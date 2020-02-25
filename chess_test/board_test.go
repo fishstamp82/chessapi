@@ -59,7 +59,3 @@ func TestInitialization(t *testing.T) {
 	}
 
 }
-
-func helper(b *chess.Board, t *testing.T) {
-
-}
