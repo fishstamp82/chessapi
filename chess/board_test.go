@@ -79,11 +79,11 @@ func TestBlackPawnMove(t *testing.T) {
 }
 
 func pretty(s []Square) []string {
-	new := []string{}
+	var str []string
 	for i := 0; i < len(s); i++ {
-		new = append(new, squareToString[s[i]])
+		str = append(str, squareToString[s[i]])
 	}
-	return new
+	return str
 }
 func sameAfterSort(a, b []Square) bool {
 	sort.Slice(a, func(i, j int) bool { return a[i] < a[j] })
