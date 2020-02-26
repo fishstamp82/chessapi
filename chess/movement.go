@@ -202,7 +202,7 @@ func (b *Board) upperRightDiag(s Square, sq []Square) []Square {
 	}
 	return sq
 }
-func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
+func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -214,9 +214,9 @@ func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	row := s.row()
 	pos := row*8 + col
 
-	var movePos Square = -7
+	var movePos Square = -9
 	var moveRow Square = -1
-	var moveCol Square = 1
+	var moveCol Square = -1
 
 	startPos := pos + movePos
 	startRow := row + moveRow
@@ -235,7 +235,83 @@ func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
+func (b *Board) knightMoves(s Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	_ = isWhite
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	topLeft := pos + 8 + 8 - 1
+	topRight := pos + 8 + 8 + 1
+	rightUp := pos + 1 + 1 + 8
+	rightDown := pos + 1 + 1 - 8
+	downRight := pos - 8 - 8 + 1
+	downLeft := pos - 8 - 8 - 1
+	leftDown := pos - 1 - 1 - 8
+	leftUp := pos - 1 - 1 + 8
+
+	topRow := row + 2
+	topLeftCol := col - 1
+	topRightCol := col + 1
+
+	rightCol := col + 2
+	rightUpRow := row + 1
+	rightDownRow := row - 1
+
+	downRow := row - 2
+	downLeftCol := col - 1
+	downRightCol := col + 1
+
+	leftCol := col - 2
+	leftUpRow := row + 1
+	leftDownRow := row - 1
+
+	combos := [8][3]Square{
+		[3]Square{topLeft, topRow, topLeftCol},
+		[3]Square{topRight, topRow, topRightCol},
+		[3]Square{rightUp, rightUpRow, rightCol},
+		[3]Square{rightDown, rightDownRow, rightCol},
+		[3]Square{downRight, downRow, downRightCol},
+		[3]Square{downLeft, downRow, downLeftCol},
+		[3]Square{leftDown, leftDownRow, leftCol},
+		[3]Square{leftUp, leftUpRow, leftCol},
+	}
+	moves := []Square{}
+
+	var target, r, c Square
+	for _, val := range combos {
+		target = val[0]
+		r = val[1]
+		c = val[2]
+
+		if target.row() != r {
+			continue
+		}
+		if target.col() != c {
+			continue
+		}
+		if target < a1 || h8 < target {
+			continue
+		}
+		if isWhite && b.board[target] < 0 {
+			moves = append(moves, target)
+		} else if !isWhite && b.board[target] > 0 {
+			moves = append(moves, target)
+		} else if b.board[target] == Empty {
+			moves = append(moves, target)
+		}
+	}
+	return moves
+}
+
+func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -247,9 +323,9 @@ func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
 	row := s.row()
 	pos := row*8 + col
 
-	var movePos Square = -9
+	var movePos Square = -7
 	var moveRow Square = -1
-	var moveCol Square = -1
+	var moveCol Square = 1
 
 	startPos := pos + movePos
 	startRow := row + moveRow
