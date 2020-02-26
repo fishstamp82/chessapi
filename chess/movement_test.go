@@ -123,21 +123,35 @@ func TestKnightMoves(t *testing.T) {
 		whiteKnight Square
 		blackKnight Square
 		expected    []Square
+		fullBoard   bool
 	}{
 		{
 			whiteKnight: a1,
 			blackKnight: a2,
 			expected:    []Square{b3, c2},
+			fullBoard:   false,
 		},
 		{
 			whiteKnight: e3,
 			blackKnight: f5,
 			expected:    []Square{d5, f5, g2, g4, d1, f1, c2, c4},
+			fullBoard:   false,
+		},
+		{
+			whiteKnight: g1,
+			blackKnight: g8,
+			expected:    []Square{f3, h3},
+			fullBoard:   true,
 		},
 	}
-
+	var b *Board
 	for _, row := range table {
-		b := NewEmptyBoard()
+		if row.fullBoard {
+			b = NewBoard()
+		} else {
+			b = NewEmptyBoard()
+		}
+
 		b.board[row.whiteKnight] = WhiteKnight
 		b.board[row.blackKnight] = BlackKnight
 		got := b.knightMoves(row.whiteKnight)
@@ -145,6 +159,45 @@ func TestKnightMoves(t *testing.T) {
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
 				pretty(got), pretty(row.expected), pieceToString[WhiteKnight], squareToString[row.whiteKnight])
+		}
+	}
+}
+
+func TestKingMoves(t *testing.T) {
+	table := []struct {
+		whiteKing Square
+		blackKing Square
+		expected  []Square
+		fullBoard bool
+	}{
+		{
+			whiteKing: a1,
+			blackKing: a2,
+			expected:  []Square{a2, b1, b2},
+			fullBoard: false,
+		},
+		{
+			whiteKing: e2,
+			blackKing: d8,
+			expected:  []Square{d1, d2, d3, e1, e3, f1, f2, f3},
+			fullBoard: false,
+		},
+	}
+	var b *Board
+	for _, row := range table {
+		if row.fullBoard {
+			b = NewBoard()
+		} else {
+			b = NewEmptyBoard()
+		}
+
+		b.board[row.whiteKing] = WhiteKing
+		b.board[row.blackKing] = BlackKing
+		got := b.kingMoves(row.whiteKing)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				pretty(got), pretty(row.expected), pieceToString[WhiteKing], squareToString[row.whiteKing])
 		}
 	}
 }

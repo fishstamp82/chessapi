@@ -173,6 +173,22 @@ func (b *Board) moves(s Square) []Square {
 		moves = b.bishopMoves(s)
 	case BlackBishop:
 		moves = b.bishopMoves(s)
+	case WhiteKnight:
+		moves = b.knightMoves(s)
+	case BlackKnight:
+		moves = b.knightMoves(s)
+	case WhiteRook:
+		moves = b.rookMoves(s)
+	case BlackRook:
+		moves = b.rookMoves(s)
+	case WhiteQueen:
+		moves = b.queenMoves(s)
+	case BlackQueen:
+		moves = b.queenMoves(s)
+		//case WhiteKing:
+		//	moves = b.kingMoves(s)
+		//case BlackKing:
+		//	moves = b.kingMoves(s)
 	}
 	return moves
 }

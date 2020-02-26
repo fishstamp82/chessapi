@@ -311,6 +311,72 @@ func (b *Board) knightMoves(s Square) []Square {
 	return moves
 }
 
+func (b *Board) kingMoves(s Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	topLeft := pos + 7
+	top := pos + 8
+	topRight := pos + 9
+	right := pos + 1
+	downRight := pos - 7
+	down := pos - 8
+	downLeft := pos - 9
+	left := pos - 1
+
+	topRow := row + 1
+	downRow := row - 1
+	leftCol := col - 1
+	rightCol := col + 1
+	sameRow := row
+	sameCol := col
+
+	combos := [8][3]Square{
+		[3]Square{topLeft, topRow, leftCol},
+		[3]Square{top, topRow, sameCol},
+		[3]Square{topRight, topRow, rightCol},
+		[3]Square{right, sameRow, rightCol},
+		[3]Square{downRight, downRow, rightCol},
+		[3]Square{down, downRow, sameCol},
+		[3]Square{downLeft, downRow, leftCol},
+		[3]Square{left, sameRow, leftCol},
+	}
+	moves := []Square{}
+
+	var target, r, c Square
+	for _, val := range combos {
+		target = val[0]
+		r = val[1]
+		c = val[2]
+
+		if target.row() != r {
+			continue
+		}
+		if target.col() != c {
+			continue
+		}
+		if target < a1 || h8 < target {
+			continue
+		}
+		if isWhite && b.board[target] < 0 {
+			moves = append(moves, target)
+		} else if !isWhite && b.board[target] > 0 {
+			moves = append(moves, target)
+		} else if b.board[target] == Empty {
+			moves = append(moves, target)
+		}
+	}
+	return moves
+}
+
 func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
@@ -456,6 +522,21 @@ func (b *Board) bishopMoves(s Square) []Square {
 func (b *Board) rookMoves(s Square) []Square {
 	var moves []Square
 
+	moves = b.horizontalLeft(s, moves)
+	moves = b.horizontalRight(s, moves)
+	moves = b.verticalTop(s, moves)
+	moves = b.verticalBottom(s, moves)
+
+	return moves
+}
+
+func (b *Board) queenMoves(s Square) []Square {
+	var moves []Square
+
+	moves = b.upperRightDiag(s, moves)
+	moves = b.upperLeftDiag(s, moves)
+	moves = b.lowerRightDiag(s, moves)
+	moves = b.lowerLeftDiag(s, moves)
 	moves = b.horizontalLeft(s, moves)
 	moves = b.horizontalRight(s, moves)
 	moves = b.verticalTop(s, moves)
