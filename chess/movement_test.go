@@ -96,12 +96,12 @@ func TestRookMoves(t *testing.T) {
 		{
 			whiteRook: h1,
 			blackRook: a2,
-			expected:  []Square{a1, b1, c1, d1, e1, f1, g1},
+			expected:  []Square{a1, b1, c1, d1, e1, f1, g1, h2, h3, h4, h5, h6, h7, h8},
 		},
 		{
 			whiteRook: e1,
-			blackRook: a2,
-			expected:  []Square{a1, b1, c1, d1, f1, g1, h1},
+			blackRook: e5,
+			expected:  []Square{a1, b1, c1, d1, e2, e3, e4, e5, f1, g1, h1},
 		},
 	}
 

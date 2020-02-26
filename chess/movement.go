@@ -68,6 +68,74 @@ func (b *Board) horizontalRight(s Square, sq []Square) []Square {
 	return sq
 }
 
+func (b *Board) verticalTop(s Square, sq []Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	var movePos Square = 8
+	var moveRow Square = 1
+	var moveCol Square = 0
+
+	startPos := pos + movePos
+	startRow := row + moveRow
+	startCol := col + moveCol
+	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+
+		if isWhite && b.board[i] < 0 {
+			sq = append(sq, i)
+			break
+		} else if !isWhite && b.board[i] > 0 {
+			sq = append(sq, i)
+			break
+		} else if b.board[i] == Empty {
+			sq = append(sq, i)
+		}
+	}
+	return sq
+}
+
+func (b *Board) verticalBottom(s Square, sq []Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	var movePos Square = -8
+	var moveRow Square = -1
+	var moveCol Square = 0
+
+	startPos := pos + movePos
+	startRow := row + moveRow
+	startCol := col + moveCol
+	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+
+		if isWhite && b.board[i] < 0 {
+			sq = append(sq, i)
+			break
+		} else if !isWhite && b.board[i] > 0 {
+			sq = append(sq, i)
+			break
+		} else if b.board[i] == Empty {
+			sq = append(sq, i)
+		}
+	}
+	return sq
+}
+
 func (b *Board) upperLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
@@ -314,6 +382,8 @@ func (b *Board) rookMoves(s Square) []Square {
 
 	moves = b.horizontalLeft(s, moves)
 	moves = b.horizontalRight(s, moves)
+	moves = b.verticalTop(s, moves)
+	moves = b.verticalBottom(s, moves)
 
 	return moves
 }
