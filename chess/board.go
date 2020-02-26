@@ -18,207 +18,6 @@ func (s Square) col() Square {
 	return s % 8
 }
 
-const (
-	a1 Square = iota
-	b1
-	c1
-	d1
-	e1
-	f1
-	g1
-	h1
-	a2
-	b2
-	c2
-	d2
-	e2
-	f2
-	g2
-	h2
-	a3
-	b3
-	c3
-	d3
-	e3
-	f3
-	g3
-	h3
-	a4
-	b4
-	c4
-	d4
-	e4
-	f4
-	g4
-	h4
-	a5
-	b5
-	c5
-	d5
-	e5
-	f5
-	g5
-	h5
-	a6
-	b6
-	c6
-	d6
-	e6
-	f6
-	g6
-	h6
-	a7
-	b7
-	c7
-	d7
-	e7
-	f7
-	g7
-	h7
-	a8
-	b8
-	c8
-	d8
-	e8
-	f8
-	g8
-	h8
-)
-
-var stringToSquare = map[string]Square{
-	"a1": a1,
-	"b1": b1,
-	"c1": c1,
-	"d1": d1,
-	"e1": e1,
-	"f1": f1,
-	"g1": g1,
-	"h1": h1,
-	"a2": a2,
-	"b2": b2,
-	"c2": c2,
-	"d2": d2,
-	"e2": e2,
-	"f2": f2,
-	"g2": g2,
-	"h2": h2,
-	"a3": a3,
-	"b3": b3,
-	"c3": c3,
-	"d3": d3,
-	"e3": e3,
-	"f3": f3,
-	"g3": g3,
-	"h3": h3,
-	"a4": a4,
-	"b4": b4,
-	"c4": c4,
-	"d4": d4,
-	"e4": e4,
-	"f4": f4,
-	"g4": g4,
-	"h4": h4,
-	"a5": a5,
-	"b5": b5,
-	"c5": c5,
-	"d5": d5,
-	"e5": e5,
-	"f5": f5,
-	"g5": g5,
-	"h5": h5,
-	"a6": a6,
-	"b6": b6,
-	"c6": c6,
-	"d6": d6,
-	"e6": e6,
-	"f6": f6,
-	"g6": g6,
-	"h6": h6,
-	"a7": a7,
-	"b7": b7,
-	"c7": c7,
-	"d7": d7,
-	"e7": e7,
-	"f7": f7,
-	"g7": g7,
-	"h7": h7,
-	"a8": a8,
-	"b8": b8,
-	"c8": c8,
-	"d8": d8,
-	"e8": e8,
-	"f8": f8,
-	"g8": g8,
-	"h8": h8,
-}
-
-var squareToString = map[Square]string{
-	a1: "a1",
-	b1: "b1",
-	c1: "c1",
-	d1: "d1",
-	e1: "e1",
-	f1: "f1",
-	g1: "g1",
-	h1: "h1",
-	a2: "a2",
-	b2: "b2",
-	c2: "c2",
-	d2: "d2",
-	e2: "e2",
-	f2: "f2",
-	g2: "g2",
-	h2: "h2",
-	a3: "a3",
-	b3: "b3",
-	c3: "c3",
-	d3: "d3",
-	e3: "e3",
-	f3: "f3",
-	g3: "g3",
-	h3: "h3",
-	a4: "a4",
-	b4: "b4",
-	c4: "c4",
-	d4: "d4",
-	e4: "e4",
-	f4: "f4",
-	g4: "g4",
-	h4: "h4",
-	a5: "a5",
-	b5: "b5",
-	c5: "c5",
-	d5: "d5",
-	e5: "e5",
-	f5: "f5",
-	g5: "g5",
-	h5: "h5",
-	a6: "a6",
-	b6: "b6",
-	c6: "c6",
-	d6: "d6",
-	e6: "e6",
-	f6: "f6",
-	g6: "g6",
-	h6: "h6",
-	a7: "a7",
-	b7: "b7",
-	c7: "c7",
-	d7: "d7",
-	e7: "e7",
-	f7: "f7",
-	g7: "g7",
-	h7: "h7",
-	a8: "a8",
-	b8: "b8",
-	c8: "c8",
-	d8: "d8",
-	e8: "e8",
-	f8: "f8",
-	g8: "g8",
-	h8: "h8",
-}
-
 type Board struct {
 	board [64]Piece
 	turn  Player
@@ -266,20 +65,29 @@ func (b *Board) CliStrRepr() string {
 func (b *Board) Move(s, t string) error {
 	sq1, err := b.getSquare(s)
 	if err != nil {
-		return errors.New("bad move input, good format should be: 'e2', 'd3', etc")
+		return errors.New(fmt.Sprintf("bad move input, got: %v, good format: 'e2'", s))
 	}
 	sq2, err := b.getSquare(t)
 	if err != nil {
-		return errors.New("bad move input, good format should be: 'e2', 'd3', etc")
+		return errors.New(fmt.Sprintf("bad second input, got: %v, good format: 'e4'", t))
+	}
+
+	switch b.turn {
+	case White:
+		if b.board[sq1] < 0 {
+			return errors.New("white's turn")
+		}
+	case Black:
+		if b.board[sq1] > 0 {
+			return errors.New("black's turn")
+		}
 	}
 
 	availMoves := b.moves(sq1)
 	if !inSlice(sq2, availMoves) {
 		return errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[sq1]], t))
 	}
-	for i := 0; i < len(availMoves); i++ {
 
-	}
 	// Mave Move
 	p := b.board[sq1]
 	b.board[sq1] = 0
@@ -351,105 +159,6 @@ func (b *Board) switchTurn() {
 	} else {
 		b.turn = White
 	}
-
-}
-
-func (b *Board) whitePawnMoves(s Square) []Square {
-	var moves []Square
-	var t Square
-	var first, second Square
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-	if row == 1 {
-		first = pos + 8   // one square move
-		second = pos + 16 // two square move
-		if b.board[first] == 0 {
-			moves = append(moves, first)
-		}
-		if b.board[second] == 0 && b.board[first] == 0 {
-			moves = append(moves, second)
-		}
-	} else {
-		first = pos + 8 // one square move
-		if b.board[first] == 0 {
-			moves = append(moves, first)
-		}
-	}
-
-	upperRight := func(s []Square) []Square {
-		t = pos + 9 // attack upper right
-		if b.board[t] < 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-
-	upperLeft := func(s []Square) []Square {
-		t = pos + 7 // attack upper right
-		if b.board[t] < 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-	if col == 0 {
-		moves = upperRight(moves)
-	} else if col == 7 {
-		moves = upperLeft(moves)
-	} else {
-		moves = upperRight(moves)
-		moves = upperLeft(moves)
-	}
-	return moves
-}
-
-func (b *Board) blackPawnMoves(s Square) []Square {
-	var moves []Square
-	var t Square
-	var first, second Square
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-	if row == 6 {
-		first = pos - 8   // one square move
-		second = pos - 16 // two square move
-		if b.board[first] == 0 {
-			moves = append(moves, first)
-		}
-		if b.board[second] == 0 && b.board[first] == 0 {
-			moves = append(moves, second)
-		}
-	} else {
-		first = pos - 8 // one square move
-		if b.board[first] == 0 {
-			moves = append(moves, first)
-		}
-	}
-
-	lowerRight := func(s []Square) []Square {
-		t = pos - 7 // attack lower right
-		if b.board[t] > 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-
-	lowerLeft := func(s []Square) []Square {
-		t = pos - 9 // attack lower left
-		if b.board[t] > 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-	if col == 0 {
-		moves = lowerRight(moves)
-	} else if col == 7 {
-		moves = lowerLeft(moves)
-	} else {
-		moves = lowerRight(moves)
-		moves = lowerLeft(moves)
-	}
-	return moves
 }
 
 func (b *Board) moves(s Square) []Square {
@@ -458,6 +167,12 @@ func (b *Board) moves(s Square) []Square {
 	switch p {
 	case WhitePawn:
 		moves = b.whitePawnMoves(s)
+	case BlackPawn:
+		moves = b.blackPawnMoves(s)
+	case WhiteBishop:
+		moves = b.bishopMoves(s)
+	case BlackBishop:
+		moves = b.bishopMoves(s)
 	}
 	return moves
 }

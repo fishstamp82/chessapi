@@ -38,7 +38,7 @@ var pieceToString = map[Piece]string{
 }
 
 var pieceToUnicode = map[Piece]string{
-	Empty:       "\u25A1",
+	Empty:       "\u0020",
 	WhitePawn:   "\u2659",
 	WhiteKnight: "\u2658",
 	WhiteBishop: "\u2657",
@@ -51,8 +51,4 @@ var pieceToUnicode = map[Piece]string{
 	BlackRook:   "\u265C",
 	BlackQueen:  "\u265B",
 	BlackKing:   "\u265A",
-}
-
-func whitePawnMoves(s Square, b Board) []Square {
-	return []Square{}
 }

@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-//
 func TestWhitePawnMove(t *testing.T) {
 	table := []struct {
 		whitePawn Square
@@ -38,6 +37,52 @@ func TestWhitePawnMove(t *testing.T) {
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				pretty(got), pretty(row.expected), squareToString[row.whitePawn])
+		}
+	}
+}
+
+func TestBishopMoves(t *testing.T) {
+	table := []struct {
+		whiteBishop Square
+		blackBishop Square
+		expected    []Square
+	}{
+		{
+			whiteBishop: a1,
+			blackBishop: a2,
+			expected:    []Square{b2, c3, d4, e5, f6, g7, h8},
+		},
+		{
+			whiteBishop: a1,
+			blackBishop: b2,
+			expected:    []Square{b2},
+		},
+		{
+			whiteBishop: e4,
+			blackBishop: d5,
+			expected:    []Square{d3, b1, c2, d5, f5, g6, h7, f3, g2, h1},
+		},
+		{
+			whiteBishop: b1,
+			blackBishop: b2,
+			expected:    []Square{a2, c2, d3, e4, f5, g6, h7},
+		},
+		{
+			whiteBishop: d4,
+			blackBishop: h8,
+			expected:    []Square{c3, b2, a1, c5, b6, a7, e3, f2, g1, e5, f6, g7, h8},
+		},
+	}
+
+	for _, row := range table {
+		b := NewEmptyBoard()
+		b.board[row.whiteBishop] = WhiteBishop
+		b.board[row.blackBishop] = BlackBishop
+		got := b.bishopMoves(row.whiteBishop)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				pretty(got), pretty(row.expected), pieceToString[WhiteBishop], squareToString[row.whiteBishop])
 		}
 	}
 }
