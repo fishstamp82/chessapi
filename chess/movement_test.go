@@ -87,6 +87,37 @@ func TestBishopMoves(t *testing.T) {
 	}
 }
 
+func TestRookMoves(t *testing.T) {
+	table := []struct {
+		whiteRook Square
+		blackRook Square
+		expected  []Square
+	}{
+		{
+			whiteRook: h1,
+			blackRook: a2,
+			expected:  []Square{a1, b1, c1, d1, e1, f1, g1},
+		},
+		{
+			whiteRook: e1,
+			blackRook: a2,
+			expected:  []Square{a1, b1, c1, d1, f1, g1, h1},
+		},
+	}
+
+	for _, row := range table {
+		b := NewEmptyBoard()
+		b.board[row.whiteRook] = WhiteRook
+		b.board[row.blackRook] = BlackRook
+		got := b.rookMoves(row.whiteRook)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				pretty(got), pretty(row.expected), pieceToString[WhiteRook], squareToString[row.whiteRook])
+		}
+	}
+}
+
 func TestBlackPawnMove(t *testing.T) {
 	table := []struct {
 		whitePawn Square
