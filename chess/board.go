@@ -140,7 +140,7 @@ func (b *Board) kingSquare(p Player) Square {
 		king = BlackKing
 	}
 
-	for pos := a1; pos < h8; pos += 1 {
+	for pos := a1; pos <= h8; pos += 1 {
 		if b.board[pos] == king {
 			return pos
 		}
