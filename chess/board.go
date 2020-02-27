@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+const (
+	White Player = iota + 1 // 1
+	Black                   // 2
+)
+
 type Player byte
 type Square int
 
@@ -102,6 +107,9 @@ func (b *Board) CliStrRepr() string {
 // error is nil on successful move
 // arguments are algebraic chess notation 'e2' -> 'e4'
 func (b *Board) Move(s, t string) error {
+	if b.state == Over {
+		return errors.New("game over, can't move")
+	}
 	sq1, err := b.getSquare(s)
 	if err != nil {
 		return errors.New(fmt.Sprintf("bad move input, got: %v, good format: 'e2'", s))
