@@ -89,17 +89,24 @@ func (b *Board) Move(s, t string) error {
 	}
 
 	availMoves := b.moves(sq1)
-	if !inSlice(sq2, availMoves) {
+	if !inSquares(sq2, availMoves) {
 		return errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[sq1]], t))
 	}
 
-	//ourKingPos := b.kingSquare(b.turn)
+	ourKingPos := b.kingSquare(b.turn)
 	// Make Move
 	p := b.board[sq1]
 	b.board[sq1] = 0
 	b.board[sq2] = p
 
 	//If we are in check, revert the move and return error can't move
+	for _, oppPiece := range b.pieces(b.opponent()) {
+		if inSquares(ourKingPos, b.targets(oppPiece)) {
+			b.board[sq1] = p
+			b.board[sq2] = 0
+			return errors.New("king will be in check")
+		}
+	}
 
 	//b.is_check()
 	//Calculate if we check the opponent, and update inCheck
@@ -107,6 +114,17 @@ func (b *Board) Move(s, t string) error {
 	// Make other players turn
 	b.switchTurn()
 	return nil
+}
+
+func (b *Board) opponent() Player {
+	switch b.turn {
+	case White:
+		return Black
+	case Black:
+		return White
+	}
+
+	panic("must be black or white")
 }
 
 func (b *Board) pieces(p Player) []Square {
@@ -242,4 +260,36 @@ func (b *Board) moves(s Square) []Square {
 		moves = b.kingMoves(s)
 	}
 	return moves
+}
+
+func (b *Board) targets(s Square) []Square {
+	p := b.board[s]
+	var targets []Square
+	switch p {
+	case WhitePawn:
+		targets = b.pawnTargets(s)
+	case BlackPawn:
+		targets = b.pawnTargets(s)
+	case WhiteBishop:
+		targets = b.bishopTargets(s)
+	case BlackBishop:
+		targets = b.bishopTargets(s)
+	case WhiteKnight:
+		targets = b.knightTargets(s)
+	case BlackKnight:
+		targets = b.knightTargets(s)
+	case WhiteRook:
+		targets = b.rookTargets(s)
+	case BlackRook:
+		targets = b.rookTargets(s)
+	case WhiteQueen:
+		targets = b.queenTargets(s)
+	case BlackQueen:
+		targets = b.queenTargets(s)
+	case WhiteKing:
+		targets = b.kingTargets(s)
+	case BlackKing:
+		targets = b.kingTargets(s)
+	}
+	return targets
 }

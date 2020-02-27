@@ -154,3 +154,34 @@ func (b *Board) queenTargets(s Square) []Square {
 	}
 	return targets
 }
+
+func (b *Board) kingTargets(s Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+
+	var moves []Square
+	targets := []Square{}
+
+	p := b.board[s]
+	switch p {
+	case WhiteKing:
+		moves = b.kingMoves(s)
+	case BlackKing:
+		moves = b.kingMoves(s)
+	default:
+		moves = []Square{}
+	}
+	for _, val := range moves {
+		if isWhite && b.board[val] < 0 {
+			targets = append(targets, val)
+		} else if !isWhite && b.board[val] > 0 {
+			targets = append(targets, val)
+		}
+	}
+	return targets
+}

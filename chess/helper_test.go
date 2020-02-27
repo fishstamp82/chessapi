@@ -27,7 +27,7 @@ func TestHelper(t *testing.T) {
 		},
 	}
 	for _, row := range table {
-		got := inSlice(row.square, row.squares)
+		got := inSquares(row.square, row.squares)
 		if got != row.expected {
 			t.Errorf("got: %t, expected: %t for %d in %v\n",
 				got, row.expected, row.square, row.squares)

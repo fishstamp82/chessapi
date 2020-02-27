@@ -183,3 +183,31 @@ func TestQueenTargets(t *testing.T) {
 		}
 	}
 }
+
+func TestKingTargets(t *testing.T) {
+	table := []struct {
+		whiteKing   Square
+		blackBishop []Square
+		expected    []Square
+	}{
+		{
+			whiteKing:   a1,
+			blackBishop: []Square{a2, b2, b1},
+			expected:    []Square{a2, b2, b1},
+		},
+	}
+
+	for _, row := range table {
+		b := NewEmptyBoard()
+		b.board[row.whiteKing] = WhiteKing
+		for _, val := range row.blackBishop {
+			b.board[val] = BlackKing
+		}
+
+		got := b.kingTargets(row.whiteKing)
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s\n",
+				pretty(got), pretty(row.expected), squareToString[row.whiteKing])
+		}
+	}
+}
