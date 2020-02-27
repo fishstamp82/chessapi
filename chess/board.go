@@ -19,13 +19,47 @@ func (s Square) col() Square {
 }
 
 type Board struct {
-	board   [64]Piece
-	turn    Player
-	inCheck bool
+	board  [64]Piece
+	turn   Player
+	state  State
+	winner Player
 }
 
+func (b *Board) CheckMate() bool {
+	if b.state == Over {
+		return true
+	}
+	return false
+}
+
+func (b *Board) Won() (string, error) {
+	if b.state != Over {
+		return "", errors.New("game not over")
+	}
+	switch b.winner {
+	case White:
+		return "white", nil
+	case Black:
+		return "black", nil
+	}
+	return "", errors.New("no clear winner, bug")
+}
+
+type State byte
+
+const (
+	Playing State = iota
+	Over
+)
+
 func (b *Board) InCheck() bool {
-	return b.inCheck
+	if b.inCheck(White) {
+		return true
+	}
+	if b.inCheck(Black) {
+		return true
+	}
+	return false
 }
 
 func (b *Board) PlayersTurn() string {
@@ -93,31 +127,95 @@ func (b *Board) Move(s, t string) error {
 		return errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[sq1]], t))
 	}
 
-	ourKingPos := b.kingSquare(b.turn)
 	// Make Move
 	p := b.board[sq1]
 	b.board[sq1] = 0
 	b.board[sq2] = p
 
-	//If we are in check, revert the move and return error can't move
-	for _, oppPiece := range b.pieces(b.opponent()) {
-		if inSquares(ourKingPos, b.targets(oppPiece)) {
-			b.board[sq1] = p
-			b.board[sq2] = 0
-			return errors.New("king will be in check")
-		}
+	//If we are in check after a move, this move is not allowed
+	if b.inCheck(b.turn) {
+		b.board[sq1] = p
+		b.board[sq2] = 0
+		return errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[sq1]], t))
 	}
 
-	//b.is_check()
-	//Calculate if we check the opponent, and update inCheck
+	//check for check mate on opponent
+	if b.isCheckMateBySquare(sq2, b.opponent(b.turn)) {
+		b.state = Over
+		b.winner = b.turn
+		return nil
+	}
 
-	// Make other players turn
+	// Switch to other player
 	b.switchTurn()
 	return nil
 }
 
-func (b *Board) opponent() Player {
-	switch b.turn {
+func (b *Board) inCheck(player Player) bool {
+	ourKingPos := b.kingSquare(player)
+
+	for _, oppPiece := range b.pieces(b.opponent(player)) {
+		if inSquares(ourKingPos, b.targets(oppPiece)) {
+			return true
+		}
+	}
+	return false
+}
+
+// See if player is checked by piece on square s
+func (b *Board) inCheckBySquare(s Square, player Player) bool {
+	kingPos := b.kingSquare(player)
+	if inSquares(kingPos, b.targets(s)) {
+		return true
+	}
+	return false
+}
+
+//Check if piece on square s check mates player p
+func (b *Board) isCheckMateBySquare(s Square, p Player) bool {
+	if !b.inCheckBySquare(s, p) {
+		return false
+	}
+
+	var king Piece
+	switch p {
+	case White:
+		king = WhiteKing
+	case Black:
+		king = BlackKing
+	}
+
+	//Check possible escapes by the king
+	kingSquare := b.kingSquare(p)
+	kingMoves := b.moves(kingSquare)
+	for _, move := range kingMoves {
+		tmpPiece := b.board[move]
+		b.board[kingSquare] = Empty
+		b.board[move] = king
+		if !b.inCheck(p) {
+			b.board[kingSquare] = king
+			b.board[move] = tmpPiece
+			return false
+		}
+		b.board[kingSquare] = king
+		b.board[move] = tmpPiece
+	}
+
+	//Must Block attack, see if any piece can move to any of the blocking squares
+	blocks := b.blocks(s, kingSquare)
+	for _, piece := range b.piecesWithoutKing(p) {
+		for _, move := range b.moves(piece) {
+			if inSquares(move, blocks) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func (b *Board) opponent(p Player) Player {
+	switch p {
 	case White:
 		return Black
 	case Black:
@@ -149,6 +247,33 @@ func (b *Board) pieces(p Player) []Square {
 	return pieces
 }
 
+func (b *Board) piecesWithoutKing(p Player) []Square {
+	var isWhite bool
+	var piece Piece
+	switch p {
+	case White:
+		isWhite = true
+	case Black:
+		isWhite = false
+	}
+
+	var pieces []Square
+	for pos := a1; pos <= h8; pos += 1 {
+		piece = b.board[p]
+		if piece == WhiteKing || piece == BlackKing {
+			continue
+		}
+		if piece > 0 && isWhite {
+			pieces = append(pieces, pos)
+		} else if piece < 0 && !isWhite {
+			pieces = append(pieces, pos)
+
+		}
+
+	}
+	return pieces
+}
+
 func (b *Board) kingSquare(p Player) Square {
 	var king Piece
 	switch p {
@@ -168,7 +293,7 @@ func (b *Board) kingSquare(p Player) Square {
 }
 
 func NewBoard() *Board {
-	b := &Board{}
+	b := &Board{state: Playing}
 
 	b.turn = White
 	//Pawns
@@ -207,7 +332,7 @@ func NewBoard() *Board {
 
 func NewEmptyBoard() *Board {
 
-	b := &Board{}
+	b := &Board{state: Playing}
 	return b
 
 }
@@ -292,4 +417,32 @@ func (b *Board) targets(s Square) []Square {
 		targets = b.kingTargets(s)
 	}
 	return targets
+}
+
+func (b *Board) blocks(s, t Square) []Square {
+	p := b.board[s]
+	var blocks []Square
+	switch p {
+	case WhitePawn:
+		blocks = b.pawnBlocks(s, t)
+	case BlackPawn:
+		blocks = b.pawnBlocks(s, t)
+	case WhiteBishop:
+		blocks = b.bishopBlocks(s, t)
+	case BlackBishop:
+		blocks = b.bishopBlocks(s, t)
+	case WhiteKnight:
+		blocks = b.knightBlocks(s, t)
+	case BlackKnight:
+		blocks = b.knightBlocks(s, t)
+	case WhiteRook:
+		blocks = b.rookBlocks(s, t)
+	case BlackRook:
+		blocks = b.rookBlocks(s, t)
+	case WhiteQueen:
+		blocks = b.queenBlocks(s, t)
+	case BlackQueen:
+		blocks = b.queenBlocks(s, t)
+	}
+	return blocks
 }

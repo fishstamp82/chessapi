@@ -159,13 +159,21 @@ func TestRookTargets(t *testing.T) {
 func TestQueenTargets(t *testing.T) {
 	table := []struct {
 		whiteQueen  Square
+		whitePawns  []Square
 		blackQueens []Square
 		expected    []Square
 	}{
 		{
 			whiteQueen:  a1,
 			blackQueens: []Square{a8, h8, h1},
+			whitePawns:  []Square{},
 			expected:    []Square{a8, h8, h1},
+		},
+		{
+			whiteQueen:  a1,
+			whitePawns:  []Square{a2, b2, b1},
+			blackQueens: []Square{a8, h8, h1},
+			expected:    []Square{},
 		},
 	}
 
@@ -174,6 +182,9 @@ func TestQueenTargets(t *testing.T) {
 		b.board[row.whiteQueen] = WhiteQueen
 		for _, val := range row.blackQueens {
 			b.board[val] = BlackQueen
+		}
+		for _, val := range row.whitePawns {
+			b.board[val] = WhitePawn
 		}
 
 		got := b.queenTargets(row.whiteQueen)

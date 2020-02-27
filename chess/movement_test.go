@@ -91,29 +91,68 @@ func TestRookMoves(t *testing.T) {
 	table := []struct {
 		whiteRook Square
 		blackRook Square
+		whitePawn Square
 		expected  []Square
 	}{
 		{
 			whiteRook: h1,
 			blackRook: a2,
+			whitePawn: d5,
 			expected:  []Square{a1, b1, c1, d1, e1, f1, g1, h2, h3, h4, h5, h6, h7, h8},
 		},
 		{
 			whiteRook: e1,
 			blackRook: e5,
+			whitePawn: d5,
 			expected:  []Square{a1, b1, c1, d1, e2, e3, e4, e5, f1, g1, h1},
+		},
+		{
+			whiteRook: e2,
+			blackRook: e5,
+			whitePawn: d2,
+			expected:  []Square{e1, e3, e4, e5, f2, g2, h2},
 		},
 	}
 
 	for _, row := range table {
 		b := NewEmptyBoard()
 		b.board[row.whiteRook] = WhiteRook
+		b.board[row.whitePawn] = WhitePawn
 		b.board[row.blackRook] = BlackRook
 		got := b.rookMoves(row.whiteRook)
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
 				pretty(got), pretty(row.expected), pieceToString[WhiteRook], squareToString[row.whiteRook])
+		}
+	}
+}
+
+func TestQueenMoves(t *testing.T) {
+	table := []struct {
+		whiteQueen Square
+		blackQueen Square
+		whitePawn  Square
+		expected   []Square
+	}{
+		{
+			whiteQueen: a8,
+			blackQueen: a1,
+			whitePawn:  a3,
+			expected:   []Square{a4, a5, a6, a7, b8, c8, d8, e8, f8, g8, h8, b7, c6, d5, e4, f3, g2, h1},
+		},
+	}
+
+	for _, row := range table {
+		b := NewEmptyBoard()
+		b.board[row.whiteQueen] = WhiteQueen
+		b.board[row.whitePawn] = WhitePawn
+		b.board[row.blackQueen] = BlackQueen
+		got := b.queenMoves(row.whiteQueen)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				pretty(got), pretty(row.expected), pieceToString[WhiteQueen], squareToString[row.whiteQueen])
 		}
 	}
 }

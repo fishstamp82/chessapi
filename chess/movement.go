@@ -19,18 +19,8 @@ func (b *Board) horizontalLeft(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
 	return sq
 }
 
@@ -53,18 +43,8 @@ func (b *Board) horizontalRight(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
 	return sq
 }
 
@@ -87,18 +67,8 @@ func (b *Board) verticalTop(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
 	return sq
 }
 
@@ -121,18 +91,8 @@ func (b *Board) verticalBottom(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
 	return sq
 }
 
@@ -155,18 +115,8 @@ func (b *Board) upperLeftDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
 	return sq
 }
 
@@ -189,17 +139,8 @@ func (b *Board) upperRightDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+
 	return sq
 }
 func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
@@ -221,17 +162,8 @@ func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
-		if isWhite && b.board[i] < 0 {
-			sq = append(sq, i)
-			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
-			break
-		} else if b.board[i] == Empty {
-			sq = append(sq, i)
-		}
-	}
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+
 	return sq
 }
 
@@ -396,9 +328,16 @@ func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
+	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	return sq
+}
+
+func (b *Board) movementAlgo(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b.board[i] < 0 {
 			sq = append(sq, i)
+			break
+		} else if isWhite && b.board[i] > 0 {
 			break
 		} else if !isWhite && b.board[i] > 0 {
 			sq = append(sq, i)
