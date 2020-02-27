@@ -19,8 +19,13 @@ func (s Square) col() Square {
 }
 
 type Board struct {
-	board [64]Piece
-	turn  Player
+	board   [64]Piece
+	turn    Player
+	inCheck bool
+}
+
+func (b *Board) InCheck() bool {
+	return b.inCheck
 }
 
 func (b *Board) PlayersTurn() string {
@@ -92,6 +97,10 @@ func (b *Board) Move(s, t string) error {
 	p := b.board[sq1]
 	b.board[sq1] = 0
 	b.board[sq2] = p
+
+	//If we are in check, revert the move and return error can't move
+	//b.is_check()
+	//Calculate if we check the opponent, and update inCheck
 
 	// Make other players turn
 	b.switchTurn()
@@ -185,10 +194,10 @@ func (b *Board) moves(s Square) []Square {
 		moves = b.queenMoves(s)
 	case BlackQueen:
 		moves = b.queenMoves(s)
-		//case WhiteKing:
-		//	moves = b.kingMoves(s)
-		//case BlackKing:
-		//	moves = b.kingMoves(s)
+	case WhiteKing:
+		moves = b.kingMoves(s)
+	case BlackKing:
+		moves = b.kingMoves(s)
 	}
 	return moves
 }
