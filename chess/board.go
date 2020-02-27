@@ -93,18 +93,60 @@ func (b *Board) Move(s, t string) error {
 		return errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[sq1]], t))
 	}
 
-	// Mave Move
+	//ourKingPos := b.kingSquare(b.turn)
+	// Make Move
 	p := b.board[sq1]
 	b.board[sq1] = 0
 	b.board[sq2] = p
 
 	//If we are in check, revert the move and return error can't move
+
 	//b.is_check()
 	//Calculate if we check the opponent, and update inCheck
 
 	// Make other players turn
 	b.switchTurn()
 	return nil
+}
+
+func (b *Board) pieces(p Player) []Square {
+	var isWhite bool
+	switch p {
+	case White:
+		isWhite = true
+	case Black:
+		isWhite = false
+	}
+
+	var pieces []Square
+	for pos := a1; pos <= h8; pos += 1 {
+		if b.board[pos] > 0 && isWhite {
+			pieces = append(pieces, pos)
+		} else if b.board[pos] < 0 && !isWhite {
+			pieces = append(pieces, pos)
+
+		}
+
+	}
+	return pieces
+}
+
+func (b *Board) kingSquare(p Player) Square {
+	var king Piece
+	switch p {
+	case White:
+		king = WhiteKing
+	case Black:
+		king = BlackKing
+	}
+
+	for pos := a1; pos < h8; pos += 1 {
+		if b.board[pos] == king {
+			return pos
+		}
+	}
+
+	panic("must have a white King")
 }
 
 func NewBoard() *Board {
