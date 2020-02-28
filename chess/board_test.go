@@ -1,12 +1,11 @@
-package chess_test
+package chess
 
 import (
-	"chessapi/chess"
 	"testing"
 )
 
 func TestInitialization(t *testing.T) {
-	b := chess.NewBoard()
+	b := NewChessBoard()
 	if b.PlayersTurn() != "white" {
 		t.Error("not white's turn on start of the game")
 	}
@@ -48,12 +47,11 @@ func TestInitialization(t *testing.T) {
 		{"g8", "black knight"},
 		{"h8", "black rook"},
 	}
-	_ = table
 
-	for _, testCase := range table {
-		p := testCase.piece
-		s := testCase.square
-		if piece, _ := b.Get(s); piece != p {
+	for _, row := range table {
+		p := row.piece
+		s := row.square
+		if piece, _ := b.get(s); piece != p {
 			t.Errorf("expected: %s on %s, got: %s\n", p, s, piece)
 		}
 	}

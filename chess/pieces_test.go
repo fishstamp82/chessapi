@@ -34,7 +34,7 @@ func TestPieces(t *testing.T) {
 	}
 
 	for ind, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		for _, val := range row.pieces {
 			b.board[val.pos] = val.piece
 		}
@@ -88,7 +88,7 @@ func TestKingSquare(t *testing.T) {
 	}
 
 	for ind, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		for _, val := range row.pieces {
 			b.board[val.pos] = val.piece
 		}

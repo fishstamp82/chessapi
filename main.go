@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-func main(){
+func main() {
 	var reader *bufio.Reader
 	var m1, m2 string
 	var err error
-	b := chess.NewBoard()
+	b := chess.NewChessBoard()
 	for {
 		if err == nil {
-			fmt.Println(b.CliStrRepr())
+			fmt.Println(b.StrRepr())
 		}
 		fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
 		reader = bufio.NewReader(os.Stdin)
@@ -26,10 +26,10 @@ func main(){
 		m2, _ = reader.ReadString('\n')
 		m2 = strings.TrimSuffix(m2, "\n")
 		err = b.Move(m1, m2)
-		if err!= nil {
+		if err != nil {
 			fmt.Println(err)
 		}
-		if b.CheckMate(){
+		if b.CheckMate() {
 			winner, _ := b.Won()
 			fmt.Printf("game over, %s won", winner)
 			break

@@ -5,13 +5,20 @@ import (
 	"fmt"
 )
 
+type Player byte
+type Square int
+type State byte
+
 const (
 	White Player = iota + 1 // 1
 	Black                   // 2
 )
 
-type Player byte
-type Square int
+const (
+	Playing State = iota
+	Over
+	Draw
+)
 
 // row goes from 0 to 7
 func (s Square) row() Square {
@@ -23,21 +30,38 @@ func (s Square) col() Square {
 	return s % 8
 }
 
-type Board struct {
+type Board interface {
+	CheckMate() bool
+	Draw() bool
+	Won() (string, error)
+	InCheck() bool
+	PlayersTurn() string
+	StrRepr() string
+	Move(s, t string) error
+}
+
+type ChessBoard struct {
 	board  [64]Piece
 	turn   Player
 	state  State
 	winner Player
 }
 
-func (b *Board) CheckMate() bool {
+func (b *ChessBoard) CheckMate() bool {
 	if b.state == Over {
 		return true
 	}
 	return false
 }
 
-func (b *Board) Won() (string, error) {
+func (b *ChessBoard) Draw() bool {
+	if b.state == Draw {
+		return true
+	}
+	return false
+}
+
+func (b *ChessBoard) Won() (string, error) {
 	if b.state != Over {
 		return "", errors.New("game not over")
 	}
@@ -50,14 +74,7 @@ func (b *Board) Won() (string, error) {
 	return "", errors.New("no clear winner, bug")
 }
 
-type State byte
-
-const (
-	Playing State = iota
-	Over
-)
-
-func (b *Board) InCheck() bool {
+func (b *ChessBoard) InCheck() bool {
 	if b.inCheck(White) {
 		return true
 	}
@@ -67,7 +84,7 @@ func (b *Board) InCheck() bool {
 	return false
 }
 
-func (b *Board) PlayersTurn() string {
+func (b *ChessBoard) PlayersTurn() string {
 	var p Player
 	p = b.turn
 	if p == White {
@@ -78,19 +95,8 @@ func (b *Board) PlayersTurn() string {
 	panic("neither white nor blacks turn")
 }
 
-// Given human readable string input "e2", return string
-// repr of piece. if none, return "-"
-func (b *Board) Get(s string) (string, error) {
-	sq, err := b.getSquare(s)
-	if err != nil {
-		return "", errors.New("bad move input, good format should be: 'e2', 'd3', etc")
-	}
-	p := b.board[sq]
-	return pieceToString[p], nil
-}
-
 //CLI repr of board
-func (b *Board) CliStrRepr() string {
+func (b *ChessBoard) StrRepr() string {
 	var board string
 	for row := 7; row >= 0; row-- {
 		board += "\n-----------------\n|"
@@ -106,7 +112,7 @@ func (b *Board) CliStrRepr() string {
 // Move gets squares in human readable form, and performs a move
 // error is nil on successful move
 // arguments are algebraic chess notation 'e2' -> 'e4'
-func (b *Board) Move(s, t string) error {
+func (b *ChessBoard) Move(s, t string) error {
 	if b.state == Over {
 		return errors.New("game over, can't move")
 	}
@@ -159,7 +165,18 @@ func (b *Board) Move(s, t string) error {
 	return nil
 }
 
-func (b *Board) inCheck(player Player) bool {
+// Given human readable string input "e2", return string
+// repr of piece. if none, return "-"
+func (b *ChessBoard) get(s string) (string, error) {
+	sq, err := b.getSquare(s)
+	if err != nil {
+		return "", errors.New("bad move input, good format should be: 'e2', 'd3', etc")
+	}
+	p := b.board[sq]
+	return pieceToString[p], nil
+}
+
+func (b *ChessBoard) inCheck(player Player) bool {
 	ourKingPos := b.kingSquare(player)
 
 	for _, oppPiece := range b.pieces(b.opponent(player)) {
@@ -171,7 +188,7 @@ func (b *Board) inCheck(player Player) bool {
 }
 
 // See if player is checked by piece on square s
-func (b *Board) inCheckBySquare(s Square, player Player) bool {
+func (b *ChessBoard) inCheckBySquare(s Square, player Player) bool {
 	kingPos := b.kingSquare(player)
 	if inSquares(kingPos, b.targets(s)) {
 		return true
@@ -180,7 +197,7 @@ func (b *Board) inCheckBySquare(s Square, player Player) bool {
 }
 
 //Check if piece on square s check mates player p
-func (b *Board) isCheckMateBySquare(s Square, p Player) bool {
+func (b *ChessBoard) isCheckMateBySquare(s Square, p Player) bool {
 	if !b.inCheckBySquare(s, p) {
 		return false
 	}
@@ -222,7 +239,7 @@ func (b *Board) isCheckMateBySquare(s Square, p Player) bool {
 	return true
 }
 
-func (b *Board) opponent(p Player) Player {
+func (b *ChessBoard) opponent(p Player) Player {
 	switch p {
 	case White:
 		return Black
@@ -233,7 +250,7 @@ func (b *Board) opponent(p Player) Player {
 	panic("must be black or white")
 }
 
-func (b *Board) pieces(p Player) []Square {
+func (b *ChessBoard) pieces(p Player) []Square {
 	var isWhite bool
 	switch p {
 	case White:
@@ -255,7 +272,7 @@ func (b *Board) pieces(p Player) []Square {
 	return pieces
 }
 
-func (b *Board) piecesWithoutKing(p Player) []Square {
+func (b *ChessBoard) piecesWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {
@@ -282,7 +299,7 @@ func (b *Board) piecesWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func (b *Board) kingSquare(p Player) Square {
+func (b *ChessBoard) kingSquare(p Player) Square {
 	var king Piece
 	switch p {
 	case White:
@@ -300,8 +317,8 @@ func (b *Board) kingSquare(p Player) Square {
 	panic("must have a white King")
 }
 
-func NewBoard() *Board {
-	b := &Board{state: Playing}
+func NewChessBoard() *ChessBoard {
+	b := &ChessBoard{state: Playing}
 
 	b.turn = White
 	//Pawns
@@ -338,13 +355,55 @@ func NewBoard() *Board {
 	return b
 }
 
-func NewEmptyBoard() *Board {
-
-	b := &Board{state: Playing}
+func NewEmptyChessBoard() *ChessBoard {
+	b := &ChessBoard{state: Playing}
 	return b
-
 }
-func (b *Board) getSquare(s string) (Square, error) {
+
+func NewBoard() Board {
+	b := &ChessBoard{state: Playing}
+
+	b.turn = White
+	//Pawns
+	for _, s := range []Square{a2, b2, c2, d2, e2, f2, g2, h2} {
+		b.board[s] = WhitePawn
+	}
+	for _, s := range []Square{a7, b7, c7, d7, e7, f7, g7, h7} {
+		b.board[s] = BlackPawn
+	}
+	b.board[a1] = WhiteRook
+	b.board[h1] = WhiteRook
+
+	b.board[a8] = BlackRook
+	b.board[h8] = BlackRook
+
+	b.board[b1] = WhiteKnight
+	b.board[g1] = WhiteKnight
+
+	b.board[b8] = BlackKnight
+	b.board[g8] = BlackKnight
+
+	b.board[c1] = WhiteBishop
+	b.board[f1] = WhiteBishop
+
+	b.board[c8] = BlackBishop
+	b.board[f8] = BlackBishop
+
+	b.board[d1] = WhiteQueen
+	b.board[e1] = WhiteKing
+
+	b.board[d8] = BlackQueen
+	b.board[e8] = BlackKing
+
+	return b
+}
+
+func NewEmptyBoard() Board {
+	b := &ChessBoard{state: Playing}
+	return b
+}
+
+func (b *ChessBoard) getSquare(s string) (Square, error) {
 	if len(s) != 2 {
 		return 0, errors.New("wrong length")
 	}
@@ -355,7 +414,7 @@ func (b *Board) getSquare(s string) (Square, error) {
 	return sq, nil
 }
 
-func (b *Board) switchTurn() {
+func (b *ChessBoard) switchTurn() {
 	if b.turn == White {
 		b.turn = Black
 	} else {
@@ -363,7 +422,7 @@ func (b *Board) switchTurn() {
 	}
 }
 
-func (b *Board) moves(s Square) []Square {
+func (b *ChessBoard) moves(s Square) []Square {
 	p := b.board[s]
 	var moves []Square
 	switch p {
@@ -395,7 +454,7 @@ func (b *Board) moves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) targets(s Square) []Square {
+func (b *ChessBoard) targets(s Square) []Square {
 	p := b.board[s]
 	var targets []Square
 	switch p {
@@ -427,22 +486,22 @@ func (b *Board) targets(s Square) []Square {
 	return targets
 }
 
-func (b *Board) blocks(s, t Square) []Square {
+func (b *ChessBoard) blocks(s, t Square) []Square {
 	p := b.board[s]
 	var blocks []Square
 	switch p {
 	case WhitePawn:
-		blocks = b.pawnBlocks(s, t)
+		blocks = b.pawnBlocks(s)
 	case BlackPawn:
-		blocks = b.pawnBlocks(s, t)
+		blocks = b.pawnBlocks(s)
 	case WhiteBishop:
 		blocks = b.bishopBlocks(s, t)
 	case BlackBishop:
 		blocks = b.bishopBlocks(s, t)
 	case WhiteKnight:
-		blocks = b.knightBlocks(s, t)
+		blocks = b.knightBlocks(s)
 	case BlackKnight:
-		blocks = b.knightBlocks(s, t)
+		blocks = b.knightBlocks(s)
 	case WhiteRook:
 		blocks = b.rookBlocks(s, t)
 	case BlackRook:

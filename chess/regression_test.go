@@ -11,21 +11,21 @@ func TestWhitesTurn(t *testing.T) {
 	}{
 		{
 			moves: [][2]string{
-				[2]string{"e2", "e4"},
-				[2]string{"e7", "e5"},
-				[2]string{"a2", "a3"},
-				[2]string{"d8", "h4"},
-				[2]string{"b2", "b3"},
-				[2]string{"h4", "e4"},
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"a2", "a3"},
+				{"d8", "h4"},
+				{"b2", "b3"},
+				{"h4", "e4"},
 			},
 			expected: White,
 		},
 	}
 	for _, row := range table {
-		b := NewBoard()
+		b := NewChessBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			b.Move(s, t)
+			_ = b.Move(s, t)
 		}
 		if b.turn != row.expected {
 			t.Errorf("expected: %v, got: %v\n", row.expected, b.turn)
