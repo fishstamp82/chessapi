@@ -1,20 +1,20 @@
 package chess
 
-func (b *Board) pawnBlocks(s, t Square) []Square {
+func (b *ChessBoard) pawnBlocks(s Square) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *Board) knightBlocks(s, t Square) []Square {
+func (b *ChessBoard) knightBlocks(s Square) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *Board) bishopBlocks(s, kingPos Square) []Square {
+func (b *ChessBoard) bishopBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 
@@ -41,7 +41,7 @@ func (b *Board) bishopBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *Board) queenBlocks(s, kingPos Square) []Square {
+func (b *ChessBoard) queenBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 
@@ -72,7 +72,7 @@ func (b *Board) queenBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *Board) rookBlocks(s, kingPos Square) []Square {
+func (b *ChessBoard) rookBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 

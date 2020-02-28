@@ -29,7 +29,7 @@ func TestWhitePawnMove(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		b.board[row.whitePawn] = WhitePawn
 		b.board[row.blackPawn] = BlackPawn
 
@@ -75,7 +75,7 @@ func TestBishopMoves(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		b.board[row.whiteBishop] = WhiteBishop
 		b.board[row.blackBishop] = BlackBishop
 		got := b.bishopMoves(row.whiteBishop)
@@ -115,7 +115,7 @@ func TestRookMoves(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		b.board[row.whiteRook] = WhiteRook
 		b.board[row.whitePawn] = WhitePawn
 		b.board[row.blackRook] = BlackRook
@@ -144,7 +144,7 @@ func TestQueenMoves(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		b.board[row.whiteQueen] = WhiteQueen
 		b.board[row.whitePawn] = WhitePawn
 		b.board[row.blackQueen] = BlackQueen
@@ -183,12 +183,12 @@ func TestKnightMoves(t *testing.T) {
 			fullBoard:   true,
 		},
 	}
-	var b *Board
+	var b *ChessBoard
 	for _, row := range table {
 		if row.fullBoard {
-			b = NewBoard()
+			b = NewChessBoard()
 		} else {
-			b = NewEmptyBoard()
+			b = NewEmptyChessBoard()
 		}
 
 		b.board[row.whiteKnight] = WhiteKnight
@@ -222,12 +222,12 @@ func TestKingMoves(t *testing.T) {
 			fullBoard: false,
 		},
 	}
-	var b *Board
+	var b *ChessBoard
 	for _, row := range table {
 		if row.fullBoard {
-			b = NewBoard()
+			b = NewChessBoard()
 		} else {
-			b = NewEmptyBoard()
+			b = NewEmptyChessBoard()
 		}
 
 		b.board[row.whiteKing] = WhiteKing
@@ -265,7 +265,7 @@ func TestBlackPawnMove(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyChessBoard()
 		b.board[row.whitePawn] = WhitePawn
 		b.board[row.blackPawn] = BlackPawn
 

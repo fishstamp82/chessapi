@@ -12,19 +12,19 @@ func TestCheck(t *testing.T) {
 	}{
 		{
 			moves: [][2]string{
-				[2]string{"e2", "e4"},
-				[2]string{"e7", "e5"},
-				[2]string{"f2", "f4"},
-				[2]string{"d8", "h4"},
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"f2", "f4"},
+				{"d8", "h4"},
 			},
 			expected: true,
 		},
 		{
 			moves: [][2]string{
-				[2]string{"e2", "e4"},
-				[2]string{"e7", "e5"},
-				[2]string{"f2", "f4"},
-				[2]string{"d8", "g5"},
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"f2", "f4"},
+				{"d8", "g5"},
 			},
 			expected: false,
 		},
@@ -34,7 +34,7 @@ func TestCheck(t *testing.T) {
 		b := chess.NewBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			b.Move(s, t)
+			_ = b.Move(s, t)
 		}
 		if b.InCheck() != row.expected {
 			t.Errorf("not in check ")
@@ -50,23 +50,23 @@ func TestCheckMate(t *testing.T) {
 	}{
 		{
 			moves: [][2]string{
-				[2]string{"e2", "e4"},
-				[2]string{"e7", "e5"},
-				[2]string{"d1", "f3"},
-				[2]string{"a7", "a6"},
-				[2]string{"f1", "c4"},
-				[2]string{"b7", "b6"},
-				[2]string{"f3", "f7"},
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"d1", "f3"},
+				{"a7", "a6"},
+				{"f1", "c4"},
+				{"b7", "b6"},
+				{"f3", "f7"},
 			},
 			expected: true,
 			won:      "white",
 		},
 		{
 			moves: [][2]string{
-				[2]string{"e2", "e4"},
-				[2]string{"e7", "e5"},
-				[2]string{"f2", "f4"},
-				[2]string{"d8", "g5"},
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"f2", "f4"},
+				{"d8", "g5"},
 			},
 			expected: false,
 			won:      "",
@@ -77,7 +77,7 @@ func TestCheckMate(t *testing.T) {
 		b := chess.NewBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			b.Move(s, t)
+			_ = b.Move(s, t)
 		}
 		if b.CheckMate() != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)

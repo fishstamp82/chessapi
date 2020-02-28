@@ -1,6 +1,6 @@
 package chess
 
-func (b *Board) horizontalLeft(s Square, sq []Square) []Square {
+func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -19,12 +19,12 @@ func (b *Board) horizontalLeft(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) horizontalRight(s Square, sq []Square) []Square {
+func (b *ChessBoard) horizontalRight(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -43,12 +43,12 @@ func (b *Board) horizontalRight(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) verticalTop(s Square, sq []Square) []Square {
+func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -67,12 +67,12 @@ func (b *Board) verticalTop(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) verticalBottom(s Square, sq []Square) []Square {
+func (b *ChessBoard) verticalBottom(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -91,12 +91,12 @@ func (b *Board) verticalBottom(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) upperLeftDiag(s Square, sq []Square) []Square {
+func (b *ChessBoard) upperLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -115,12 +115,12 @@ func (b *Board) upperLeftDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) upperRightDiag(s Square, sq []Square) []Square {
+func (b *ChessBoard) upperRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -139,11 +139,11 @@ func (b *Board) upperRightDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
-func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
+func (b *ChessBoard) lowerLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -162,12 +162,12 @@ func (b *Board) lowerLeftDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 
 	return sq
 }
 
-func (b *Board) knightMoves(s Square) []Square {
+func (b *ChessBoard) knightMoves(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -206,16 +206,16 @@ func (b *Board) knightMoves(s Square) []Square {
 	leftDownRow := row - 1
 
 	combos := [8][3]Square{
-		[3]Square{topLeft, topRow, topLeftCol},
-		[3]Square{topRight, topRow, topRightCol},
-		[3]Square{rightUp, rightUpRow, rightCol},
-		[3]Square{rightDown, rightDownRow, rightCol},
-		[3]Square{downRight, downRow, downRightCol},
-		[3]Square{downLeft, downRow, downLeftCol},
-		[3]Square{leftDown, leftDownRow, leftCol},
-		[3]Square{leftUp, leftUpRow, leftCol},
+		{topLeft, topRow, topLeftCol},
+		{topRight, topRow, topRightCol},
+		{rightUp, rightUpRow, rightCol},
+		{rightDown, rightDownRow, rightCol},
+		{downRight, downRow, downRightCol},
+		{downLeft, downRow, downLeftCol},
+		{leftDown, leftDownRow, leftCol},
+		{leftUp, leftUpRow, leftCol},
 	}
-	moves := []Square{}
+	var moves []Square
 
 	var target, r, c Square
 	for _, val := range combos {
@@ -243,7 +243,7 @@ func (b *Board) knightMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) kingMoves(s Square) []Square {
+func (b *ChessBoard) kingMoves(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -272,16 +272,16 @@ func (b *Board) kingMoves(s Square) []Square {
 	sameCol := col
 
 	combos := [8][3]Square{
-		[3]Square{topLeft, topRow, leftCol},
-		[3]Square{top, topRow, sameCol},
-		[3]Square{topRight, topRow, rightCol},
-		[3]Square{right, sameRow, rightCol},
-		[3]Square{downRight, downRow, rightCol},
-		[3]Square{down, downRow, sameCol},
-		[3]Square{downLeft, downRow, leftCol},
-		[3]Square{left, sameRow, leftCol},
+		{topLeft, topRow, leftCol},
+		{top, topRow, sameCol},
+		{topRight, topRow, rightCol},
+		{right, sameRow, rightCol},
+		{downRight, downRow, rightCol},
+		{down, downRow, sameCol},
+		{downLeft, downRow, leftCol},
+		{left, sameRow, leftCol},
 	}
-	moves := []Square{}
+	var moves []Square
 
 	var target, r, c Square
 	for _, val := range combos {
@@ -309,7 +309,7 @@ func (b *Board) kingMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
+func (b *ChessBoard) lowerRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -328,11 +328,11 @@ func (b *Board) lowerRightDiag(s Square, sq []Square) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = b.movementAlgo(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
 	return sq
 }
 
-func (b *Board) movementAlgo(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
+func (b *ChessBoard) movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b.board[i] < 0 {
 			sq = append(sq, i)
@@ -349,7 +349,7 @@ func (b *Board) movementAlgo(startPos Square, startRow Square, startCol Square, 
 	return sq
 }
 
-func (b *Board) whitePawnMoves(s Square) []Square {
+func (b *ChessBoard) whitePawnMoves(s Square) []Square {
 	var moves []Square
 	var t Square
 	var first, second Square
@@ -398,7 +398,7 @@ func (b *Board) whitePawnMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) blackPawnMoves(s Square) []Square {
+func (b *ChessBoard) blackPawnMoves(s Square) []Square {
 	var moves []Square
 	var t Square
 	var first, second Square
@@ -447,7 +447,7 @@ func (b *Board) blackPawnMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) bishopMoves(s Square) []Square {
+func (b *ChessBoard) bishopMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.upperRightDiag(s, moves)
@@ -458,7 +458,7 @@ func (b *Board) bishopMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) rookMoves(s Square) []Square {
+func (b *ChessBoard) rookMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.horizontalLeft(s, moves)
@@ -469,7 +469,7 @@ func (b *Board) rookMoves(s Square) []Square {
 	return moves
 }
 
-func (b *Board) queenMoves(s Square) []Square {
+func (b *ChessBoard) queenMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.upperRightDiag(s, moves)
