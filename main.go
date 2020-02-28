@@ -15,7 +15,7 @@ func main() {
 	b := chess.NewChessBoard()
 	for {
 		if err == nil {
-			fmt.Println(b.StrRepr())
+			fmt.Println(b.BoardMap())
 		}
 		fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
 		reader = bufio.NewReader(os.Stdin)

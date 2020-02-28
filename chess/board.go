@@ -36,7 +36,7 @@ type Board interface {
 	Won() (string, error)
 	InCheck() bool
 	PlayersTurn() string
-	StrRepr() string
+	BoardMap() map[string]string
 	Move(s, t string) error
 }
 
@@ -96,14 +96,10 @@ func (b *ChessBoard) PlayersTurn() string {
 }
 
 //CLI repr of board
-func (b *ChessBoard) StrRepr() string {
-	var board string
-	for row := 7; row >= 0; row-- {
-		board += "\n-----------------\n|"
-		for col := 0; col <= 7; col++ {
-			idx := row*8 + col
-			board += pieceToUnicode[b.board[idx]] + "|"
-		}
+func (b *ChessBoard) BoardMap() map[string]string {
+	board := map[string]string{}
+	for square := a1; square <= h8; square++ {
+		board[squareToString[square]] = pieceToUnicode[b.board[square]]
 	}
 
 	return board
@@ -395,11 +391,6 @@ func NewBoard() Board {
 	b.board[d8] = BlackQueen
 	b.board[e8] = BlackKing
 
-	return b
-}
-
-func NewEmptyBoard() Board {
-	b := &ChessBoard{state: Playing}
 	return b
 }
 
