@@ -8,14 +8,18 @@ A library in go to play chess.
 The chessboard only has a method, which you use to
 play a game of chess.
 
-There are 3 functions of the Board interface
-which are used.
+The library exposes an interface which should have
+functionality to play chess.
 
 ```go
 
 type Board interface {
-    Move(string, string) error
-    IsCheckMate() bool
-    Won() (string. error) //who won, if game is over
+	CheckMate() bool
+	Draw() bool
+	Won() (string, error)
+	InCheck() bool
+	PlayersTurn() string
+	BoardMap() map[string]string
+	Move(s, t string) error
 }
 ```

@@ -3,3 +3,7 @@ un pasant
 50 move draw rule
 3 repetition draw rule
 clean up code
+pawn promotion
+draws
+resigning
+discovered check (do not only check piece that moved)
