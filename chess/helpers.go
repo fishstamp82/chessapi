@@ -8,3 +8,13 @@ func inSquares(t Square, list []Square) bool {
 	}
 	return false
 }
+
+func uniqueSquares(s []Square) []Square {
+	var uniq []Square
+	for i := 0; i < len(s); i++ {
+		if !inSquares(s[i], uniq) {
+			uniq = append(uniq, s[i])
+		}
+	}
+	return uniq
+}
