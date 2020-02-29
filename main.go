@@ -5,19 +5,36 @@ import (
 	"chessapi/chess"
 	"fmt"
 	"os"
+	"os/signal"
 	"sort"
 	"strings"
 )
 
 func main() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
 	var reader *bufio.Reader
 	var m1, m2 string
 	var err error
+	var moves [][2]string
+	go func(moves *[][2]string) {
+		for _ = range c {
+			fmt.Printf("starting dump for reg test\n")
+			fmt.Printf("moves: [][2]string{\n")
+			for _, each := range *moves {
+				fmt.Printf("\t{\"%s\", \"%s\"},\n", each[0], each[1])
+			}
+			fmt.Printf("},\n")
+
+			os.Exit(0)
+		}
+	}(&moves)
+
 	b := chess.NewChessBoard()
 	for {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
-
 		}
 		fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
 		reader = bufio.NewReader(os.Stdin)
@@ -30,12 +47,17 @@ func main() {
 		err = b.Move(m1, m2)
 		if err != nil {
 			fmt.Println(err)
+		} else {
+			moves = append(moves, [2]string{m1, m2})
 		}
 		if b.CheckMate() {
 			winner, _ := b.Won()
 			fmt.Printf("game over, %s won", winner)
 			break
 		}
+	}
+	for _, val := range moves {
+		fmt.Println(val)
 	}
 }
 
@@ -51,7 +73,6 @@ func pretty(m map[string]string) string {
 	sort.Slice(s, func(i, j int) bool {
 		return lookup(s[i][0], s[j][0])
 	})
-	fmt.Printf("%v\n", s)
 	var ind int
 	for row := 7; row >= 0; row-- {
 		finalString += "\n-----------------\n|"

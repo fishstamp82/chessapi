@@ -1,6 +1,6 @@
 package chess
 
-func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
+func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -12,9 +12,33 @@ func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
 	row := s.row()
 	pos := row*8 + col
 
-	var movePos Square = -1
-	var moveRow Square = 0
-	var moveCol Square = -1
+	var movePos Square = 8
+	var moveRow Square = 1
+	var moveCol Square = 0
+
+	startPos := pos + movePos
+	startRow := row + moveRow
+	startCol := col + moveCol
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+
+	return sq
+}
+
+func (b *ChessBoard) upperRightDiag(s Square, sq []Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	var movePos Square = 9
+	var moveRow Square = 1
+	var moveCol Square = 1
 
 	startPos := pos + movePos
 	startRow := row + moveRow
@@ -48,7 +72,7 @@ func (b *ChessBoard) horizontalRight(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
+func (b *ChessBoard) lowerRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -60,15 +84,14 @@ func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
 	row := s.row()
 	pos := row*8 + col
 
-	var movePos Square = 8
-	var moveRow Square = 1
-	var moveCol Square = 0
+	var movePos Square = -7
+	var moveRow Square = -1
+	var moveCol Square = 1
 
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
 	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
-
 	return sq
 }
 
@@ -96,53 +119,6 @@ func (b *ChessBoard) verticalBottom(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) upperLeftDiag(s Square, sq []Square) []Square {
-	var isWhite bool
-	switch b.board[s] > 0 {
-	case true:
-		isWhite = true
-	case false:
-		isWhite = false
-	}
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-
-	var movePos Square = 7
-	var moveRow Square = 1
-	var moveCol Square = -1
-
-	startPos := pos + movePos
-	startRow := row + moveRow
-	startCol := col + moveCol
-	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
-
-	return sq
-}
-
-func (b *ChessBoard) upperRightDiag(s Square, sq []Square) []Square {
-	var isWhite bool
-	switch b.board[s] > 0 {
-	case true:
-		isWhite = true
-	case false:
-		isWhite = false
-	}
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-
-	var movePos Square = 9
-	var moveRow Square = 1
-	var moveCol Square = 1
-
-	startPos := pos + movePos
-	startRow := row + moveRow
-	startCol := col + moveCol
-	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
-
-	return sq
-}
 func (b *ChessBoard) lowerLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
@@ -157,6 +133,54 @@ func (b *ChessBoard) lowerLeftDiag(s Square, sq []Square) []Square {
 
 	var movePos Square = -9
 	var moveRow Square = -1
+	var moveCol Square = -1
+
+	startPos := pos + movePos
+	startRow := row + moveRow
+	startCol := col + moveCol
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+
+	return sq
+}
+
+func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	var movePos Square = -1
+	var moveRow Square = 0
+	var moveCol Square = -1
+
+	startPos := pos + movePos
+	startRow := row + moveRow
+	startCol := col + moveCol
+	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
+
+	return sq
+}
+
+func (b *ChessBoard) upperLeftDiag(s Square, sq []Square) []Square {
+	var isWhite bool
+	switch b.board[s] > 0 {
+	case true:
+		isWhite = true
+	case false:
+		isWhite = false
+	}
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	var movePos Square = 7
+	var moveRow Square = 1
 	var moveCol Square = -1
 
 	startPos := pos + movePos
@@ -308,39 +332,18 @@ func (b *ChessBoard) kingMoves(s Square) []Square {
 	}
 	return moves
 }
-
-func (b *ChessBoard) lowerRightDiag(s Square, sq []Square) []Square {
-	var isWhite bool
-	switch b.board[s] > 0 {
-	case true:
-		isWhite = true
-	case false:
-		isWhite = false
-	}
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-
-	var movePos Square = -7
-	var moveRow Square = -1
-	var moveCol Square = 1
-
-	startPos := pos + movePos
-	startRow := row + moveRow
-	startCol := col + moveCol
-	sq = b.movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq)
-	return sq
-}
-
 func (b *ChessBoard) movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
+	isBlack := !isWhite
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b.board[i] < 0 {
 			sq = append(sq, i)
 			break
+		} else if isBlack && b.board[i] > 0 {
+			sq = append(sq, i)
+			break
 		} else if isWhite && b.board[i] > 0 {
 			break
-		} else if !isWhite && b.board[i] > 0 {
-			sq = append(sq, i)
+		} else if isBlack && b.board[i] < 0 {
 			break
 		} else if b.board[i] == Empty {
 			sq = append(sq, i)

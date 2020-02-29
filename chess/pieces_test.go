@@ -42,7 +42,7 @@ func TestPieces(t *testing.T) {
 		got := b.pieces(row.player)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
-				pretty(got), pretty(row.expected), ind+1)
+				printPrettySquares(got), printPrettySquares(row.expected), ind+1)
 		}
 	}
 }

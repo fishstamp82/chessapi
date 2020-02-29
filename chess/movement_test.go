@@ -36,7 +36,7 @@ func TestWhitePawnMove(t *testing.T) {
 		got := b.whitePawnMoves(row.whitePawn)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whitePawn])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
 		}
 	}
 }
@@ -82,7 +82,7 @@ func TestBishopMoves(t *testing.T) {
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				pretty(got), pretty(row.expected), pieceToString[WhiteBishop], squareToString[row.whiteBishop])
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteBishop], squareToString[row.whiteBishop])
 		}
 	}
 }
@@ -123,7 +123,7 @@ func TestRookMoves(t *testing.T) {
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				pretty(got), pretty(row.expected), pieceToString[WhiteRook], squareToString[row.whiteRook])
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteRook], squareToString[row.whiteRook])
 		}
 	}
 }
@@ -152,7 +152,27 @@ func TestQueenMoves(t *testing.T) {
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				pretty(got), pretty(row.expected), pieceToString[WhiteQueen], squareToString[row.whiteQueen])
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteQueen], squareToString[row.whiteQueen])
+		}
+	}
+}
+
+func TestBlackQueenMovesBeginningPosition(t *testing.T) {
+	table := []struct {
+		expected []Square
+	}{
+		{
+			expected: []Square{},
+		},
+	}
+
+	for _, row := range table {
+		b := NewChessBoard()
+		got := b.queenMoves(d8)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteQueen], squareToString[d8])
 		}
 	}
 }
@@ -197,7 +217,7 @@ func TestKnightMoves(t *testing.T) {
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				pretty(got), pretty(row.expected), pieceToString[WhiteKnight], squareToString[row.whiteKnight])
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKnight], squareToString[row.whiteKnight])
 		}
 	}
 }
@@ -236,7 +256,7 @@ func TestKingMoves(t *testing.T) {
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				pretty(got), pretty(row.expected), pieceToString[WhiteKing], squareToString[row.whiteKing])
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKing], squareToString[row.whiteKing])
 		}
 	}
 }
@@ -272,12 +292,12 @@ func TestBlackPawnMove(t *testing.T) {
 		got := b.blackPawnMoves(row.blackPawn)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.blackPawn])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.blackPawn])
 		}
 	}
 }
 
-func pretty(s []Square) []string {
+func printPrettySquares(s []Square) []string {
 	var str []string
 	for i := 0; i < len(s); i++ {
 		str = append(str, squareToString[s[i]])

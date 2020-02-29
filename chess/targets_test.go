@@ -37,7 +37,7 @@ func TestPawnTargets(t *testing.T) {
 		got := b.pawnTargets(row.whitePawn)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whitePawn])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
 		}
 	}
 }
@@ -75,7 +75,7 @@ func TestBishopTargets(t *testing.T) {
 		got := b.bishopTargets(row.whiteBishop)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whiteBishop])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteBishop])
 		}
 	}
 }
@@ -113,7 +113,7 @@ func TestKnightTargets(t *testing.T) {
 		got := b.knightTargets(row.whiteKnight)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whiteKnight])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKnight])
 		}
 	}
 }
@@ -151,7 +151,7 @@ func TestRookTargets(t *testing.T) {
 		got := b.rookTargets(row.whiteRook)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whiteRook])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteRook])
 		}
 	}
 }
@@ -190,7 +190,7 @@ func TestQueenTargets(t *testing.T) {
 		got := b.queenTargets(row.whiteQueen)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whiteQueen])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteQueen])
 		}
 	}
 }
@@ -218,7 +218,7 @@ func TestKingTargets(t *testing.T) {
 		got := b.kingTargets(row.whiteKing)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				pretty(got), pretty(row.expected), squareToString[row.whiteKing])
+				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKing])
 		}
 	}
 }
