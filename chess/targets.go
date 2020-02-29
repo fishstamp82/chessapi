@@ -1,5 +1,37 @@
 package chess
 
+func (b *ChessBoard) targets(s Square) []Square {
+	p := b.board[s]
+	var targets []Square
+	switch p {
+	case WhitePawn:
+		targets = b.pawnTargets(s)
+	case BlackPawn:
+		targets = b.pawnTargets(s)
+	case WhiteBishop:
+		targets = b.bishopTargets(s)
+	case BlackBishop:
+		targets = b.bishopTargets(s)
+	case WhiteKnight:
+		targets = b.knightTargets(s)
+	case BlackKnight:
+		targets = b.knightTargets(s)
+	case WhiteRook:
+		targets = b.rookTargets(s)
+	case BlackRook:
+		targets = b.rookTargets(s)
+	case WhiteQueen:
+		targets = b.queenTargets(s)
+	case BlackQueen:
+		targets = b.queenTargets(s)
+	case WhiteKing:
+		targets = b.kingTargets(s)
+	case BlackKing:
+		targets = b.kingTargets(s)
+	}
+	return targets
+}
+
 func (b *ChessBoard) pawnTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {

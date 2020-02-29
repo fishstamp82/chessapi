@@ -1,5 +1,33 @@
 package chess
 
+func (b *ChessBoard) blocks(s, t Square) []Square {
+	p := b.board[s]
+	var blocks []Square
+	switch p {
+	case WhitePawn:
+		blocks = b.pawnBlocks(s)
+	case BlackPawn:
+		blocks = b.pawnBlocks(s)
+	case WhiteBishop:
+		blocks = b.bishopBlocks(s, t)
+	case BlackBishop:
+		blocks = b.bishopBlocks(s, t)
+	case WhiteKnight:
+		blocks = b.knightBlocks(s)
+	case BlackKnight:
+		blocks = b.knightBlocks(s)
+	case WhiteRook:
+		blocks = b.rookBlocks(s, t)
+	case BlackRook:
+		blocks = b.rookBlocks(s, t)
+	case WhiteQueen:
+		blocks = b.queenBlocks(s, t)
+	case BlackQueen:
+		blocks = b.queenBlocks(s, t)
+	}
+	return blocks
+}
+
 func (b *ChessBoard) pawnBlocks(s Square) []Square {
 
 	var blocks []Square

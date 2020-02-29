@@ -150,8 +150,8 @@ func (b *ChessBoard) Move(s, t string) error {
 		return errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[sq1]], t))
 	}
 
-	//check for check mate on opponent
-	if b.isCheckMated(b.opponent(b.turn)) {
+	//check for check mate on getOpponent
+	if b.isCheckMated(b.getOpponent(b.turn)) {
 		b.state = Over
 		b.winner = b.turn
 		return nil
@@ -164,7 +164,7 @@ func (b *ChessBoard) Move(s, t string) error {
 
 // Given human readable string input "e2", return string
 // repr of piece. if none, return "-"
-func (b *ChessBoard) get(s string) (string, error) {
+func (b *ChessBoard) stringRepr(s string) (string, error) {
 	sq, err := b.getSquare(s)
 	if err != nil {
 		return "", errors.New("bad move input, good format should be: 'e2', 'd3', etc")
@@ -176,19 +176,10 @@ func (b *ChessBoard) get(s string) (string, error) {
 func (b *ChessBoard) inCheck(player Player) bool {
 	ourKingPos := b.kingSquare(player)
 
-	for _, oppPiece := range b.pieces(b.opponent(player)) {
+	for _, oppPiece := range b.getPieces(b.getOpponent(player)) {
 		if inSquares(ourKingPos, b.targets(oppPiece)) {
 			return true
 		}
-	}
-	return false
-}
-
-// See if player is checked by piece on square s
-func (b *ChessBoard) inCheckBySquare(s Square, player Player) bool {
-	kingPos := b.kingSquare(player)
-	if inSquares(kingPos, b.targets(s)) {
-		return true
 	}
 	return false
 }
@@ -223,10 +214,10 @@ func (b *ChessBoard) isCheckMated(p Player) bool {
 		b.board[move] = tmpPiece
 	}
 
-	//Must Block all attacks from opponent in one move
+	//Must Block all attacks from getOpponent in one move
 	var toBlock []Square
 	var targets []Square
-	for _, square := range b.squaresWithoutKing(b.opponent(p)) {
+	for _, square := range b.squaresWithoutKing(b.getOpponent(p)) {
 		targets = b.targets(square)
 		if !inSquares(kingSquare, targets) {
 			continue
@@ -238,7 +229,7 @@ func (b *ChessBoard) isCheckMated(p Player) bool {
 	toBlock = uniqueSquares(toBlock)
 
 	var s, t Piece
-	//Must Block all attacks from opponent in one move
+	//Must Block all attacks from getOpponent in one move
 	for _, source := range b.squaresWithoutKing(p) {
 		for _, target := range b.moves(source) {
 			if inSquares(target, toBlock) {
@@ -259,7 +250,7 @@ func (b *ChessBoard) isCheckMated(p Player) bool {
 	return true
 }
 
-func (b *ChessBoard) opponent(p Player) Player {
+func (b *ChessBoard) getOpponent(p Player) Player {
 	switch p {
 	case White:
 		return Black
@@ -270,7 +261,7 @@ func (b *ChessBoard) opponent(p Player) Player {
 	panic("must be black or white")
 }
 
-func (b *ChessBoard) pieces(p Player) []Square {
+func (b *ChessBoard) getPieces(p Player) []Square {
 	var isWhite bool
 	switch p {
 	case White:
@@ -290,51 +281,6 @@ func (b *ChessBoard) pieces(p Player) []Square {
 
 	}
 	return pieces
-}
-
-func (b *ChessBoard) squaresWithoutKing(p Player) []Square {
-	var isWhite bool
-	var piece Piece
-	switch p {
-	case White:
-		isWhite = true
-	case Black:
-		isWhite = false
-	}
-
-	var pieces []Square
-	for pos := a1; pos <= h8; pos += 1 {
-		piece = b.board[pos]
-		if piece == WhiteKing || piece == BlackKing {
-			continue
-		}
-		if piece > 0 && isWhite {
-			pieces = append(pieces, pos)
-		} else if piece < 0 && !isWhite {
-			pieces = append(pieces, pos)
-
-		}
-
-	}
-	return pieces
-}
-
-func (b *ChessBoard) kingSquare(p Player) Square {
-	var king Piece
-	switch p {
-	case White:
-		king = WhiteKing
-	case Black:
-		king = BlackKing
-	}
-
-	for pos := a1; pos <= h8; pos += 1 {
-		if b.board[pos] == king {
-			return pos
-		}
-	}
-
-	panic("must have a white King")
 }
 
 func NewChessBoard() *ChessBoard {
@@ -435,96 +381,4 @@ func (b *ChessBoard) switchTurn() {
 	} else {
 		b.turn = White
 	}
-}
-
-func (b *ChessBoard) moves(s Square) []Square {
-	p := b.board[s]
-	var moves []Square
-	switch p {
-	case WhitePawn:
-		moves = b.whitePawnMoves(s)
-	case BlackPawn:
-		moves = b.blackPawnMoves(s)
-	case WhiteBishop:
-		moves = b.bishopMoves(s)
-	case BlackBishop:
-		moves = b.bishopMoves(s)
-	case WhiteKnight:
-		moves = b.knightMoves(s)
-	case BlackKnight:
-		moves = b.knightMoves(s)
-	case WhiteRook:
-		moves = b.rookMoves(s)
-	case BlackRook:
-		moves = b.rookMoves(s)
-	case WhiteQueen:
-		moves = b.queenMoves(s)
-	case BlackQueen:
-		moves = b.queenMoves(s)
-	case WhiteKing:
-		moves = b.kingMoves(s)
-	case BlackKing:
-		moves = b.kingMoves(s)
-	}
-	return moves
-}
-
-func (b *ChessBoard) targets(s Square) []Square {
-	p := b.board[s]
-	var targets []Square
-	switch p {
-	case WhitePawn:
-		targets = b.pawnTargets(s)
-	case BlackPawn:
-		targets = b.pawnTargets(s)
-	case WhiteBishop:
-		targets = b.bishopTargets(s)
-	case BlackBishop:
-		targets = b.bishopTargets(s)
-	case WhiteKnight:
-		targets = b.knightTargets(s)
-	case BlackKnight:
-		targets = b.knightTargets(s)
-	case WhiteRook:
-		targets = b.rookTargets(s)
-	case BlackRook:
-		targets = b.rookTargets(s)
-	case WhiteQueen:
-		targets = b.queenTargets(s)
-	case BlackQueen:
-		targets = b.queenTargets(s)
-	case WhiteKing:
-		targets = b.kingTargets(s)
-	case BlackKing:
-		targets = b.kingTargets(s)
-	}
-	return targets
-}
-
-func (b *ChessBoard) blocks(s, t Square) []Square {
-	p := b.board[s]
-	var blocks []Square
-	switch p {
-	case WhitePawn:
-		blocks = b.pawnBlocks(s)
-	case BlackPawn:
-		blocks = b.pawnBlocks(s)
-	case WhiteBishop:
-		blocks = b.bishopBlocks(s, t)
-	case BlackBishop:
-		blocks = b.bishopBlocks(s, t)
-	case WhiteKnight:
-		blocks = b.knightBlocks(s)
-	case BlackKnight:
-		blocks = b.knightBlocks(s)
-	case WhiteRook:
-		blocks = b.rookBlocks(s, t)
-	case BlackRook:
-		blocks = b.rookBlocks(s, t)
-	case WhiteQueen:
-		blocks = b.queenBlocks(s, t)
-	case BlackQueen:
-		blocks = b.queenBlocks(s, t)
-	}
-	return blocks
 }

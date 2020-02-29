@@ -1,5 +1,37 @@
 package chess
 
+func (b *ChessBoard) moves(s Square) []Square {
+	p := b.board[s]
+	var moves []Square
+	switch p {
+	case WhitePawn:
+		moves = b.whitePawnMoves(s)
+	case BlackPawn:
+		moves = b.blackPawnMoves(s)
+	case WhiteBishop:
+		moves = b.bishopMoves(s)
+	case BlackBishop:
+		moves = b.bishopMoves(s)
+	case WhiteKnight:
+		moves = b.knightMoves(s)
+	case BlackKnight:
+		moves = b.knightMoves(s)
+	case WhiteRook:
+		moves = b.rookMoves(s)
+	case BlackRook:
+		moves = b.rookMoves(s)
+	case WhiteQueen:
+		moves = b.queenMoves(s)
+	case BlackQueen:
+		moves = b.queenMoves(s)
+	case WhiteKing:
+		moves = b.kingMoves(s)
+	case BlackKing:
+		moves = b.kingMoves(s)
+	}
+	return moves
+}
+
 func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {

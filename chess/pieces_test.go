@@ -39,7 +39,7 @@ func TestPieces(t *testing.T) {
 			b.board[val.pos] = val.piece
 		}
 
-		got := b.pieces(row.player)
+		got := b.getPieces(row.player)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				printPrettySquares(got), printPrettySquares(row.expected), ind+1)

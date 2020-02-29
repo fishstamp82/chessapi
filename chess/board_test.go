@@ -46,12 +46,13 @@ func TestInitialization(t *testing.T) {
 		{"f8", "black bishop"},
 		{"g8", "black knight"},
 		{"h8", "black rook"},
+		{"a5", ""},
 	}
 
 	for _, row := range table {
 		p := row.piece
 		s := row.square
-		if piece, _ := b.get(s); piece != p {
+		if piece, _ := b.stringRepr(s); piece != p {
 			t.Errorf("expected: %s on %s, got: %s\n", p, s, piece)
 		}
 	}
