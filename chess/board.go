@@ -18,6 +18,7 @@ const (
 	Playing State = iota
 	Over
 	Draw
+	Promotion
 )
 
 // row goes from 0 to 7
@@ -109,8 +110,8 @@ func (b *MailBoxBoard) BoardMap() map[string]string {
 // error is nil on successful move
 // arguments are algebraic chess notation 'e2' -> 'e4'
 func (b *MailBoxBoard) Move(s, t string) error {
-	if b.state == Over {
-		return errors.New("game over, can't move")
+	if b.state != Playing {
+		return errors.New("not in playing state")
 	}
 	sq1, err := b.getSquare(s)
 	if err != nil {
