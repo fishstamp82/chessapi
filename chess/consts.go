@@ -10,7 +10,7 @@ const (
 )
 
 const (
-	Playing State = iota
+	Playing State = iota + 1
 	Over
 	Draw
 	Promotion

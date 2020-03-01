@@ -5,11 +5,16 @@ import (
 	"fmt"
 )
 
+type stateContext struct {
+	playersTurn         Player
+	winner              Player
+	pawnPromotionSquare Square
+}
 type MailBoxBoard struct {
-	board  [64]Piece
-	turn   Player
-	state  State
-	winner Player
+	board        [64]Piece
+	state        State
+	stateContext stateContext
+	winner       Player
 }
 
 func (b *MailBoxBoard) CheckMate() bool {
@@ -30,7 +35,7 @@ func (b *MailBoxBoard) Won() (string, error) {
 	if b.state != Over {
 		return "", errors.New("game not over")
 	}
-	switch b.winner {
+	switch b.stateContext.winner {
 	case White:
 		return "white", nil
 	case Black:
@@ -50,8 +55,7 @@ func (b *MailBoxBoard) InCheck() bool {
 }
 
 func (b *MailBoxBoard) PlayersTurn() string {
-	var p Player
-	p = b.turn
+	p := b.stateContext.playersTurn
 	if p == White {
 		return "white"
 	} else if p == Black {
@@ -73,58 +77,65 @@ func (b *MailBoxBoard) BoardMap() map[string]string {
 // Move gets squares in human readable form, and performs a move
 // error is nil on successful move
 // arguments are algebraic chess notation 'e2' -> 'e4'
-func (b *MailBoxBoard) Move(s, t string) error {
+func (b *MailBoxBoard) Move(s, t string) (State, error) {
 	if b.state != Playing {
-		return errors.New("not in playing state")
+		return b.state, errors.New("not in playing state")
 	}
-	sq1, err := b.getSquare(s)
+	fromSquare, err := b.getSquare(s)
 	if err != nil {
-		return errors.New(fmt.Sprintf("bad move input, got: %v, good format: 'e2'", s))
+		return b.state, errors.New(fmt.Sprintf("bad move input, got: %v, good format: 'e2'", s))
 	}
-	sq2, err := b.getSquare(t)
+	toSquare, err := b.getSquare(t)
 	if err != nil {
-		return errors.New(fmt.Sprintf("bad second input, got: %v, good format: 'e4'", t))
+		return b.state, errors.New(fmt.Sprintf("bad second input, got: %v, good format: 'e4'", t))
 	}
 
-	switch b.turn {
+	switch b.stateContext.playersTurn {
 	case White:
-		if b.board[sq1] < 0 {
-			return errors.New("white's turn")
+		if b.board[fromSquare] < 0 {
+			return b.state, errors.New("white's turn")
 		}
 	case Black:
-		if b.board[sq1] > 0 {
-			return errors.New("black's turn")
+		if b.board[fromSquare] > 0 {
+			return b.state, errors.New("black's turn")
 		}
 	}
 
-	availMoves := b.moves(sq1)
-	if !inSquares(sq2, availMoves) {
-		return errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[sq1]], t))
+	availMoves := b.moves(fromSquare)
+	if !inSquares(toSquare, availMoves) {
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], t))
 	}
 
 	// Make Move
-	p := b.board[sq1]
-	tmpPiece := b.board[sq2]
-	b.board[sq1] = 0
-	b.board[sq2] = p
+	piece := b.board[fromSquare]
+	tmpPiece := b.board[toSquare]
+	b.board[fromSquare] = 0
+	b.board[toSquare] = piece
 
 	//If we are in check after a move, this move is not allowed
-	if b.inCheck(b.turn) {
-		b.board[sq1] = p
-		b.board[sq2] = tmpPiece
-		return errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[sq1]], t))
+	if b.inCheck(b.stateContext.playersTurn) {
+		b.board[fromSquare] = piece
+		b.board[toSquare] = tmpPiece
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[fromSquare]], t))
 	}
 
-	//check for check mate on getOpponent
-	if b.isCheckMated(b.getOpponent(b.turn)) {
+	//If we reach pawn promotion, return
+	if pawnFinalRank(piece, toSquare) {
+		b.state = Promotion
+		b.stateContext.pawnPromotionSquare = toSquare
+		return b.state, nil
+	}
+
+	//is check mate for opponent
+	if b.isCheckMated(b.getOpponent(b.stateContext.playersTurn)) {
 		b.state = Over
-		b.winner = b.turn
-		return nil
+		b.stateContext.winner = b.stateContext.playersTurn
+		return b.state, nil
 	}
 
 	// Switch to other player
 	b.switchTurn()
-	return nil
+	return b.state, nil
 }
 
 // Given human readable string input "e2", return string
@@ -260,17 +271,17 @@ func (b *MailBoxBoard) getSquare(s string) (Square, error) {
 }
 
 func (b *MailBoxBoard) switchTurn() {
-	if b.turn == White {
-		b.turn = Black
+	if b.stateContext.playersTurn == White {
+		b.stateContext.playersTurn = Black
 	} else {
-		b.turn = White
+		b.stateContext.playersTurn = White
 	}
 }
 
 func NewMailBoxBoard() *MailBoxBoard {
 	b := &MailBoxBoard{state: Playing}
 
-	b.turn = White
+	b.stateContext.playersTurn = White
 	//Pawns
 	for _, s := range []Square{a2, b2, c2, d2, e2, f2, g2, h2} {
 		b.board[s] = WhitePawn
@@ -303,6 +314,14 @@ func NewMailBoxBoard() *MailBoxBoard {
 	b.board[e8] = BlackKing
 
 	return b
+}
+
+func (b *MailBoxBoard) Promote(p Piece) (State, error) {
+	if !validPromotion(p, b.stateContext.playersTurn) {
+		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
+	}
+	b.board[b.stateContext.pawnPromotionSquare] = p
+	return Playing, nil
 }
 
 func NewEmptyMailBoxBoard() *MailBoxBoard {

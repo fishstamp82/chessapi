@@ -18,6 +18,8 @@ func main() {
 	var m1, m2 string
 	var err error
 	var moves [][2]string
+	var state chess.State
+
 	go func(moves *[][2]string) {
 		for _ = range c {
 			fmt.Printf("starting dump for reg test\n")
@@ -33,6 +35,7 @@ func main() {
 
 	b := chess.NewBoard()
 	for {
+
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
 		}
@@ -44,7 +47,13 @@ func main() {
 		reader = bufio.NewReader(os.Stdin)
 		m2, _ = reader.ReadString('\n')
 		m2 = strings.TrimSuffix(m2, "\n")
-		err = b.Move(m1, m2)
+		state, err = b.Move(m1, m2)
+
+		if state == chess.Promotion {
+			// read input from player
+			continue
+		}
+
 		if err != nil {
 			fmt.Println(err)
 		} else {

@@ -34,3 +34,29 @@ func TestHelper(t *testing.T) {
 		}
 	}
 }
+
+func TestValidPromotion(t *testing.T) {
+	table := []struct {
+		player   Player
+		piece    Piece
+		expected bool
+	}{
+		{
+			player:   White,
+			piece:    WhiteKing,
+			expected: false,
+		},
+		{
+			player:   Black,
+			piece:    BlackKnight,
+			expected: true,
+		},
+	}
+	for _, row := range table {
+		got := validPromotion(row.piece, row.player)
+		if got != row.expected {
+			t.Errorf("got: %t, expected: %t for %d in %v\n",
+				got, row.expected, row.piece, row.player)
+		}
+	}
+}

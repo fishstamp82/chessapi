@@ -73,3 +73,34 @@ func uniqueSquares(s []Square) []Square {
 	}
 	return uniq
 }
+
+func pawnFinalRank(piece Piece, square Square) bool {
+	switch piece {
+	case WhitePawn:
+		return inSquares(square, []Square{a8, b8, c8, d8, e8, f8, g8, h8})
+	case BlackPawn:
+		return inSquares(square, []Square{a1, b1, c1, d1, e1, f1, g1, h1})
+	}
+	return false
+}
+
+func validPromotion(piece Piece, player Player) bool {
+	switch player {
+	case White:
+		switch piece {
+		case WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen:
+			return true
+		default:
+			return false
+		}
+	case Black:
+		switch piece {
+		case BlackKnight, BlackBishop, BlackRook, BlackQueen:
+			return true
+		default:
+			return false
+		}
+	}
+
+	return false
+}

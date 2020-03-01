@@ -25,10 +25,10 @@ func TestWhitesTurn(t *testing.T) {
 		b := NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			_ = b.Move(s, t)
+			_, _ = b.Move(s, t)
 		}
-		if b.turn != row.expected {
-			t.Errorf("expected: %v, got: %v\n", row.expected, b.turn)
+		if b.stateContext.playersTurn != row.expected {
+			t.Errorf("expected: %v, got: %v\n", row.expected, b.stateContext.playersTurn)
 		}
 	}
 }
@@ -52,7 +52,7 @@ func TestBishopMovesAfterMoves(t *testing.T) {
 		b := NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			_ = b.Move(s, t)
+			_, _ = b.Move(s, t)
 		}
 
 		if !sameAfterSort(b.bishopMoves(row.pieceAt), row.expected) {

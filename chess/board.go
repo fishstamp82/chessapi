@@ -7,13 +7,14 @@ type Board interface {
 	InCheck() bool
 	PlayersTurn() string
 	BoardMap() map[string]string
-	Move(s, t string) error
+	Move(s, t string) (State, error)
+	Promote(Piece) (State, error)
 }
 
 func NewBoard() Board {
 	b := &MailBoxBoard{state: Playing}
 
-	b.turn = White
+	b.stateContext.playersTurn = White
 	//Pawns
 	for _, s := range []Square{a2, b2, c2, d2, e2, f2, g2, h2} {
 		b.board[s] = WhitePawn
