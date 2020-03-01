@@ -23,3 +23,8 @@ type Board interface {
 	Move(s, t string) error
 }
 ```
+
+
+###### Development
+
+sh init_hooks.sh
