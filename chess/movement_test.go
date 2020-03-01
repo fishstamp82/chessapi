@@ -167,7 +167,7 @@ func TestBlackQueenMovesBeginningPosition(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewChessBoard()
+		b := NewMailBoxBoard()
 		got := b.queenMoves(d8)
 
 		if !sameAfterSort(got, row.expected) {
@@ -206,7 +206,7 @@ func TestKnightMoves(t *testing.T) {
 	var b *MailBoxBoard
 	for _, row := range table {
 		if row.fullBoard {
-			b = NewChessBoard()
+			b = NewMailBoxBoard()
 		} else {
 			b = NewEmptyMailBoxBoard()
 		}
@@ -245,7 +245,7 @@ func TestKingMoves(t *testing.T) {
 	var b *MailBoxBoard
 	for _, row := range table {
 		if row.fullBoard {
-			b = NewChessBoard()
+			b = NewMailBoxBoard()
 		} else {
 			b = NewEmptyMailBoxBoard()
 		}

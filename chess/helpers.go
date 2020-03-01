@@ -1,5 +1,15 @@
 package chess
 
+// row goes from 0 to 7
+func (s Square) row() Square {
+	return s / 8
+}
+
+// col goes from 0 to 7
+func (s Square) col() Square {
+	return s % 8
+}
+
 func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece

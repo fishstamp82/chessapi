@@ -1,5 +1,21 @@
 package chess
 
+type Player byte
+type Square int
+type State byte
+
+const (
+	White Player = iota + 1 // 1
+	Black                   // 2
+)
+
+const (
+	Playing State = iota
+	Over
+	Draw
+	Promotion
+)
+
 const (
 	a1 Square = iota
 	b1

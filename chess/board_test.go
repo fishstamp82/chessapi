@@ -5,7 +5,7 @@ import (
 )
 
 func TestInitialization(t *testing.T) {
-	b := NewChessBoard()
+	b := NewMailBoxBoard()
 	if b.PlayersTurn() != "white" {
 		t.Error("not white's turn on start of the game")
 	}

@@ -31,7 +31,7 @@ func main() {
 		}
 	}(&moves)
 
-	b := chess.NewChessBoard()
+	b := chess.NewMailBoxBoard()
 	for {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))

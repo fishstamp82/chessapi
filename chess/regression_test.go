@@ -22,7 +22,7 @@ func TestWhitesTurn(t *testing.T) {
 		},
 	}
 	for _, row := range table {
-		b := NewChessBoard()
+		b := NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
 			_ = b.Move(s, t)
@@ -49,7 +49,7 @@ func TestBishopMovesAfterMoves(t *testing.T) {
 		},
 	}
 	for _, row := range table {
-		b := NewChessBoard()
+		b := NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
 			_ = b.Move(s, t)
