@@ -322,7 +322,7 @@ func NewChessBoard() *MailBoxBoard {
 	return b
 }
 
-func NewEmptyChessBoard() *MailBoxBoard {
+func NewEmptyMailBoxBoard() *MailBoxBoard {
 	b := &MailBoxBoard{state: Playing}
 	return b
 }
