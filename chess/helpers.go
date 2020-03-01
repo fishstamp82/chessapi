@@ -1,6 +1,6 @@
 package chess
 
-func (b *ChessBoard) squaresWithoutKing(p Player) []Square {
+func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {
@@ -27,7 +27,7 @@ func (b *ChessBoard) squaresWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func (b *ChessBoard) kingSquare(p Player) Square {
+func (b *MailBoxBoard) kingSquare(p Player) Square {
 	var king Piece
 	switch p {
 	case White:

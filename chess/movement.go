@@ -1,6 +1,6 @@
 package chess
 
-func (b *ChessBoard) moves(s Square) []Square {
+func (b *MailBoxBoard) moves(s Square) []Square {
 	p := b.board[s]
 	var moves []Square
 	switch p {
@@ -32,7 +32,7 @@ func (b *ChessBoard) moves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) verticalTop(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -56,7 +56,7 @@ func (b *ChessBoard) verticalTop(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) upperRightDiag(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) upperRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -80,7 +80,7 @@ func (b *ChessBoard) upperRightDiag(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) horizontalRight(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) horizontalRight(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -104,7 +104,7 @@ func (b *ChessBoard) horizontalRight(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) lowerRightDiag(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) lowerRightDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -127,7 +127,7 @@ func (b *ChessBoard) lowerRightDiag(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) verticalBottom(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) verticalBottom(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -151,7 +151,7 @@ func (b *ChessBoard) verticalBottom(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) lowerLeftDiag(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) lowerLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -175,7 +175,7 @@ func (b *ChessBoard) lowerLeftDiag(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) horizontalLeft(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -199,7 +199,7 @@ func (b *ChessBoard) horizontalLeft(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) upperLeftDiag(s Square, sq []Square) []Square {
+func (b *MailBoxBoard) upperLeftDiag(s Square, sq []Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -223,7 +223,7 @@ func (b *ChessBoard) upperLeftDiag(s Square, sq []Square) []Square {
 	return sq
 }
 
-func (b *ChessBoard) knightMoves(s Square) []Square {
+func (b *MailBoxBoard) knightMoves(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -299,7 +299,7 @@ func (b *ChessBoard) knightMoves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) kingMoves(s Square) []Square {
+func (b *MailBoxBoard) kingMoves(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -364,7 +364,7 @@ func (b *ChessBoard) kingMoves(s Square) []Square {
 	}
 	return moves
 }
-func (b *ChessBoard) movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
+func (b *MailBoxBoard) movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
 	isBlack := !isWhite
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b.board[i] < 0 {
@@ -384,7 +384,7 @@ func (b *ChessBoard) movementAlgorithm(startPos Square, startRow Square, startCo
 	return sq
 }
 
-func (b *ChessBoard) whitePawnMoves(s Square) []Square {
+func (b *MailBoxBoard) whitePawnMoves(s Square) []Square {
 	var moves []Square
 	var t Square
 	var first, second Square
@@ -433,7 +433,7 @@ func (b *ChessBoard) whitePawnMoves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) blackPawnMoves(s Square) []Square {
+func (b *MailBoxBoard) blackPawnMoves(s Square) []Square {
 	var moves []Square
 	var t Square
 	var first, second Square
@@ -482,7 +482,7 @@ func (b *ChessBoard) blackPawnMoves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) bishopMoves(s Square) []Square {
+func (b *MailBoxBoard) bishopMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.upperRightDiag(s, moves)
@@ -493,7 +493,7 @@ func (b *ChessBoard) bishopMoves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) rookMoves(s Square) []Square {
+func (b *MailBoxBoard) rookMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.horizontalLeft(s, moves)
@@ -504,7 +504,7 @@ func (b *ChessBoard) rookMoves(s Square) []Square {
 	return moves
 }
 
-func (b *ChessBoard) queenMoves(s Square) []Square {
+func (b *MailBoxBoard) queenMoves(s Square) []Square {
 	var moves []Square
 
 	moves = b.upperRightDiag(s, moves)

@@ -203,7 +203,7 @@ func TestKnightMoves(t *testing.T) {
 			fullBoard:   true,
 		},
 	}
-	var b *ChessBoard
+	var b *MailBoxBoard
 	for _, row := range table {
 		if row.fullBoard {
 			b = NewChessBoard()
@@ -242,7 +242,7 @@ func TestKingMoves(t *testing.T) {
 			fullBoard: false,
 		},
 	}
-	var b *ChessBoard
+	var b *MailBoxBoard
 	for _, row := range table {
 		if row.fullBoard {
 			b = NewChessBoard()
