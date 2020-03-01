@@ -278,6 +278,14 @@ func (b *MailBoxBoard) switchTurn() {
 	}
 }
 
+func (b *MailBoxBoard) Promote(p Piece) (State, error) {
+	if !validPromotion(p, b.stateContext.playersTurn) {
+		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
+	}
+	b.board[b.stateContext.pawnPromotionSquare] = p
+	return Playing, nil
+}
+
 func NewMailBoxBoard() *MailBoxBoard {
 	b := &MailBoxBoard{state: Playing}
 
@@ -314,14 +322,6 @@ func NewMailBoxBoard() *MailBoxBoard {
 	b.board[e8] = BlackKing
 
 	return b
-}
-
-func (b *MailBoxBoard) Promote(p Piece) (State, error) {
-	if !validPromotion(p, b.stateContext.playersTurn) {
-		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
-	}
-	b.board[b.stateContext.pawnPromotionSquare] = p
-	return Playing, nil
 }
 
 func NewEmptyMailBoxBoard() *MailBoxBoard {
