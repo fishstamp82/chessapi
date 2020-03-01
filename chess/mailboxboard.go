@@ -138,6 +138,14 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 	return b.state, nil
 }
 
+func (b *MailBoxBoard) Promote(p Piece) (State, error) {
+	if !validPromotion(p, b.stateContext.playersTurn) {
+		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
+	}
+	b.board[b.stateContext.pawnPromotionSquare] = p
+	return Playing, nil
+}
+
 // Given human readable string input "e2", return string
 // repr of piece. if none, return "-"
 func (b *MailBoxBoard) stringRepr(s string) (string, error) {
@@ -276,14 +284,6 @@ func (b *MailBoxBoard) switchTurn() {
 	} else {
 		b.stateContext.playersTurn = White
 	}
-}
-
-func (b *MailBoxBoard) Promote(p Piece) (State, error) {
-	if !validPromotion(p, b.stateContext.playersTurn) {
-		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
-	}
-	b.board[b.stateContext.pawnPromotionSquare] = p
-	return Playing, nil
 }
 
 func NewMailBoxBoard() *MailBoxBoard {
