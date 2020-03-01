@@ -90,6 +90,28 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 		return b.state, errors.New(fmt.Sprintf("bad second input, got: %v, good format: 'e4'", t))
 	}
 
+	return b.move(fromSquare, toSquare)
+
+}
+
+func (b *MailBoxBoard) Promote(p Piece) (State, error) {
+	if !validPromotion(p, b.stateContext.playersTurn) {
+		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
+	}
+	b.board[b.stateContext.pawnPromotionSquare] = p
+
+	if b.isCheckMated(b.getOpponent(b.stateContext.playersTurn)) {
+		b.state = Over
+		return b.state, nil
+	}
+
+	b.state = Playing
+	b.switchTurn()
+	return Playing, nil
+}
+
+func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
+
 	switch b.stateContext.playersTurn {
 	case White:
 		if b.board[fromSquare] < 0 {
@@ -103,7 +125,7 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 
 	availMoves := b.moves(fromSquare)
 	if !inSquares(toSquare, availMoves) {
-		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], t))
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
 	}
 
 	// Make Move
@@ -116,7 +138,7 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 	if b.inCheck(b.stateContext.playersTurn) {
 		b.board[fromSquare] = piece
 		b.board[toSquare] = tmpPiece
-		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[fromSquare]], t))
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
 	}
 
 	//If we reach pawn promotion, return
@@ -136,14 +158,6 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 	// Switch to other player
 	b.switchTurn()
 	return b.state, nil
-}
-
-func (b *MailBoxBoard) Promote(p Piece) (State, error) {
-	if !validPromotion(p, b.stateContext.playersTurn) {
-		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
-	}
-	b.board[b.stateContext.pawnPromotionSquare] = p
-	return Playing, nil
 }
 
 // Given human readable string input "e2", return string
@@ -326,5 +340,6 @@ func NewMailBoxBoard() *MailBoxBoard {
 
 func NewEmptyMailBoxBoard() *MailBoxBoard {
 	b := &MailBoxBoard{state: Playing}
+	b.stateContext.playersTurn = White
 	return b
 }

@@ -35,7 +35,6 @@ func main() {
 
 	b := chess.NewBoard()
 	for {
-
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
 		}
@@ -49,15 +48,14 @@ func main() {
 		m2 = strings.TrimSuffix(m2, "\n")
 		state, err = b.Move(m1, m2)
 
-		if state == chess.Promotion {
-			// read input from player
-			continue
-		}
-
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			moves = append(moves, [2]string{m1, m2})
+		}
+		if state == chess.Promotion {
+			// read input from player
+			continue
 		}
 		if b.CheckMate() {
 			winner, _ := b.Won()
