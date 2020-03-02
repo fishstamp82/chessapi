@@ -28,7 +28,7 @@ func TestPawnTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whitePawn] = WhitePawn
 		for _, val := range row.blackPawns {
 			b.board[val] = BlackPawn
@@ -66,7 +66,7 @@ func TestBishopTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whiteBishop] = WhiteBishop
 		for _, val := range row.blackBishops {
 			b.board[val] = BlackBishop
@@ -104,7 +104,7 @@ func TestKnightTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whiteKnight] = WhiteKnight
 		for _, val := range row.blackKnights {
 			b.board[val] = BlackKnight
@@ -142,7 +142,7 @@ func TestRookTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whiteRook] = WhiteRook
 		for _, val := range row.blackRooks {
 			b.board[val] = BlackRook
@@ -178,7 +178,7 @@ func TestQueenTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whiteQueen] = WhiteQueen
 		for _, val := range row.blackQueens {
 			b.board[val] = BlackQueen
@@ -209,7 +209,7 @@ func TestKingTargets(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewEmptyChessBoard()
+		b := NewEmptyMailBoxBoard()
 		b.board[row.whiteKing] = WhiteKing
 		for _, val := range row.blackBishop {
 			b.board[val] = BlackKing

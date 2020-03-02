@@ -1,6 +1,6 @@
 package chess
 
-func (b *ChessBoard) targets(s Square) []Square {
+func (b *MailBoxBoard) targets(s Square) []Square {
 	p := b.board[s]
 	var targets []Square
 	switch p {
@@ -32,7 +32,7 @@ func (b *ChessBoard) targets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) pawnTargets(s Square) []Square {
+func (b *MailBoxBoard) pawnTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -63,7 +63,7 @@ func (b *ChessBoard) pawnTargets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) bishopTargets(s Square) []Square {
+func (b *MailBoxBoard) bishopTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -94,7 +94,7 @@ func (b *ChessBoard) bishopTargets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) knightTargets(s Square) []Square {
+func (b *MailBoxBoard) knightTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -125,7 +125,7 @@ func (b *ChessBoard) knightTargets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) rookTargets(s Square) []Square {
+func (b *MailBoxBoard) rookTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -156,7 +156,7 @@ func (b *ChessBoard) rookTargets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) queenTargets(s Square) []Square {
+func (b *MailBoxBoard) queenTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:
@@ -187,7 +187,7 @@ func (b *ChessBoard) queenTargets(s Square) []Square {
 	return targets
 }
 
-func (b *ChessBoard) kingTargets(s Square) []Square {
+func (b *MailBoxBoard) kingTargets(s Square) []Square {
 	var isWhite bool
 	switch b.board[s] > 0 {
 	case true:

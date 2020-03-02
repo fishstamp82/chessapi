@@ -34,7 +34,7 @@ func TestCheck(t *testing.T) {
 		b := chess.NewBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			_ = b.Move(s, t)
+			_, _ = b.Move(s, t)
 		}
 		if b.InCheck() != row.expected {
 			t.Errorf("not in check ")
@@ -77,7 +77,7 @@ func TestCheckMate(t *testing.T) {
 		b := chess.NewBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
-			_ = b.Move(s, t)
+			_, _ = b.Move(s, t)
 		}
 		if b.CheckMate() != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)

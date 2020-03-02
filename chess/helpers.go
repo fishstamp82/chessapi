@@ -1,6 +1,16 @@
 package chess
 
-func (b *ChessBoard) squaresWithoutKing(p Player) []Square {
+// row goes from 0 to 7
+func (s Square) row() Square {
+	return s / 8
+}
+
+// col goes from 0 to 7
+func (s Square) col() Square {
+	return s % 8
+}
+
+func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {
@@ -27,7 +37,7 @@ func (b *ChessBoard) squaresWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func (b *ChessBoard) kingSquare(p Player) Square {
+func (b *MailBoxBoard) kingSquare(p Player) Square {
 	var king Piece
 	switch p {
 	case White:
@@ -62,4 +72,35 @@ func uniqueSquares(s []Square) []Square {
 		}
 	}
 	return uniq
+}
+
+func pawnFinalRank(piece Piece, square Square) bool {
+	switch piece {
+	case WhitePawn:
+		return inSquares(square, []Square{a8, b8, c8, d8, e8, f8, g8, h8})
+	case BlackPawn:
+		return inSquares(square, []Square{a1, b1, c1, d1, e1, f1, g1, h1})
+	}
+	return false
+}
+
+func validPromotion(piece Piece, player Player) bool {
+	switch player {
+	case White:
+		switch piece {
+		case WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen:
+			return true
+		default:
+			return false
+		}
+	case Black:
+		switch piece {
+		case BlackKnight, BlackBishop, BlackRook, BlackQueen:
+			return true
+		default:
+			return false
+		}
+	}
+
+	return false
 }

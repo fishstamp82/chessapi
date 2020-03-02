@@ -1,6 +1,6 @@
 package chess
 
-func (b *ChessBoard) blocks(s, t Square) []Square {
+func (b *MailBoxBoard) blocks(s, t Square) []Square {
 	p := b.board[s]
 	var blocks []Square
 	switch p {
@@ -28,21 +28,21 @@ func (b *ChessBoard) blocks(s, t Square) []Square {
 	return blocks
 }
 
-func (b *ChessBoard) pawnBlocks(s Square) []Square {
+func (b *MailBoxBoard) pawnBlocks(s Square) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *ChessBoard) knightBlocks(s Square) []Square {
+func (b *MailBoxBoard) knightBlocks(s Square) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *ChessBoard) bishopBlocks(s, kingPos Square) []Square {
+func (b *MailBoxBoard) bishopBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 
@@ -69,7 +69,7 @@ func (b *ChessBoard) bishopBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *ChessBoard) queenBlocks(s, kingPos Square) []Square {
+func (b *MailBoxBoard) queenBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 
@@ -100,7 +100,7 @@ func (b *ChessBoard) queenBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *ChessBoard) rookBlocks(s, kingPos Square) []Square {
+func (b *MailBoxBoard) rookBlocks(s, kingPos Square) []Square {
 
 	var blocks []Square
 
