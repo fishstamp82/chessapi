@@ -9,8 +9,10 @@ type context struct {
 	playersTurn         Player
 	winner              Player
 	pawnPromotionSquare Square
-	whiteCanRockade     bool
-	blackCanRockade     bool
+	whiteCanCastleRight bool
+	whiteCanCastleLeft  bool
+	blackCanCastleRight bool
+	blackCanCastleLeft  bool
 }
 
 type MailBoxBoard struct {
@@ -158,9 +160,58 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 		return b.state, nil
 	}
 
+	//castles
+	b.handleKingIfCastle(fromSquare, toSquare, piece, b.context.playersTurn)
+	b.handleAbortCastle(fromSquare, toSquare, piece)
+
 	// Switch to other player
 	b.switchTurn()
 	return b.state, nil
+}
+
+func (b *MailBoxBoard) handleKingIfCastle(fromSquare, toSquare Square, p Piece, player Player) {
+	if p != WhiteKing && p != BlackKing {
+		return
+	}
+
+	if (fromSquare == e1 && toSquare == g1) && b.context.whiteCanCastleRight {
+
+		b.board[h1] = Empty
+		b.board[f1] = WhiteRook
+	}
+}
+
+func (b *MailBoxBoard) handleAbortCastle(fromSquare, toSquare Square, p Piece) {
+	if p != WhiteRook && p != BlackRook {
+		return
+	}
+
+	switch fromSquare {
+	case a1:
+		b.context.whiteCanCastleLeft = false
+	case h1:
+		b.context.whiteCanCastleRight = false
+	case a8:
+		b.context.blackCanCastleLeft = false
+	case h8:
+		b.context.blackCanCastleRight = false
+	}
+
+	switch toSquare {
+	case a1:
+		b.context.whiteCanCastleLeft = false
+	case h1:
+		b.context.whiteCanCastleRight = false
+	case a8:
+		b.context.blackCanCastleLeft = false
+	case h8:
+		b.context.blackCanCastleRight = false
+	}
+
+	if fromSquare == e1 && toSquare == g1 {
+		b.board[h1] = Empty
+		b.board[f1] = WhiteRook
+	}
 }
 
 // Given human readable string input "e2", return string
@@ -304,9 +355,19 @@ func (b *MailBoxBoard) switchTurn() {
 }
 
 func NewMailBoxBoard() *MailBoxBoard {
-	b := &MailBoxBoard{state: Playing}
+	b := &MailBoxBoard{
+		state: Playing,
+		context: context{
+			playersTurn:         White,
+			winner:              0,
+			pawnPromotionSquare: 0,
+			whiteCanCastleRight: true,
+			whiteCanCastleLeft:  true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+		},
+	}
 
-	b.context.playersTurn = White
 	//Pawns
 	for _, s := range []Square{a2, b2, c2, d2, e2, f2, g2, h2} {
 		b.board[s] = WhitePawn
@@ -342,7 +403,17 @@ func NewMailBoxBoard() *MailBoxBoard {
 }
 
 func NewEmptyMailBoxBoard() *MailBoxBoard {
-	b := &MailBoxBoard{state: Playing}
-	b.context.playersTurn = White
+	b := &MailBoxBoard{
+		state: Playing,
+		context: context{
+			playersTurn:         White,
+			winner:              0,
+			pawnPromotionSquare: 0,
+			whiteCanCastleRight: true,
+			whiteCanCastleLeft:  true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+		},
+	}
 	return b
 }

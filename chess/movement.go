@@ -1,5 +1,11 @@
 package chess
 
+type Move struct {
+	from     Square
+	to       Square
+	moveType Movement
+}
+
 func (b *MailBoxBoard) moves(s Square) []Square {
 	p := b.board[s]
 	var moves []Square
@@ -25,9 +31,9 @@ func (b *MailBoxBoard) moves(s Square) []Square {
 	case BlackQueen:
 		moves = b.queenMoves(s)
 	case WhiteKing:
-		moves = b.kingMoves(s)
+		moves = b.whiteKingMoves(s)
 	case BlackKing:
-		moves = b.kingMoves(s)
+		moves = b.blackKingMoves(s)
 	}
 	return moves
 }
@@ -299,14 +305,7 @@ func (b *MailBoxBoard) knightMoves(s Square) []Square {
 	return moves
 }
 
-func (b *MailBoxBoard) kingMoves(s Square) []Square {
-	var isWhite bool
-	switch b.board[s] > 0 {
-	case true:
-		isWhite = true
-	case false:
-		isWhite = false
-	}
+func (b *MailBoxBoard) whiteKingMoves(s Square) []Square {
 	col := s.col()
 	row := s.row()
 	pos := row*8 + col
@@ -354,16 +353,119 @@ func (b *MailBoxBoard) kingMoves(s Square) []Square {
 		if target < a1 || h8 < target {
 			continue
 		}
-		if isWhite && b.board[target] < 0 {
-			moves = append(moves, target)
-		} else if !isWhite && b.board[target] > 0 {
+		if b.board[target] < 0 {
 			moves = append(moves, target)
 		} else if b.board[target] == Empty {
 			moves = append(moves, target)
 		}
 	}
+
+	canCastleRight := b.context.whiteCanCastleRight
+	canCastleLeft := b.context.whiteCanCastleLeft
+	if b.context.whiteCanCastleRight {
+		for _, p := range b.getPieces(Black) {
+			for _, t := range b.targets(p) {
+				if t == f1 || t == g1 {
+					canCastleRight = false
+				}
+			}
+		}
+		if (b.board[f1] != Empty) || (b.board[g1] != Empty) {
+			canCastleRight = false
+		}
+	}
+	if b.context.whiteCanCastleLeft {
+		for _, p := range b.getPieces(Black) {
+			for _, t := range b.targets(p) {
+				if t == d1 || t == c1 || t == b1 {
+					canCastleLeft = false
+				}
+			}
+		}
+		if (b.board[b1] != Empty) || (b.board[c1] != Empty) || (b.board[d1] != Empty) {
+			canCastleLeft = false
+		}
+	}
+
+	if canCastleRight {
+		moves = append(moves, g1)
+	}
+	if canCastleLeft {
+		moves = append(moves, c1)
+	}
 	return moves
 }
+
+func (b *MailBoxBoard) blackKingMoves(s Square) []Square {
+	col := s.col()
+	row := s.row()
+	pos := row*8 + col
+
+	topLeft := pos + 7
+	top := pos + 8
+	topRight := pos + 9
+	right := pos + 1
+	downRight := pos - 7
+	down := pos - 8
+	downLeft := pos - 9
+	left := pos - 1
+
+	topRow := row + 1
+	downRow := row - 1
+	leftCol := col - 1
+	rightCol := col + 1
+	sameRow := row
+	sameCol := col
+
+	combos := [8][3]Square{
+		{topLeft, topRow, leftCol},
+		{top, topRow, sameCol},
+		{topRight, topRow, rightCol},
+		{right, sameRow, rightCol},
+		{downRight, downRow, rightCol},
+		{down, downRow, sameCol},
+		{downLeft, downRow, leftCol},
+		{left, sameRow, leftCol},
+	}
+	var moves []Square
+
+	var target, r, c Square
+	for _, val := range combos {
+		target = val[0]
+		r = val[1]
+		c = val[2]
+
+		if target.row() != r {
+			continue
+		}
+		if target.col() != c {
+			continue
+		}
+		if target < a1 || h8 < target {
+			continue
+		}
+
+		if b.board[target] > 0 {
+			moves = append(moves, target)
+		} else if b.board[target] == Empty {
+			moves = append(moves, target)
+		}
+	}
+
+	if b.context.blackCanCastleRight {
+		if b.board[f8] == Empty && b.board[g8] == Empty {
+			moves = append(moves, g8)
+		}
+	}
+	if b.context.blackCanCastleLeft {
+		if b.board[d8] == Empty && b.board[c8] == Empty && b.board[b8] == Empty {
+			moves = append(moves, c8)
+		}
+	}
+
+	return moves
+}
+
 func (b *MailBoxBoard) movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square) []Square {
 	isBlack := !isWhite
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {

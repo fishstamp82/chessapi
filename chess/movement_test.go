@@ -252,11 +252,46 @@ func TestKingMoves(t *testing.T) {
 
 		b.board[row.whiteKing] = WhiteKing
 		b.board[row.blackKing] = BlackKing
-		got := b.kingMoves(row.whiteKing)
+		got := b.whiteKingMoves(row.whiteKing)
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKing], squareToString[row.whiteKing])
+		}
+	}
+}
+
+func TestKingCastle(t *testing.T) {
+	type piecePosition struct {
+		position Square
+		piece    Piece
+	}
+	table := []struct {
+		pieces   []piecePosition
+		expected []Square
+	}{
+		{
+			pieces: []piecePosition{
+				{e1, WhiteKing},
+				{h1, WhiteRook},
+				{a1, WhiteRook},
+				{d8, WhiteQueen},
+			},
+			expected: []Square{c1, d1, d2, e2, f1, f2, g1},
+		},
+	}
+	var b *MailBoxBoard
+	for _, row := range table {
+		b = NewEmptyMailBoxBoard()
+		for _, val := range row.pieces {
+			b.board[val.position] = val.piece
+		}
+
+		got := b.whiteKingMoves(e1)
+
+		if !sameAfterSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s on %s\n",
+				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKing], squareToString[e1])
 		}
 	}
 }

@@ -202,9 +202,9 @@ func (b *MailBoxBoard) kingTargets(s Square) []Square {
 	p := b.board[s]
 	switch p {
 	case WhiteKing:
-		moves = b.kingMoves(s)
+		moves = b.whiteKingMoves(s)
 	case BlackKing:
-		moves = b.kingMoves(s)
+		moves = b.whiteKingMoves(s)
 	default:
 		moves = []Square{}
 	}
