@@ -128,7 +128,7 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 		}
 	}
 
-	availMoves := b.moves(fromSquare)
+	availMoves := moves(fromSquare, b.board, b.context)
 	if !inSquares(toSquare, availMoves) {
 		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
 	}
@@ -229,7 +229,7 @@ func (b *MailBoxBoard) inCheck(player Player) bool {
 	ourKingPos := b.kingSquare(player)
 
 	for _, oppPiece := range b.getPieces(b.getOpponent(player)) {
-		if inSquares(ourKingPos, b.targets(oppPiece)) {
+		if inSquares(ourKingPos, targets(oppPiece, b.board)) {
 			return true
 		}
 	}
@@ -252,7 +252,7 @@ func (b *MailBoxBoard) isCheckMated(p Player) bool {
 
 	//Check possible escapes by the king
 	kingSquare := b.kingSquare(p)
-	kingMoves := b.moves(kingSquare)
+	kingMoves := moves(kingSquare, b.board, b.context)
 	for _, move := range kingMoves {
 		tmpPiece := b.board[move]
 		b.board[kingSquare] = Empty
@@ -268,13 +268,13 @@ func (b *MailBoxBoard) isCheckMated(p Player) bool {
 
 	//Must Block all attacks from getOpponent in one move
 	var toBlock []Square
-	var targets []Square
+	var trgts []Square
 	for _, square := range b.squaresWithoutKing(b.getOpponent(p)) {
-		targets = b.targets(square)
-		if !inSquares(kingSquare, targets) {
+		trgts = targets(square, b.board)
+		if !inSquares(kingSquare, trgts) {
 			continue
 		}
-		for _, sq := range b.blocks(square, kingSquare) {
+		for _, sq := range blocks(square, kingSquare, b.board) {
 			toBlock = append(toBlock, sq)
 		}
 	}
@@ -283,7 +283,7 @@ func (b *MailBoxBoard) isCheckMated(p Player) bool {
 	var s, t Piece
 	//Must Block all attacks from getOpponent in one move
 	for _, source := range b.squaresWithoutKing(p) {
-		for _, target := range b.moves(source) {
+		for _, target := range moves(source, b.board, b.context) {
 			if inSquares(target, toBlock) {
 				s = b.board[source]
 				t = b.board[target]
@@ -409,10 +409,6 @@ func NewEmptyMailBoxBoard() *MailBoxBoard {
 			playersTurn:         White,
 			winner:              0,
 			pawnPromotionSquare: 0,
-			whiteCanCastleRight: true,
-			whiteCanCastleLeft:  true,
-			blackCanCastleRight: true,
-			blackCanCastleLeft:  true,
 		},
 	}
 	return b

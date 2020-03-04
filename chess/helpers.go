@@ -104,3 +104,30 @@ func validPromotion(piece Piece, player Player) bool {
 
 	return false
 }
+
+func squaresWithoutKing(p Player, b [64]Piece) []Square {
+	var isWhite bool
+	var piece Piece
+	switch p {
+	case White:
+		isWhite = true
+	case Black:
+		isWhite = false
+	}
+
+	var pieces []Square
+	for pos := a1; pos <= h8; pos += 1 {
+		piece = b[pos]
+		if piece == WhiteKing || piece == BlackKing {
+			continue
+		}
+		if piece > 0 && isWhite {
+			pieces = append(pieces, pos)
+		} else if piece < 0 && !isWhite {
+			pieces = append(pieces, pos)
+
+		}
+
+	}
+	return pieces
+}

@@ -1,60 +1,67 @@
 package chess
 
-func (b *MailBoxBoard) blocks(s, t Square) []Square {
-	p := b.board[s]
+// Purpose of blocks is to find squares that block a certain piece
+// from attacking.
+// This is used to be able to calculate check-mate, so that
+// if a king can not move or kill a checking piece, one of the
+// pieces under the player in check need to block the check in some way
+// by standing in front of it
+
+func blocks(s, t Square, b [64]Piece) []Square {
+	p := b[s]
 	var blocks []Square
 	switch p {
 	case WhitePawn:
-		blocks = b.pawnBlocks(s)
+		blocks = pawnBlocks(s, b)
 	case BlackPawn:
-		blocks = b.pawnBlocks(s)
-	case WhiteBishop:
-		blocks = b.bishopBlocks(s, t)
-	case BlackBishop:
-		blocks = b.bishopBlocks(s, t)
+		blocks = pawnBlocks(s, b)
 	case WhiteKnight:
-		blocks = b.knightBlocks(s)
+		blocks = knightBlocks(s, b)
 	case BlackKnight:
-		blocks = b.knightBlocks(s)
+		blocks = knightBlocks(s, b)
+	case WhiteBishop:
+		blocks = bishopBlocks(s, t, b)
+	case BlackBishop:
+		blocks = bishopBlocks(s, t, b)
 	case WhiteRook:
-		blocks = b.rookBlocks(s, t)
+		blocks = rookBlocks(s, t, b)
 	case BlackRook:
-		blocks = b.rookBlocks(s, t)
+		blocks = rookBlocks(s, t, b)
 	case WhiteQueen:
-		blocks = b.queenBlocks(s, t)
+		blocks = queenBlocks(s, t, b)
 	case BlackQueen:
-		blocks = b.queenBlocks(s, t)
+		blocks = queenBlocks(s, t, b)
 	}
 	return blocks
 }
 
-func (b *MailBoxBoard) pawnBlocks(s Square) []Square {
+func pawnBlocks(s Square, b [64]Piece) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *MailBoxBoard) knightBlocks(s Square) []Square {
+func knightBlocks(s Square, b [64]Piece) []Square {
 
 	var blocks []Square
 	blocks = append(blocks, s)
 	return blocks
 }
 
-func (b *MailBoxBoard) bishopBlocks(s, kingPos Square) []Square {
+func bishopBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square) []Square{
-		b.lowerLeftDiag,
-		b.lowerRightDiag,
-		b.upperLeftDiag,
-		b.upperRightDiag,
+	directions := []func(Square, []Square, [64]Piece) []Square{
+		lowerLeftDiag,
+		lowerRightDiag,
+		upperLeftDiag,
+		upperRightDiag,
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{})
+		moves := lambda(s, []Square{}, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 
@@ -69,23 +76,23 @@ func (b *MailBoxBoard) bishopBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *MailBoxBoard) queenBlocks(s, kingPos Square) []Square {
+func queenBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square) []Square{
-		b.lowerLeftDiag,
-		b.lowerRightDiag,
-		b.upperLeftDiag,
-		b.upperRightDiag,
-		b.verticalTop,
-		b.horizontalRight,
-		b.verticalBottom,
-		b.horizontalLeft,
+	directions := []func(Square, []Square, [64]Piece) []Square{
+		lowerLeftDiag,
+		lowerRightDiag,
+		upperLeftDiag,
+		upperRightDiag,
+		verticalTop,
+		horizontalRight,
+		verticalBottom,
+		horizontalLeft,
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{})
+		moves := lambda(s, []Square{}, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 
@@ -100,19 +107,19 @@ func (b *MailBoxBoard) queenBlocks(s, kingPos Square) []Square {
 	panic("no king square found, something wrong before this func")
 }
 
-func (b *MailBoxBoard) rookBlocks(s, kingPos Square) []Square {
+func rookBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square) []Square{
-		b.verticalTop,
-		b.horizontalRight,
-		b.verticalBottom,
-		b.horizontalLeft,
+	directions := []func(Square, []Square, [64]Piece) []Square{
+		verticalTop,
+		horizontalRight,
+		verticalBottom,
+		horizontalLeft,
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{})
+		moves := lambda(s, []Square{}, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 

@@ -34,7 +34,7 @@ func TestPawnTargets(t *testing.T) {
 			b.board[val] = BlackPawn
 		}
 
-		got := b.pawnTargets(row.whitePawn)
+		got := pawnTargets(row.whitePawn, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
@@ -72,7 +72,7 @@ func TestBishopTargets(t *testing.T) {
 			b.board[val] = BlackBishop
 		}
 
-		got := b.bishopTargets(row.whiteBishop)
+		got := bishopTargets(row.whiteBishop, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteBishop])
@@ -110,7 +110,7 @@ func TestKnightTargets(t *testing.T) {
 			b.board[val] = BlackKnight
 		}
 
-		got := b.knightTargets(row.whiteKnight)
+		got := knightTargets(row.whiteKnight, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKnight])
@@ -148,7 +148,7 @@ func TestRookTargets(t *testing.T) {
 			b.board[val] = BlackRook
 		}
 
-		got := b.rookTargets(row.whiteRook)
+		got := rookTargets(row.whiteRook, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteRook])
@@ -187,7 +187,7 @@ func TestQueenTargets(t *testing.T) {
 			b.board[val] = WhitePawn
 		}
 
-		got := b.queenTargets(row.whiteQueen)
+		got := queenTargets(row.whiteQueen, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteQueen])
@@ -215,7 +215,7 @@ func TestKingTargets(t *testing.T) {
 			b.board[val] = BlackKing
 		}
 
-		got := b.kingTargets(row.whiteKing)
+		got := kingTargets(row.whiteKing, b.board)
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKing])
