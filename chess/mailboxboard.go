@@ -184,11 +184,11 @@ func (b *MailBoxBoard) moveRookIfCastle(fromSquare, toSquare Square, p Piece) {
 	}
 	if fromSquare == e8 && toSquare == g8 {
 		b.board[h8] = Empty
-		b.board[f8] = WhiteRook
+		b.board[f8] = BlackRook
 	}
 	if fromSquare == e8 && toSquare == c8 {
-		b.board[a1] = Empty
-		b.board[d1] = WhiteRook
+		b.board[a8] = Empty
+		b.board[d8] = BlackRook
 	}
 }
 
