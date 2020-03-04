@@ -161,30 +161,38 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	}
 
 	//castles
-	b.handleKingIfCastle(fromSquare, toSquare, piece, b.context.playersTurn)
-	b.handleAbortCastle(fromSquare, toSquare, piece)
+	b.moveRookIfCastle(fromSquare, toSquare, piece)
+	b.abortCastling(fromSquare, toSquare)
 
 	// Switch to other player
 	b.switchTurn()
 	return b.state, nil
 }
 
-func (b *MailBoxBoard) handleKingIfCastle(fromSquare, toSquare Square, p Piece, player Player) {
+func (b *MailBoxBoard) moveRookIfCastle(fromSquare, toSquare Square, p Piece) {
 	if p != WhiteKing && p != BlackKing {
 		return
 	}
 
-	if (fromSquare == e1 && toSquare == g1) && b.context.whiteCanCastleRight {
-
+	if fromSquare == e1 && toSquare == g1 {
 		b.board[h1] = Empty
 		b.board[f1] = WhiteRook
 	}
+	if fromSquare == e1 && toSquare == c1 {
+		b.board[a1] = Empty
+		b.board[d1] = WhiteRook
+	}
+	if fromSquare == e8 && toSquare == g8 {
+		b.board[h8] = Empty
+		b.board[f8] = WhiteRook
+	}
+	if fromSquare == e8 && toSquare == c8 {
+		b.board[a1] = Empty
+		b.board[d1] = WhiteRook
+	}
 }
 
-func (b *MailBoxBoard) handleAbortCastle(fromSquare, toSquare Square, p Piece) {
-	if p != WhiteRook && p != BlackRook {
-		return
-	}
+func (b *MailBoxBoard) abortCastling(fromSquare, toSquare Square) {
 
 	switch fromSquare {
 	case a1:
@@ -194,6 +202,12 @@ func (b *MailBoxBoard) handleAbortCastle(fromSquare, toSquare Square, p Piece) {
 	case a8:
 		b.context.blackCanCastleLeft = false
 	case h8:
+		b.context.blackCanCastleRight = false
+	case e1:
+		b.context.whiteCanCastleLeft = false
+		b.context.whiteCanCastleRight = false
+	case e8:
+		b.context.blackCanCastleLeft = false
 		b.context.blackCanCastleRight = false
 	}
 
@@ -208,10 +222,6 @@ func (b *MailBoxBoard) handleAbortCastle(fromSquare, toSquare Square, p Piece) {
 		b.context.blackCanCastleRight = false
 	}
 
-	if fromSquare == e1 && toSquare == g1 {
-		b.board[h1] = Empty
-		b.board[f1] = WhiteRook
-	}
 }
 
 // Given human readable string input "e2", return string

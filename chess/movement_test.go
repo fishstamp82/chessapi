@@ -261,7 +261,7 @@ func TestKingMoves(t *testing.T) {
 	}
 }
 
-func TestKingCastle(t *testing.T) {
+func TestWhiteKingCastle(t *testing.T) {
 	type piecePosition struct {
 		position Square
 		piece    Piece
@@ -275,7 +275,6 @@ func TestKingCastle(t *testing.T) {
 				{e1, WhiteKing},
 				{h1, WhiteRook},
 				{a1, WhiteRook},
-				{d8, WhiteQueen},
 			},
 			expected: []Square{c1, d1, d2, e2, f1, f2, g1},
 		},
