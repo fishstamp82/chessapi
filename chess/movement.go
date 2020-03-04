@@ -481,10 +481,10 @@ func blackKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Squar
 	}
 
 	if canCastleRight {
-		moves = append(moves, g1)
+		moves = append(moves, g8)
 	}
 	if canCastleLeft {
-		moves = append(moves, c1)
+		moves = append(moves, c8)
 	}
 	return moves
 }
