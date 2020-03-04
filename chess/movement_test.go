@@ -249,6 +249,10 @@ func TestKingMoves(t *testing.T) {
 		} else {
 			b = NewEmptyMailBoxBoard()
 		}
+		b.context.whiteCanCastleLeft = false
+		b.context.whiteCanCastleRight = false
+		b.context.blackCanCastleLeft = false
+		b.context.blackCanCastleRight = false
 
 		b.board[row.whiteKing] = WhiteKing
 		b.board[row.blackKing] = BlackKing

@@ -3,7 +3,7 @@ package chess
 type Player byte
 type Square int
 type State byte
-type Movement byte
+type MovementType byte
 
 const (
 	White Player = iota + 1 // 1
@@ -18,7 +18,7 @@ const (
 )
 
 const (
-	Regular Movement = iota
+	Regular MovementType = iota
 	Capture
 	ShortCastle
 	LongCastle

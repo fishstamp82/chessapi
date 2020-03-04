@@ -1,9 +1,9 @@
 package chess
 
 type Move struct {
-	from     Square
-	to       Square
-	moveType Movement
+	from Square
+	to   Square
+	kind MovementType
 }
 
 func (b *MailBoxBoard) moves(s Square) []Square {
@@ -363,7 +363,7 @@ func (b *MailBoxBoard) whiteKingMoves(s Square) []Square {
 	canCastleRight := b.context.whiteCanCastleRight
 	canCastleLeft := b.context.whiteCanCastleLeft
 	if b.context.whiteCanCastleRight {
-		for _, p := range b.getPieces(Black) {
+		for _, p := range b.squaresWithoutKing(Black) {
 			for _, t := range b.targets(p) {
 				if t == f1 || t == g1 {
 					canCastleRight = false
@@ -375,7 +375,7 @@ func (b *MailBoxBoard) whiteKingMoves(s Square) []Square {
 		}
 	}
 	if b.context.whiteCanCastleLeft {
-		for _, p := range b.getPieces(Black) {
+		for _, p := range b.squaresWithoutKing(Black) {
 			for _, t := range b.targets(p) {
 				if t == d1 || t == c1 || t == b1 {
 					canCastleLeft = false
