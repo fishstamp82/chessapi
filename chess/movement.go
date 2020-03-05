@@ -7,7 +7,7 @@ type Move struct {
 	moveType   MovementType
 }
 
-func moves(s Square, b [64]Piece, c context) []Square {
+func validMoves(s Square, b [64]Piece, ctx context) []Square {
 	p := b[s]
 	var moves []Square
 	switch p {
@@ -32,9 +32,11 @@ func moves(s Square, b [64]Piece, c context) []Square {
 	case BlackQueen:
 		moves = queenMoves(s, b)
 	case WhiteKing:
-		moves = whiteKingMoves(s, b, c.whiteCanCastleLeft, c.whiteCanCastleRight)
+		moves = whiteKingMoves(s, b)
+		moves = append(moves, whiteKingCastleMoves(s, b, ctx)...)
 	case BlackKing:
-		moves = blackKingMoves(s, b, c.blackCanCastleLeft, c.blackCanCastleRight)
+		moves = blackKingMoves(s, b)
+		moves = append(moves, blackKingCastleMoves(s, b, ctx)...)
 	}
 	return moves
 }
@@ -306,7 +308,8 @@ func knightMoves(s Square, b [64]Piece) []Square {
 	return moves
 }
 
-func whiteKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Square {
+func whiteKingMoves(s Square, b [64]Piece) []Square {
+
 	col := s.col()
 	row := s.row()
 	pos := row*8 + col
@@ -360,44 +363,10 @@ func whiteKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Squar
 			moves = append(moves, target)
 		}
 	}
-
-	canCastleRight := castleRight
-	canCastleLeft := castleLeft
-	if castleRight {
-		for _, p := range squaresWithoutKing(Black, b) {
-			for _, t := range targets(p, b) {
-				if t == f1 || t == g1 {
-					canCastleRight = false
-				}
-			}
-		}
-		if (b[f1] != Empty) || (b[g1] != Empty) {
-			canCastleRight = false
-		}
-	}
-	if castleLeft {
-		for _, p := range squaresWithoutKing(Black, b) {
-			for _, t := range targets(p, b) {
-				if t == d1 || t == c1 || t == b1 {
-					canCastleLeft = false
-				}
-			}
-		}
-		if (b[b1] != Empty) || (b[c1] != Empty) || (b[d1] != Empty) {
-			canCastleLeft = false
-		}
-	}
-
-	if canCastleRight {
-		moves = append(moves, g1)
-	}
-	if canCastleLeft {
-		moves = append(moves, c1)
-	}
 	return moves
 }
 
-func blackKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Square {
+func blackKingMoves(s Square, b [64]Piece) []Square {
 	col := s.col()
 	row := s.row()
 	pos := row*8 + col
@@ -453,9 +422,62 @@ func blackKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Squar
 		}
 	}
 
-	canCastleRight := castleRight
-	canCastleLeft := castleLeft
-	if castleRight {
+	return moves
+}
+
+func whiteKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
+	var moves []Square
+
+	if s != e1 {
+		return moves
+	}
+
+	canCastleRight := ctx.whiteCanCastleRight
+	canCastleLeft := ctx.whiteCanCastleLeft
+	if canCastleRight {
+		if (b[f1] != Empty) || (b[g1] != Empty) {
+			canCastleRight = false
+		}
+		for _, p := range squaresWithoutKing(Black, b) {
+			for _, t := range validMoves(p, b, ctx) {
+				if t == f1 || t == g1 {
+					canCastleRight = false
+					break
+				}
+			}
+		}
+	}
+	if canCastleLeft {
+		for _, p := range squaresWithoutKing(Black, b) {
+			for _, t := range targets(p, b) {
+				if t == d1 || t == c1 || t == b1 {
+					canCastleLeft = false
+				}
+			}
+		}
+		if (b[b1] != Empty) || (b[c1] != Empty) || (b[d1] != Empty) {
+			canCastleLeft = false
+		}
+	}
+
+	if canCastleRight {
+		moves = append(moves, g1)
+	}
+	if canCastleLeft {
+		moves = append(moves, c1)
+	}
+	return moves
+}
+
+func blackKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
+
+	var moves []Square
+	if s != e8 {
+		return moves
+	}
+	canCastleRight := ctx.blackCanCastleRight
+	canCastleLeft := ctx.blackCanCastleLeft
+	if canCastleRight {
 		for _, p := range squaresWithoutKing(White, b) {
 			for _, t := range targets(p, b) {
 				if t == f8 || t == g8 {
@@ -467,7 +489,7 @@ func blackKingMoves(s Square, b [64]Piece, castleLeft, castleRight bool) []Squar
 			canCastleRight = false
 		}
 	}
-	if castleLeft {
+	if canCastleLeft {
 		for _, p := range squaresWithoutKing(White, b) {
 			for _, t := range targets(p, b) {
 				if t == d8 || t == c8 || t == b8 {

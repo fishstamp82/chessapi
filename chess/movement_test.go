@@ -243,6 +243,7 @@ func TestKingMoves(t *testing.T) {
 		},
 	}
 	var b *MailBoxBoard
+	var got []Square
 	for _, row := range table {
 		if row.fullBoard {
 			b = NewMailBoxBoard()
@@ -252,7 +253,7 @@ func TestKingMoves(t *testing.T) {
 
 		b.board[row.whiteKing] = WhiteKing
 		b.board[row.blackKing] = BlackKing
-		got := whiteKingMoves(row.whiteKing, b.board, false, false)
+		got = whiteKingMoves(row.whiteKing, b.board)
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",
@@ -276,17 +277,20 @@ func TestWhiteKingCastle(t *testing.T) {
 				{h1, WhiteRook},
 				{a1, WhiteRook},
 			},
-			expected: []Square{c1, d1, d2, e2, f1, f2, g1},
+			expected: []Square{c1, g1},
 		},
 	}
 	var b *MailBoxBoard
+	var got []Square
 	for _, row := range table {
 		b = NewEmptyMailBoxBoard()
 		for _, val := range row.pieces {
 			b.board[val.position] = val.piece
 		}
+		b.context.whiteCanCastleRight = true
+		b.context.whiteCanCastleLeft = true
 
-		got := whiteKingMoves(e1, b.board, true, true)
+		got = append(got, whiteKingCastleMoves(e1, b.board, b.context)...)
 
 		if !sameAfterSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s on %s\n",

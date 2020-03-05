@@ -128,7 +128,7 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 		}
 	}
 
-	availMoves := moves(fromSquare, b.board, b.context)
+	availMoves := validMoves(fromSquare, b.board, b.context)
 	if !inSquares(toSquare, availMoves) {
 		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
 	}
@@ -262,7 +262,7 @@ func (b *MailBoxBoard) isCheckMated(p Player) bool {
 
 	//Check possible escapes by the king
 	kingSquare := b.kingSquare(p)
-	kingMoves := moves(kingSquare, b.board, b.context)
+	kingMoves := validMoves(kingSquare, b.board, b.context)
 	for _, move := range kingMoves {
 		tmpPiece := b.board[move]
 		b.board[kingSquare] = Empty
@@ -293,7 +293,7 @@ func (b *MailBoxBoard) isCheckMated(p Player) bool {
 	var s, t Piece
 	//Must Block all attacks from getOpponent in one move
 	for _, source := range b.squaresWithoutKing(p) {
-		for _, target := range moves(source, b.board, b.context) {
+		for _, target := range validMoves(source, b.board, b.context) {
 			if inSquares(target, toBlock) {
 				s = b.board[source]
 				t = b.board[target]
@@ -416,9 +416,7 @@ func NewEmptyMailBoxBoard() *MailBoxBoard {
 	b := &MailBoxBoard{
 		state: Playing,
 		context: context{
-			playersTurn:         White,
-			winner:              0,
-			pawnPromotionSquare: 0,
+			playersTurn: White,
 		},
 	}
 	return b

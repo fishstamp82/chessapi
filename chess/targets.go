@@ -202,9 +202,9 @@ func kingTargets(s Square, b [64]Piece) []Square {
 	p := b[s]
 	switch p {
 	case WhiteKing:
-		moves = whiteKingMoves(s, b, false, false)
+		moves = whiteKingMoves(s, b)
 	case BlackKing:
-		moves = whiteKingMoves(s, b, false, false)
+		moves = whiteKingMoves(s, b)
 	default:
 		moves = []Square{}
 	}
