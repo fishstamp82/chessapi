@@ -14,7 +14,11 @@ type Board interface {
 func NewBoard() Board {
 	b := &MailBoxBoard{state: Playing}
 
-	b.stateContext.playersTurn = White
+	b.context.playersTurn = White
+	b.context.whiteCanCastleLeft = true
+	b.context.whiteCanCastleRight = true
+	b.context.blackCanCastleLeft = true
+	b.context.blackCanCastleRight = true
 	//Pawns
 	for _, s := range []Square{a2, b2, c2, d2, e2, f2, g2, h2} {
 		b.board[s] = WhitePawn

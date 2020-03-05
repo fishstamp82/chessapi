@@ -3,6 +3,7 @@ package chess
 type Player byte
 type Square int
 type State byte
+type MovementType byte
 
 const (
 	White Player = iota + 1 // 1
@@ -14,6 +15,16 @@ const (
 	Over
 	Draw
 	Promotion
+)
+
+const (
+	Regular MovementType = iota
+	Capture
+	ShortCastle
+	LongCastle
+	Promo
+	Check
+	CheckMate
 )
 
 const (

@@ -1,40 +1,40 @@
 package chess
 
-func (b *MailBoxBoard) targets(s Square) []Square {
-	p := b.board[s]
+func targets(s Square, b [64]Piece) []Square {
+	p := b[s]
 	var targets []Square
 	switch p {
 	case WhitePawn:
-		targets = b.pawnTargets(s)
+		targets = pawnTargets(s, b)
 	case BlackPawn:
-		targets = b.pawnTargets(s)
+		targets = pawnTargets(s, b)
 	case WhiteBishop:
-		targets = b.bishopTargets(s)
+		targets = bishopTargets(s, b)
 	case BlackBishop:
-		targets = b.bishopTargets(s)
+		targets = bishopTargets(s, b)
 	case WhiteKnight:
-		targets = b.knightTargets(s)
+		targets = knightTargets(s, b)
 	case BlackKnight:
-		targets = b.knightTargets(s)
+		targets = knightTargets(s, b)
 	case WhiteRook:
-		targets = b.rookTargets(s)
+		targets = rookTargets(s, b)
 	case BlackRook:
-		targets = b.rookTargets(s)
+		targets = rookTargets(s, b)
 	case WhiteQueen:
-		targets = b.queenTargets(s)
+		targets = queenTargets(s, b)
 	case BlackQueen:
-		targets = b.queenTargets(s)
+		targets = queenTargets(s, b)
 	case WhiteKing:
-		targets = b.kingTargets(s)
+		targets = kingTargets(s, b)
 	case BlackKing:
-		targets = b.kingTargets(s)
+		targets = kingTargets(s, b)
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) pawnTargets(s Square) []Square {
+func pawnTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -44,28 +44,28 @@ func (b *MailBoxBoard) pawnTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhitePawn:
-		moves = b.whitePawnMoves(s)
+		moves = whitePawnMoves(s, b)
 	case BlackPawn:
-		moves = b.blackPawnMoves(s)
+		moves = blackPawnMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) bishopTargets(s Square) []Square {
+func bishopTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -75,28 +75,28 @@ func (b *MailBoxBoard) bishopTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhiteBishop:
-		moves = b.bishopMoves(s)
+		moves = bishopMoves(s, b)
 	case BlackBishop:
-		moves = b.bishopMoves(s)
+		moves = bishopMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) knightTargets(s Square) []Square {
+func knightTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -106,28 +106,28 @@ func (b *MailBoxBoard) knightTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhiteKnight:
-		moves = b.knightMoves(s)
+		moves = knightMoves(s, b)
 	case BlackKnight:
-		moves = b.knightMoves(s)
+		moves = knightMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) rookTargets(s Square) []Square {
+func rookTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -137,28 +137,28 @@ func (b *MailBoxBoard) rookTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhiteRook:
-		moves = b.rookMoves(s)
+		moves = rookMoves(s, b)
 	case BlackRook:
-		moves = b.rookMoves(s)
+		moves = rookMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) queenTargets(s Square) []Square {
+func queenTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -168,28 +168,28 @@ func (b *MailBoxBoard) queenTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhiteQueen:
-		moves = b.queenMoves(s)
+		moves = queenMoves(s, b)
 	case BlackQueen:
-		moves = b.queenMoves(s)
+		moves = queenMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}
 	return targets
 }
 
-func (b *MailBoxBoard) kingTargets(s Square) []Square {
+func kingTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool
-	switch b.board[s] > 0 {
+	switch b[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -199,19 +199,19 @@ func (b *MailBoxBoard) kingTargets(s Square) []Square {
 	var moves []Square
 	var targets []Square
 
-	p := b.board[s]
+	p := b[s]
 	switch p {
 	case WhiteKing:
-		moves = b.kingMoves(s)
+		moves = whiteKingMoves(s, b)
 	case BlackKing:
-		moves = b.kingMoves(s)
+		moves = whiteKingMoves(s, b)
 	default:
 		moves = []Square{}
 	}
 	for _, val := range moves {
-		if isWhite && b.board[val] < 0 {
+		if isWhite && b[val] < 0 {
 			targets = append(targets, val)
-		} else if !isWhite && b.board[val] > 0 {
+		} else if !isWhite && b[val] > 0 {
 			targets = append(targets, val)
 		}
 	}

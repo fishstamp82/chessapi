@@ -27,8 +27,8 @@ func TestWhitesTurn(t *testing.T) {
 			s, t := val[0], val[1]
 			_, _ = b.Move(s, t)
 		}
-		if b.stateContext.playersTurn != row.expected {
-			t.Errorf("expected: %v, got: %v\n", row.expected, b.stateContext.playersTurn)
+		if b.context.playersTurn != row.expected {
+			t.Errorf("expected: %v, got: %v\n", row.expected, b.context.playersTurn)
 		}
 	}
 }
@@ -48,15 +48,17 @@ func TestBishopMovesAfterMoves(t *testing.T) {
 			expected: []Square{},
 		},
 	}
+
+	var bm []Square
 	for _, row := range table {
 		b := NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
 			_, _ = b.Move(s, t)
 		}
-
-		if !sameAfterSort(b.bishopMoves(row.pieceAt), row.expected) {
-			t.Errorf("expected: %v, got: %v\n", row.expected, printPrettySquares(b.moves(row.pieceAt)))
+		bm = bishopMoves(row.pieceAt, b.board)
+		if !sameAfterSort(bm, row.expected) {
+			t.Errorf("expected: %v, got: %v\n", row.expected, printPrettySquares(bm))
 		}
 	}
 }
