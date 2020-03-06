@@ -4,10 +4,10 @@ func targets(s Square, b [64]Piece) []Square {
 	p := b[s]
 	var targets []Square
 	switch p {
-	case WhitePawn:
-		targets = pawnTargets(s, b)
-	case BlackPawn:
-		targets = pawnTargets(s, b)
+	//case WhitePawn:
+	//	targets = pawnTargets(s, b)
+	//case BlackPawn:
+	//	targets = pawnTargets(s, b)
 	case WhiteBishop:
 		targets = bishopTargets(s, b)
 	case BlackBishop:
@@ -32,36 +32,37 @@ func targets(s Square, b [64]Piece) []Square {
 	return targets
 }
 
-func pawnTargets(s Square, b [64]Piece) []Square {
-	var isWhite bool
-	switch b[s] > 0 {
-	case true:
-		isWhite = true
-	case false:
-		isWhite = false
-	}
-
-	var moves []Square
-	var targets []Square
-
-	p := b[s]
-	switch p {
-	case WhitePawn:
-		moves = whitePawnMoves(s, b)
-	case BlackPawn:
-		moves = blackPawnMoves(s, b)
-	default:
-		moves = []Square{}
-	}
-	for _, val := range moves {
-		if isWhite && b[val] < 0 {
-			targets = append(targets, val)
-		} else if !isWhite && b[val] > 0 {
-			targets = append(targets, val)
-		}
-	}
-	return targets
-}
+//
+//func pawnTargets(s Square, b [64]Piece) []Square {
+//	var isWhite bool
+//	switch b[s] > 0 {
+//	case true:
+//		isWhite = true
+//	case false:
+//		isWhite = false
+//	}
+//
+//	var moves []Square
+//	var targets []Square
+//
+//	p := b[s]
+//	switch p {
+//	case WhitePawn:
+//		moves = whitePawnMoves(s, b)
+//	case BlackPawn:
+//		moves = blackPawnMoves(s, b)
+//	default:
+//		moves = []Square{}
+//	}
+//	for _, val := range moves {
+//		if isWhite && b[val] < 0 {
+//			targets = append(targets, val)
+//		} else if !isWhite && b[val] > 0 {
+//			targets = append(targets, val)
+//		}
+//	}
+//	return targets
+//}
 
 func bishopTargets(s Square, b [64]Piece) []Square {
 	var isWhite bool

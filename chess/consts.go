@@ -1,5 +1,7 @@
 package chess
 
+import "fmt"
+
 //go:generate stringer -type=Piece,Player,Square,State,MovementType -output=stringer_gen.go
 
 type Player byte
@@ -24,7 +26,13 @@ const (
 	WhiteKing         // 6
 )
 
-const ()
+type NoMoveError struct {
+	Move string
+}
+
+func (nm *NoMoveError) Error() string {
+	return fmt.Sprintf("no move: %s", nm.Move)
+}
 
 const (
 	White Player = iota + 1 // 1

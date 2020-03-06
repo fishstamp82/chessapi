@@ -11,6 +11,7 @@ type piecePosition struct {
 }
 
 type Move struct {
+	piece          Piece
 	fromSquare     Square
 	toSquare       Square
 	piecePositions []piecePosition // Resulting pieces in each square
@@ -546,55 +547,6 @@ func movementAlgorithm(startPos Square, startRow Square, startCol Square, movePo
 	return sq
 }
 
-func whitePawnMoves(s Square, b [64]Piece) []Square {
-	var moves []Square
-	var t Square
-	var first, second Square
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-	if row == 1 {
-		first = pos + 8   // one square move
-		second = pos + 16 // two square move
-		if b[first] == 0 {
-			moves = append(moves, first)
-		}
-		if b[second] == 0 && b[first] == 0 {
-			moves = append(moves, second)
-		}
-	} else {
-		first = pos + 8 // one square move
-		if b[first] == 0 {
-			moves = append(moves, first)
-		}
-	}
-
-	upperRight := func(s []Square) []Square {
-		t = pos + 9 // attack upper right
-		if b[t] < 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-
-	upperLeft := func(s []Square) []Square {
-		t = pos + 7 // attack upper right
-		if b[t] < 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-	if col == 0 {
-		moves = upperRight(moves)
-	} else if col == 7 {
-		moves = upperLeft(moves)
-	} else {
-		moves = upperRight(moves)
-		moves = upperLeft(moves)
-	}
-	return moves
-}
-
 func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 	var moves []Move
 
@@ -752,6 +704,7 @@ func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 
 func makePawnMoves(p Piece, f, t Square, mt MovementType) Move {
 	return Move{
+		piece:      p,
 		fromSquare: f,
 		toSquare:   t,
 		piecePositions: []piecePosition{
@@ -770,6 +723,7 @@ func makePawnMoves(p Piece, f, t Square, mt MovementType) Move {
 
 func makeMoves(p Piece, f, t Square, mt MovementType) Move {
 	return Move{
+		piece:      p,
 		fromSquare: f,
 		toSquare:   t,
 		piecePositions: []piecePosition{
@@ -817,55 +771,6 @@ func makePawnPromotionMoves(p Player, f, t Square, mt MovementType) []Move {
 			},
 			moveType: mt,
 		})
-	}
-	return moves
-}
-
-func blackPawnMoves(s Square, b [64]Piece) []Square {
-	var moves []Square
-	var t Square
-	var first, second Square
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-	if row == 6 {
-		first = pos - 8   // one square move
-		second = pos - 16 // two square move
-		if b[first] == 0 {
-			moves = append(moves, first)
-		}
-		if b[second] == 0 && b[first] == 0 {
-			moves = append(moves, second)
-		}
-	} else {
-		first = pos - 8 // one square move
-		if b[first] == 0 {
-			moves = append(moves, first)
-		}
-	}
-
-	lowerRight := func(s []Square) []Square {
-		t = pos - 7 // attack lower right
-		if b[t] > 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-
-	lowerLeft := func(s []Square) []Square {
-		t = pos - 9 // attack lower left
-		if b[t] > 0 {
-			s = append(s, t)
-		}
-		return s
-	}
-	if col == 0 {
-		moves = lowerRight(moves)
-	} else if col == 7 {
-		moves = lowerLeft(moves)
-	} else {
-		moves = lowerRight(moves)
-		moves = lowerLeft(moves)
 	}
 	return moves
 }

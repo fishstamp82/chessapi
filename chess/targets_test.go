@@ -4,43 +4,44 @@ import (
 	"testing"
 )
 
-func TestPawnTargets(t *testing.T) {
-	table := []struct {
-		whitePawn  Square
-		blackPawns []Square
-		expected   []Square
-	}{
-		{
-			whitePawn:  a2,
-			blackPawns: []Square{b3},
-			expected:   []Square{b3},
-		},
-		{
-			whitePawn:  b2,
-			blackPawns: []Square{a3, c3},
-			expected:   []Square{a3, c3},
-		},
-		{
-			whitePawn:  c6,
-			blackPawns: []Square{a2, d7},
-			expected:   []Square{d7},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whitePawn] = WhitePawn
-		for _, val := range row.blackPawns {
-			b.board[val] = BlackPawn
-		}
-
-		got := pawnTargets(row.whitePawn, b.board)
-		if !sameAfterSquareSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
-		}
-	}
-}
+//
+//func TestPawnTargets(t *testing.T) {
+//	table := []struct {
+//		whitePawn  Square
+//		blackPawns []Square
+//		expected   []Square
+//	}{
+//		{
+//			whitePawn:  a2,
+//			blackPawns: []Square{b3},
+//			expected:   []Square{b3},
+//		},
+//		{
+//			whitePawn:  b2,
+//			blackPawns: []Square{a3, c3},
+//			expected:   []Square{a3, c3},
+//		},
+//		{
+//			whitePawn:  c6,
+//			blackPawns: []Square{a2, d7},
+//			expected:   []Square{d7},
+//		},
+//	}
+//
+//	for _, row := range table {
+//		b := NewEmptyMailBoxBoard()
+//		b.board[row.whitePawn] = WhitePawn
+//		for _, val := range row.blackPawns {
+//			b.board[val] = BlackPawn
+//		}
+//
+//		got := pawnTargets(row.whitePawn, b.board)
+//		if !sameAfterSquareSort(got, row.expected) {
+//			t.Errorf("got: %v, expected: %v for %s\n",
+//				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
+//		}
+//	}
+//}
 
 func TestBishopTargets(t *testing.T) {
 	table := []struct {

@@ -3,6 +3,7 @@ package chess
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type context struct {
@@ -131,45 +132,39 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 
 	availMoves, err := validMoves(fromSquare, b.board, b.context)
 	if err != nil {
-		return Playing, err
+		return b.state, err
 	}
 	availSquares := getSquares(availMoves)
 	if !inSquares(toSquare, availSquares) {
 		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", b.board[fromSquare], squareToString[toSquare]))
 	}
 
-	// Make Move
-	piece := b.board[fromSquare]
-	tmpPiece := b.board[toSquare]
-	b.board[fromSquare] = 0
-	b.board[toSquare] = piece
-
-	//If we are in check after a move, this move is not allowed
-	if b.inCheck(b.context.playersTurn) {
-		b.board[fromSquare] = piece
-		b.board[toSquare] = tmpPiece
-		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", b.board[fromSquare], squareToString[toSquare]))
+	//
+	m := Move{}
+	for _, move := range availMoves {
+		if move.fromSquare == fromSquare && move.toSquare == toSquare {
+			m = move
+		}
+	}
+	if m.toSquare == none {
+		return b.state, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
 	}
 
-	//If we reach pawn promotion, return
-	if pawnFinalRank(piece, toSquare) {
-		b.state = Promo
-		b.context.pawnPromotionSquare = toSquare
-		return b.state, nil
+	// Make Move
+	for _, pp := range m.piecePositions {
+		b.board[pp.position] = pp.piece
 	}
 
 	//is check mate for opponent
-	//if b.isCheckMated(b.getOpponent(b.context.playersTurn)) {
-	//	b.state = Over
-	//	b.context.winner = b.context.playersTurn
-	//	return b.state, nil
-	//}
+	if m.moveType == CheckMate {
+		b.state = Over
+		b.context.winner = b.context.playersTurn
+		return b.state, nil
+	}
 
 	//castles
-	b.moveRookIfCastle(fromSquare, toSquare, piece)
-	b.abortCastling(fromSquare, toSquare)
-
-	b.setEnPassant(piece, fromSquare, toSquare)
+	b.abortCastling(m)
+	b.getEnPassantSquare(m)
 
 	// Switch to other player
 	b.switchTurn()
@@ -184,32 +179,9 @@ func getSquares(m []Move) []Square {
 	return s
 }
 
-func (b *MailBoxBoard) moveRookIfCastle(fromSquare, toSquare Square, p Piece) {
-	if p != WhiteKing && p != BlackKing {
-		return
-	}
+func (b *MailBoxBoard) abortCastling(m Move) {
 
-	if fromSquare == e1 && toSquare == g1 {
-		b.board[h1] = Empty
-		b.board[f1] = WhiteRook
-	}
-	if fromSquare == e1 && toSquare == c1 {
-		b.board[a1] = Empty
-		b.board[d1] = WhiteRook
-	}
-	if fromSquare == e8 && toSquare == g8 {
-		b.board[h8] = Empty
-		b.board[f8] = BlackRook
-	}
-	if fromSquare == e8 && toSquare == c8 {
-		b.board[a8] = Empty
-		b.board[d8] = BlackRook
-	}
-}
-
-func (b *MailBoxBoard) abortCastling(fromSquare, toSquare Square) {
-
-	switch fromSquare {
+	switch m.fromSquare {
 	case a1:
 		b.context.whiteCanCastleLeft = false
 	case h1:
@@ -226,7 +198,7 @@ func (b *MailBoxBoard) abortCastling(fromSquare, toSquare Square) {
 		b.context.blackCanCastleRight = false
 	}
 
-	switch toSquare {
+	switch m.toSquare {
 	case a1:
 		b.context.whiteCanCastleLeft = false
 	case h1:
@@ -371,19 +343,18 @@ func (b *MailBoxBoard) getSquare(s string) (Square, error) {
 	return sq, nil
 }
 
-func (b *MailBoxBoard) setEnPassant(p Piece, fromSquare, toSquare Square) {
-	if p != WhitePawn && p != BlackPawn {
+func (b *MailBoxBoard) getEnPassantSquare(m Move) Square {
+	if m.piece != WhitePawn && m.piece != BlackPawn {
 		b.context.enPassantSquare = none
-		return
+		return none
 	}
-	if fromSquare.rank() == 2 && toSquare.rank() == 4 && p == WhitePawn {
-		b.context.enPassantSquare = fromSquare + 8
-	} else if fromSquare.rank() == 7 && toSquare.rank() == 5 && p == BlackPawn {
-		b.context.enPassantSquare = fromSquare - 8
+	if m.fromSquare.rank() == 2 && m.toSquare.rank() == 4 && m.piece == WhitePawn {
+		return m.fromSquare + 8
+	} else if m.fromSquare.rank() == 7 && m.toSquare.rank() == 5 && m.piece == BlackPawn {
+		return m.fromSquare - 8
 	} else {
-		b.context.enPassantSquare = none
+		return none
 	}
-
 }
 func (b *MailBoxBoard) switchTurn() {
 	if b.context.playersTurn == White {

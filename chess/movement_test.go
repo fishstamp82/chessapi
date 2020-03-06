@@ -6,42 +6,6 @@ import (
 	"testing"
 )
 
-func TestWhitePawnMove(t *testing.T) {
-	table := []struct {
-		whitePawn Square
-		blackPawn Square
-		expected  []Square
-	}{
-		{
-			whitePawn: a2,
-			blackPawn: a3,
-			expected:  []Square{},
-		},
-		{
-			whitePawn: b2,
-			blackPawn: a3,
-			expected:  []Square{a3, b3, b4},
-		},
-		{
-			whitePawn: a3,
-			blackPawn: h8,
-			expected:  []Square{a4},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackPawn] = BlackPawn
-
-		got := whitePawnMoves(row.whitePawn, b.board)
-		if !sameAfterSquareSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
-		}
-	}
-}
-
 func TestPawnMoves(t *testing.T) {
 	table := []struct {
 		moves    [][2]string
@@ -360,42 +324,6 @@ func TestKingMoves(t *testing.T) {
 //		}
 //	}
 //}
-
-func TestBlackPawnMove(t *testing.T) {
-	table := []struct {
-		whitePawn Square
-		blackPawn Square
-		expected  []Square
-	}{
-		{
-			whitePawn: a2,
-			blackPawn: a3,
-			expected:  []Square{},
-		},
-		{
-			whitePawn: b2,
-			blackPawn: a3,
-			expected:  []Square{b2, a2},
-		},
-		{
-			whitePawn: g6,
-			blackPawn: h7,
-			expected:  []Square{h5, h6, g6},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackPawn] = BlackPawn
-
-		got := blackPawnMoves(row.blackPawn, b.board)
-		if !sameAfterSquareSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.blackPawn])
-		}
-	}
-}
 
 func printPrettySquares(s []Square) []string {
 	var str []string
