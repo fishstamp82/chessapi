@@ -226,7 +226,7 @@ func (b *MailBoxBoard) inCheck(player Player) bool {
 	ourKingPos := b.kingSquare(player)
 
 	for _, oppPiece := range b.getPieces(b.getOpponent(player)) {
-		if inSquares(ourKingPos, targets(oppPiece, b.board)) {
+		if inSquares(ourKingPos, getSquares(targets(oppPiece, b.board))) {
 			return true
 		}
 	}

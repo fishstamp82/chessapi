@@ -53,7 +53,7 @@ func bishopBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square, [64]Piece) []Square{
+	directions := []func(Square, [64]Piece) []Move{
 		lowerLeftDiag,
 		lowerRightDiag,
 		upperLeftDiag,
@@ -61,15 +61,15 @@ func bishopBlocks(s, kingPos Square, b [64]Piece) []Square {
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{}, b)
+		moves := lambda(s, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 
-		for _, square := range moves {
-			if square == kingPos {
+		for _, move := range moves {
+			if move.toSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, square)
+			blocks = append(blocks, move.toSquare)
 		}
 	}
 
@@ -80,7 +80,7 @@ func queenBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square, [64]Piece) []Square{
+	directions := []func(Square, [64]Piece) []Move{
 		lowerLeftDiag,
 		lowerRightDiag,
 		upperLeftDiag,
@@ -92,15 +92,15 @@ func queenBlocks(s, kingPos Square, b [64]Piece) []Square {
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{}, b)
+		moves := lambda(s, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 
-		for _, square := range moves {
-			if square == kingPos {
+		for _, move := range moves {
+			if move.toSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, square)
+			blocks = append(blocks, move.toSquare)
 		}
 	}
 
@@ -111,7 +111,7 @@ func rookBlocks(s, kingPos Square, b [64]Piece) []Square {
 
 	var blocks []Square
 
-	directions := []func(Square, []Square, [64]Piece) []Square{
+	directions := []func(Square, [64]Piece) []Move{
 		verticalTop,
 		horizontalRight,
 		verticalBottom,
@@ -119,15 +119,15 @@ func rookBlocks(s, kingPos Square, b [64]Piece) []Square {
 	}
 
 	for _, lambda := range directions {
-		moves := lambda(s, []Square{}, b)
+		moves := lambda(s, b)
 		blocks = []Square{}
 		blocks = append(blocks, s)
 
-		for _, square := range moves {
-			if square == kingPos {
+		for _, move := range moves {
+			if move.toSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, square)
+			blocks = append(blocks, move.toSquare)
 		}
 	}
 

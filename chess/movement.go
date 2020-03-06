@@ -28,10 +28,10 @@ func validMoves(s Square, b [64]Piece, ctx context) ([]Move, error) {
 		moves, err = pawnMoves(s, b)
 	case BlackPawn:
 		moves, err = pawnMoves(s, b)
-		//case WhiteBishop:
-		//	moves = bishopMoves(s, b)
-		//case BlackBishop:
-		//	moves = bishopMoves(s, b)
+	case WhiteBishop:
+		moves = bishopMoves(s, b)
+	case BlackBishop:
+		moves = bishopMoves(s, b)
 		//case WhiteKnight:
 		//	moves = knightMoves(s, b)
 		//case BlackKnight:
@@ -57,9 +57,11 @@ func validMoves(s Square, b [64]Piece, ctx context) ([]Move, error) {
 	return moves, nil
 }
 
-func verticalTop(s Square, sq []Square, b [64]Piece) []Square {
+func verticalTop(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -76,14 +78,14 @@ func verticalTop(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func upperRightDiag(s Square, sq []Square, b [64]Piece) []Square {
+func upperRightDiag(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -100,14 +102,14 @@ func upperRightDiag(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func horizontalRight(s Square, sq []Square, b [64]Piece) []Square {
+func horizontalRight(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -124,14 +126,14 @@ func horizontalRight(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func lowerRightDiag(s Square, sq []Square, b [64]Piece) []Square {
+func lowerRightDiag(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -148,13 +150,15 @@ func lowerRightDiag(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
-	return sq
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+
 }
 
-func verticalBottom(s Square, sq []Square, b [64]Piece) []Square {
+func verticalBottom(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -171,14 +175,15 @@ func verticalBottom(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func lowerLeftDiag(s Square, sq []Square, b [64]Piece) []Square {
+func lowerLeftDiag(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -195,14 +200,15 @@ func lowerLeftDiag(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func horizontalLeft(s Square, sq []Square, b [64]Piece) []Square {
+func horizontalLeft(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -219,14 +225,15 @@ func horizontalLeft(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func upperLeftDiag(s Square, sq []Square, b [64]Piece) []Square {
+func upperLeftDiag(s Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[s]
+
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -243,22 +250,22 @@ func upperLeftDiag(s Square, sq []Square, b [64]Piece) []Square {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	sq = movementAlgorithm(startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, sq, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
 
-	return sq
 }
 
-func knightMoves(s Square, b [64]Piece) []Square {
+func knightMoves(fromSquare Square, b [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	piece := b[fromSquare]
+	switch piece > 0 {
 	case true:
 		isWhite = true
 	case false:
 		isWhite = false
 	}
 	_ = isWhite
-	col := s.col()
-	row := s.row()
+	col := fromSquare.col()
+	row := fromSquare.row()
 	pos := row*8 + col
 
 	topLeft := pos + 8 + 8 - 1
@@ -296,38 +303,49 @@ func knightMoves(s Square, b [64]Piece) []Square {
 		{leftDown, leftDownRow, leftCol},
 		{leftUp, leftUpRow, leftCol},
 	}
-	var moves []Square
+	var moves []Move
 
-	var target, r, c Square
+	var toSquare, r, c Square
 	for _, val := range combos {
-		target = val[0]
+		toSquare = val[0]
 		r = val[1]
 		c = val[2]
 
-		if target.row() != r {
+		if toSquare.row() != r {
 			continue
 		}
-		if target.col() != c {
+		if toSquare.col() != c {
 			continue
 		}
-		if target < a1 || h8 < target {
+		if toSquare < a1 || h8 < toSquare {
 			continue
 		}
-		if isWhite && b[target] < 0 {
-			moves = append(moves, target)
-		} else if !isWhite && b[target] > 0 {
-			moves = append(moves, target)
-		} else if b[target] == Empty {
-			moves = append(moves, target)
+		if isWhite && b[toSquare] < 0 {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+		} else if !isWhite && b[toSquare] > 0 {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+		} else if b[toSquare] == Empty {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Regular))
 		}
 	}
 	return moves
 }
 
-func whiteKingMoves(s Square, b [64]Piece) []Square {
+func kingMoves(fromSquare Square, b [64]Piece) []Move {
 
-	col := s.col()
-	row := s.row()
+	piece := b[fromSquare]
+	var isWhite, isBlack bool
+	switch piece {
+	case WhiteKing:
+		isWhite = true
+		isBlack = false
+	case BlackKing:
+		isWhite = false
+		isBlack = true
+
+	}
+	col := fromSquare.col()
+	row := fromSquare.row()
 	pos := row*8 + col
 
 	topLeft := pos + 7
@@ -356,88 +374,31 @@ func whiteKingMoves(s Square, b [64]Piece) []Square {
 		{downLeft, downRow, leftCol},
 		{left, sameRow, leftCol},
 	}
-	var moves []Square
+	var moves []Move
 
-	var target, r, c Square
+	var toSquare, r, c Square
 	for _, val := range combos {
-		target = val[0]
+		toSquare = val[0]
 		r = val[1]
 		c = val[2]
 
-		if target.row() != r {
+		if toSquare.row() != r {
 			continue
 		}
-		if target.col() != c {
+		if toSquare.col() != c {
 			continue
 		}
-		if target < a1 || h8 < target {
+		if toSquare < a1 || h8 < toSquare {
 			continue
 		}
-		if b[target] < 0 {
-			moves = append(moves, target)
-		} else if b[target] == Empty {
-			moves = append(moves, target)
+		if (b[toSquare] < 0) && isWhite {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+		} else if (b[toSquare] < 0) && isBlack {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+		} else if b[toSquare] == Empty {
+			moves = append(moves, makeMove(piece, fromSquare, toSquare, Regular))
 		}
 	}
-	return moves
-}
-
-func blackKingMoves(s Square, b [64]Piece) []Square {
-	col := s.col()
-	row := s.row()
-	pos := row*8 + col
-
-	topLeft := pos + 7
-	top := pos + 8
-	topRight := pos + 9
-	right := pos + 1
-	downRight := pos - 7
-	down := pos - 8
-	downLeft := pos - 9
-	left := pos - 1
-
-	topRow := row + 1
-	downRow := row - 1
-	leftCol := col - 1
-	rightCol := col + 1
-	sameRow := row
-	sameCol := col
-
-	combos := [8][3]Square{
-		{topLeft, topRow, leftCol},
-		{top, topRow, sameCol},
-		{topRight, topRow, rightCol},
-		{right, sameRow, rightCol},
-		{downRight, downRow, rightCol},
-		{down, downRow, sameCol},
-		{downLeft, downRow, leftCol},
-		{left, sameRow, leftCol},
-	}
-	var moves []Square
-
-	var target, r, c Square
-	for _, val := range combos {
-		target = val[0]
-		r = val[1]
-		c = val[2]
-
-		if target.row() != r {
-			continue
-		}
-		if target.col() != c {
-			continue
-		}
-		if target < a1 || h8 < target {
-			continue
-		}
-
-		if b[target] > 0 {
-			moves = append(moves, target)
-		} else if b[target] == Empty {
-			moves = append(moves, target)
-		}
-	}
-
 	return moves
 }
 
@@ -496,7 +457,7 @@ func blackKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
 	if canCastleRight {
 		for _, p := range squaresWithoutKing(White, b) {
 			for _, t := range targets(p, b) {
-				if t == f8 || t == g8 {
+				if t.toSquare == f8 || t.toSquare == g8 {
 					canCastleRight = false
 				}
 			}
@@ -508,7 +469,7 @@ func blackKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
 	if canCastleLeft {
 		for _, p := range squaresWithoutKing(White, b) {
 			for _, t := range targets(p, b) {
-				if t == d8 || t == c8 || t == b8 {
+				if t.toSquare == d8 || t.toSquare == c8 || t.toSquare == b8 {
 					canCastleLeft = false
 				}
 			}
@@ -527,24 +488,25 @@ func blackKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
 	return moves
 }
 
-func movementAlgorithm(startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, sq []Square, b [64]Piece) []Square {
+func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, p Piece, b [64]Piece) []Move {
 	isBlack := !isWhite
+	var moves []Move
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b[i] < 0 {
-			sq = append(sq, i)
+			moves = append(moves, makeMove(p, fromSquare, i, Capture))
 			break
 		} else if isBlack && b[i] > 0 {
-			sq = append(sq, i)
+			moves = append(moves, makeMove(p, fromSquare, i, Capture))
 			break
 		} else if isWhite && b[i] > 0 {
 			break
 		} else if isBlack && b[i] < 0 {
 			break
 		} else if b[i] == Empty {
-			sq = append(sq, i)
+			moves = append(moves, makeMove(p, fromSquare, i, Regular))
 		}
 	}
-	return sq
+	return moves
 }
 
 func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
@@ -721,7 +683,7 @@ func makePawnMoves(p Piece, f, t Square, mt MovementType) Move {
 	}
 }
 
-func makeMoves(p Piece, f, t Square, mt MovementType) Move {
+func makeMove(p Piece, f, t Square, mt MovementType) Move {
 	return Move{
 		piece:      p,
 		fromSquare: f,
@@ -775,39 +737,39 @@ func makePawnPromotionMoves(p Player, f, t Square, mt MovementType) []Move {
 	return moves
 }
 
-func bishopMoves(s Square, b [64]Piece) []Square {
-	var moves []Square
+func bishopMoves(s Square, b [64]Piece) []Move {
+	var moves []Move
 
-	moves = upperRightDiag(s, moves, b)
-	moves = upperLeftDiag(s, moves, b)
-	moves = lowerRightDiag(s, moves, b)
-	moves = lowerLeftDiag(s, moves, b)
-
-	return moves
-}
-
-func rookMoves(s Square, b [64]Piece) []Square {
-	var moves []Square
-
-	moves = horizontalLeft(s, moves, b)
-	moves = horizontalRight(s, moves, b)
-	moves = verticalTop(s, moves, b)
-	moves = verticalBottom(s, moves, b)
+	moves = append(moves, upperRightDiag(s, b)...)
+	moves = append(moves, upperLeftDiag(s, b)...)
+	moves = append(moves, lowerRightDiag(s, b)...)
+	moves = append(moves, lowerLeftDiag(s, b)...)
 
 	return moves
 }
 
-func queenMoves(s Square, b [64]Piece) []Square {
-	var moves []Square
+func rookMoves(s Square, b [64]Piece) []Move {
+	var moves []Move
 
-	moves = upperRightDiag(s, moves, b)
-	moves = upperLeftDiag(s, moves, b)
-	moves = lowerRightDiag(s, moves, b)
-	moves = lowerLeftDiag(s, moves, b)
-	moves = horizontalLeft(s, moves, b)
-	moves = horizontalRight(s, moves, b)
-	moves = verticalTop(s, moves, b)
-	moves = verticalBottom(s, moves, b)
+	moves = append(moves, horizontalLeft(s, b)...)
+	moves = append(moves, horizontalRight(s, b)...)
+	moves = append(moves, verticalTop(s, b)...)
+	moves = append(moves, verticalBottom(s, b)...)
+
+	return moves
+}
+
+func queenMoves(s Square, b [64]Piece) []Move {
+	var moves []Move
+
+	moves = append(moves, upperRightDiag(s, b)...)
+	moves = append(moves, upperLeftDiag(s, b)...)
+	moves = append(moves, lowerRightDiag(s, b)...)
+	moves = append(moves, lowerLeftDiag(s, b)...)
+	moves = append(moves, horizontalLeft(s, b)...)
+	moves = append(moves, horizontalRight(s, b)...)
+	moves = append(moves, verticalTop(s, b)...)
+	moves = append(moves, verticalBottom(s, b)...)
 
 	return moves
 }

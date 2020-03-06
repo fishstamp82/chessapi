@@ -32,33 +32,3 @@ func TestWhitesTurn(t *testing.T) {
 		}
 	}
 }
-
-func TestBishopMovesAfterMoves(t *testing.T) {
-	table := []struct {
-		moves    [][2]string
-		pieceAt  Square
-		expected []Square
-	}{
-		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"d7", "d5"},
-			},
-			pieceAt:  f8,
-			expected: []Square{},
-		},
-	}
-
-	var bm []Square
-	for _, row := range table {
-		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, t := val[0], val[1]
-			_, _ = b.Move(s, t)
-		}
-		bm = bishopMoves(row.pieceAt, b.board)
-		if !sameAfterSquareSort(bm, row.expected) {
-			t.Errorf("expected: %v, got: %v\n", row.expected, printPrettySquares(bm))
-		}
-	}
-}
