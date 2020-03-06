@@ -27,7 +27,7 @@ func TestPromotion(t *testing.T) {
 				{e7, e8},
 			},
 			promotion:        WhiteRook,
-			expectedStateOne: Promotion,
+			expectedStateOne: Promo,
 			expectedStateTwo: Over,
 			checkMate:        true,
 		},

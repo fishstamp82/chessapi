@@ -13,6 +13,7 @@ type context struct {
 	whiteCanCastleLeft  bool
 	blackCanCastleRight bool
 	blackCanCastleLeft  bool
+	enPassantSquare     Square
 }
 
 type MailBoxBoard struct {
@@ -130,7 +131,7 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 
 	availMoves := validMoves(fromSquare, b.board, b.context)
 	if !inSquares(toSquare, availMoves) {
-		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", b.board[fromSquare], squareToString[toSquare]))
 	}
 
 	// Make Move
@@ -143,12 +144,12 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	if b.inCheck(b.context.playersTurn) {
 		b.board[fromSquare] = piece
 		b.board[toSquare] = tmpPiece
-		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", pieceToString[b.board[fromSquare]], squareToString[toSquare]))
+		return b.state, errors.New(fmt.Sprintf("%s can't go to %s, check exposed\n", b.board[fromSquare], squareToString[toSquare]))
 	}
 
 	//If we reach pawn promotion, return
 	if pawnFinalRank(piece, toSquare) {
-		b.state = Promotion
+		b.state = Promo
 		b.context.pawnPromotionSquare = toSquare
 		return b.state, nil
 	}
@@ -163,6 +164,8 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	//castles
 	b.moveRookIfCastle(fromSquare, toSquare, piece)
 	b.abortCastling(fromSquare, toSquare)
+
+	b.setEnPassant(piece, fromSquare, toSquare)
 
 	// Switch to other player
 	b.switchTurn()
@@ -232,7 +235,7 @@ func (b *MailBoxBoard) stringRepr(s string) (string, error) {
 		return "", errors.New("bad move input, good format should be: 'e2', 'd3', etc")
 	}
 	p := b.board[sq]
-	return pieceToString[p], nil
+	return fmt.Sprintf("%s", p), nil
 }
 
 func (b *MailBoxBoard) inCheck(player Player) bool {
@@ -356,6 +359,20 @@ func (b *MailBoxBoard) getSquare(s string) (Square, error) {
 	return sq, nil
 }
 
+func (b *MailBoxBoard) setEnPassant(p Piece, fromSquare, toSquare Square) {
+	if p != WhitePawn && p != BlackPawn {
+		b.context.enPassantSquare = none
+		return
+	}
+	if fromSquare.rank() == 2 && toSquare.rank() == 4 && p == WhitePawn {
+		b.context.enPassantSquare = fromSquare + 8
+	} else if fromSquare.rank() == 7 && toSquare.rank() == 5 && p == BlackPawn {
+		b.context.enPassantSquare = fromSquare - 8
+	} else {
+		b.context.enPassantSquare = none
+	}
+
+}
 func (b *MailBoxBoard) switchTurn() {
 	if b.context.playersTurn == White {
 		b.context.playersTurn = Black

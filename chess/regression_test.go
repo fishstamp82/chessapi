@@ -57,7 +57,7 @@ func TestBishopMovesAfterMoves(t *testing.T) {
 			_, _ = b.Move(s, t)
 		}
 		bm = bishopMoves(row.pieceAt, b.board)
-		if !sameAfterSort(bm, row.expected) {
+		if !sameAfterSquareSort(bm, row.expected) {
 			t.Errorf("expected: %v, got: %v\n", row.expected, printPrettySquares(bm))
 		}
 	}

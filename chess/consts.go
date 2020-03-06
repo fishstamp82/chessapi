@@ -1,9 +1,30 @@
 package chess
 
+//go:generate stringer -type=Piece,Player,Square,State,MovementType -output=stringer_gen.go
+
 type Player byte
 type Square int
 type State byte
 type MovementType byte
+type Piece int8
+
+const (
+	BlackKing   Piece = iota - 6
+	BlackQueen        // -5
+	BlackRook         // -4
+	BlackBishop       // -3
+	BlackKnight       // -2
+	BlackPawn         // -1
+	Empty             // 0
+	WhitePawn         // 1
+	WhiteKnight       // 2
+	WhiteBishop       // 3
+	WhiteRook         // 4
+	WhiteQueen        // 5
+	WhiteKing         // 6
+)
+
+const ()
 
 const (
 	White Player = iota + 1 // 1
@@ -14,7 +35,7 @@ const (
 	Playing State = iota + 1
 	Over
 	Draw
-	Promotion
+	Promo
 )
 
 const (
@@ -22,13 +43,15 @@ const (
 	Capture
 	ShortCastle
 	LongCastle
-	Promo
+	Promotion
+	CapturePromotion
 	Check
 	CheckMate
 )
 
 const (
-	a1 Square = iota
+	none Square = iota - 1
+	a1
 	b1
 	c1
 	d1

@@ -35,7 +35,7 @@ func TestPawnTargets(t *testing.T) {
 		}
 
 		got := pawnTargets(row.whitePawn, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
 		}
@@ -73,7 +73,7 @@ func TestBishopTargets(t *testing.T) {
 		}
 
 		got := bishopTargets(row.whiteBishop, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteBishop])
 		}
@@ -111,7 +111,7 @@ func TestKnightTargets(t *testing.T) {
 		}
 
 		got := knightTargets(row.whiteKnight, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKnight])
 		}
@@ -149,7 +149,7 @@ func TestRookTargets(t *testing.T) {
 		}
 
 		got := rookTargets(row.whiteRook, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteRook])
 		}
@@ -188,7 +188,7 @@ func TestQueenTargets(t *testing.T) {
 		}
 
 		got := queenTargets(row.whiteQueen, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteQueen])
 		}
@@ -216,7 +216,7 @@ func TestKingTargets(t *testing.T) {
 		}
 
 		got := kingTargets(row.whiteKing, b.board)
-		if !sameAfterSort(got, row.expected) {
+		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whiteKing])
 		}
