@@ -166,13 +166,14 @@ func _() {
 	_ = x[LongCastle-3]
 	_ = x[Promotion-4]
 	_ = x[CapturePromotion-5]
-	_ = x[Check-6]
-	_ = x[CheckMate-7]
+	_ = x[CaptureEnPassant-6]
+	_ = x[Check-7]
+	_ = x[CheckMate-8]
 }
 
-const _MovementType_name = "RegularCaptureShortCastleLongCastlePromotionCapturePromotionCheckCheckMate"
+const _MovementType_name = "RegularCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckCheckMate"
 
-var _MovementType_index = [...]uint8{0, 7, 14, 25, 35, 44, 60, 65, 74}
+var _MovementType_index = [...]uint8{0, 7, 14, 25, 35, 44, 60, 76, 81, 90}
 
 func (i MovementType) String() string {
 	if i >= MovementType(len(_MovementType_index)-1) {

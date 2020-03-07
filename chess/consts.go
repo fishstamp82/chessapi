@@ -53,6 +53,7 @@ const (
 	LongCastle
 	Promotion
 	CapturePromotion
+	CaptureEnPassant
 	Check
 	CheckMate
 )

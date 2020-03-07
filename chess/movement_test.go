@@ -15,6 +15,7 @@ func TestPawnMoves(t *testing.T) {
 		{
 			moves: [][2]string{
 				{"e2", "e4"},
+				{"e7", "e5"},
 			},
 			pawnPos: d2,
 			expected: []Move{
@@ -42,9 +43,10 @@ func TestPawnMoves(t *testing.T) {
 				{"g5", "g6"},
 				{"d4", "d3"},
 				{"g6", "h7"},
+				{"a7", "a6"},
 			},
 			pawnPos:  h7,
-			expected: makePawnPromotionMoves(White, h7, g8, CapturePromotion),
+			expected: createPawnPromotionMoves(White, h7, g8, CapturePromotion),
 		},
 	}
 
@@ -59,7 +61,7 @@ func TestPawnMoves(t *testing.T) {
 			}
 		}
 
-		got := pawnMoves(row.pawnPos, b.board)
+		got := pawnMoves(row.pawnPos, b.board, b.context.enPassantSquare)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)

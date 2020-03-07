@@ -162,7 +162,7 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 
 	//castles
 	b.abortCastling(m)
-	b.getEnPassantSquare(m)
+	b.context.enPassantSquare = b.getEnPassantSquare(m)
 
 	// Switch to other player
 	b.switchTurn()
