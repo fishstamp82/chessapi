@@ -32,24 +32,24 @@ func validMoves(s Square, b [64]Piece, ctx context) ([]Move, error) {
 		moves = bishopMoves(s, b)
 	case BlackBishop:
 		moves = bishopMoves(s, b)
-		//case WhiteKnight:
-		//	moves = knightMoves(s, b)
-		//case BlackKnight:
-		//	moves = knightMoves(s, b)
-		//case WhiteRook:
-		//	moves = rookMoves(s, b)
-		//case BlackRook:
-		//	moves = rookMoves(s, b)
-		//case WhiteQueen:
-		//	moves = queenMoves(s, b)
-		//case BlackQueen:
-		//	moves = queenMoves(s, b)
-		//case WhiteKing:
-		//	moves = whiteKingMoves(s, b)
-		//	moves = append(moves, whiteKingCastleMoves(s, b, ctx)...)
-		//case BlackKing:
-		//	moves = blackKingMoves(s, b)
-		//	moves = append(moves, blackKingCastleMoves(s, b, ctx)...)
+	case WhiteKnight:
+		moves = knightMoves(s, b)
+	case BlackKnight:
+		moves = knightMoves(s, b)
+	case WhiteRook:
+		moves = rookMoves(s, b)
+	case BlackRook:
+		moves = rookMoves(s, b)
+	case WhiteQueen:
+		moves = queenMoves(s, b)
+	case BlackQueen:
+		moves = queenMoves(s, b)
+	case WhiteKing:
+		moves = kingMoves(s, b)
+		//moves = append(moves, whiteKingCastleMoves(s, b, ctx)...)
+	case BlackKing:
+		moves = kingMoves(s, b)
+		//moves = append(moves, blackKingCastleMoves(s, b, ctx)...)
 	}
 	if err != nil {
 		return nil, err
@@ -348,7 +348,6 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 	row := fromSquare.row()
 	pos := row*8 + col
 
-	topLeft := pos + 7
 	top := pos + 8
 	topRight := pos + 9
 	right := pos + 1
@@ -356,6 +355,7 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 	down := pos - 8
 	downLeft := pos - 9
 	left := pos - 1
+	topLeft := pos + 7
 
 	topRow := row + 1
 	downRow := row - 1
