@@ -59,7 +59,7 @@ func TestPawnMoves(t *testing.T) {
 			}
 		}
 
-		got, _ := pawnMoves(row.pawnPos, b.board)
+		got := pawnMoves(row.pawnPos, b.board)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
@@ -300,7 +300,8 @@ func TestQueenMoves(t *testing.T) {
 
 func TestKingMoves(t *testing.T) {
 	var piece = WhiteKing
-	var fun = kingMoves
+	var fun1 = kingMoves
+	var fun2 = castleMoves
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -339,7 +340,25 @@ func TestKingMoves(t *testing.T) {
 			expected: []Move{
 				makeMove(piece, e1, e2, Regular),
 				makeMove(piece, e1, f1, Regular),
-				//makeMove(piece, e1, g1, ShortCastle),
+				makeMove(piece, e1, g1, ShortCastle),
+			},
+		},
+		{
+			moves: [][2]string{
+				{"d2", "d4"},
+				{"d7", "d5"},
+				{"c1", "f4"},
+				{"e7", "e5"},
+				{"b1", "c3"},
+				{"a7", "a5"},
+				{"d1", "d2"},
+				{"a8", "a6"},
+				{"a1", "b1"},
+			},
+			pos:   e1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, e1, d1, Regular),
 			},
 		},
 	}
@@ -355,7 +374,8 @@ func TestKingMoves(t *testing.T) {
 			}
 		}
 
-		got := fun(row.pos, b.board)
+		got := fun1(row.pos, b.board)
+		got = append(got, fun2(row.pos, b.board, b.context)...)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)

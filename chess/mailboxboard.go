@@ -130,10 +130,8 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 		}
 	}
 
-	availMoves, err := validMoves(fromSquare, b.board, b.context)
-	if err != nil {
-		return b.state, err
-	}
+	availMoves := validMoves(fromSquare, b.board, b.context)
+
 	availSquares := getSquares(availMoves)
 	if !inSquares(toSquare, availSquares) {
 		return b.state, errors.New(fmt.Sprintf("%s can't go to %s\n", b.board[fromSquare], squareToString[toSquare]))

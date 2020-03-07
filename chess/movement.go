@@ -1,10 +1,5 @@
 package chess
 
-import (
-	"errors"
-	"fmt"
-)
-
 type piecePosition struct {
 	piece    Piece
 	position Square
@@ -18,43 +13,27 @@ type Move struct {
 	moveType       MovementType
 }
 
-func validMoves(s Square, b [64]Piece, ctx context) ([]Move, error) {
+func validMoves(s Square, b [64]Piece, ctx context) []Move {
 	p := b[s]
 	var moves []Move
-	var err error
 
 	switch p {
-	case WhitePawn:
-		moves, err = pawnMoves(s, b)
-	case BlackPawn:
-		moves, err = pawnMoves(s, b)
-	case WhiteBishop:
+	case WhitePawn, BlackPawn:
+		moves = pawnMoves(s, b)
+	case WhiteBishop, BlackBishop:
 		moves = bishopMoves(s, b)
-	case BlackBishop:
-		moves = bishopMoves(s, b)
-	case WhiteKnight:
+	case WhiteKnight, BlackKnight:
 		moves = knightMoves(s, b)
-	case BlackKnight:
-		moves = knightMoves(s, b)
-	case WhiteRook:
+	case WhiteRook, BlackRook:
 		moves = rookMoves(s, b)
-	case BlackRook:
-		moves = rookMoves(s, b)
-	case WhiteQueen:
+	case WhiteQueen, BlackQueen:
 		moves = queenMoves(s, b)
-	case BlackQueen:
-		moves = queenMoves(s, b)
-	case WhiteKing:
+	case WhiteKing, BlackKing:
 		moves = kingMoves(s, b)
-		//moves = append(moves, whiteKingCastleMoves(s, b, ctx)...)
-	case BlackKing:
-		moves = kingMoves(s, b)
-		//moves = append(moves, blackKingCastleMoves(s, b, ctx)...)
+		moves = append(moves, castleMoves(s, b, ctx)...)
+
 	}
-	if err != nil {
-		return nil, err
-	}
-	return moves, nil
+	return moves
 }
 
 func verticalTop(s Square, b [64]Piece) []Move {
@@ -402,90 +381,89 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 	return moves
 }
 
-//func whiteKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
-//	var moves []Square
-//
-//	if s != e1 {
-//		return moves
-//	}
-//
-//	canCastleRight := ctx.whiteCanCastleRight
-//	canCastleLeft := ctx.whiteCanCastleLeft
-//	if canCastleRight {
-//		if (b[f1] != Empty) || (b[g1] != Empty) {
-//			canCastleRight = false
-//		}
-//		for _, p := range squaresWithoutKing(Black, b) {
-//			for _, t := range validMoves(p, b, ctx) {
-//				if t == f1 || t == g1 {
-//					canCastleRight = false
-//					break
-//				}
-//			}
-//		}
-//	}
-//	if canCastleLeft {
-//		for _, p := range squaresWithoutKing(Black, b) {
-//			for _, t := range targets(p, b) {
-//				if t == d1 || t == c1 || t == b1 {
-//					canCastleLeft = false
-//				}
-//			}
-//		}
-//		if (b[b1] != Empty) || (b[c1] != Empty) || (b[d1] != Empty) {
-//			canCastleLeft = false
-//		}
-//	}
-//
-//	if canCastleRight {
-//		moves = append(moves, g1)
-//	}
-//	if canCastleLeft {
-//		moves = append(moves, c1)
-//	}
-//	return moves
-//}
+func castleMoves(kingSquare Square, b [64]Piece, ctx context) []Move {
+	var moves []Move
+	var piece = b[kingSquare]
 
-func blackKingCastleMoves(s Square, b [64]Piece, ctx context) []Square {
-
-	var moves []Square
-	if s != e8 {
+	if kingSquare != e1 && kingSquare != e8 {
 		return moves
 	}
-	canCastleRight := ctx.blackCanCastleRight
-	canCastleLeft := ctx.blackCanCastleLeft
+
+	var isWhite bool
+	var isBlack bool
+	var canCastleRight bool
+	var canCastleLeft bool
+	var shortCastleSquares []Square
+	var longCastleSquares []Square
+	var opponent Player
+
+	switch piece {
+	case WhiteKing:
+		isWhite = true
+		canCastleRight = ctx.whiteCanCastleRight
+		canCastleLeft = ctx.whiteCanCastleLeft
+		shortCastleSquares = []Square{f1, g1}
+		longCastleSquares = []Square{d1, c1, b1}
+		opponent = Black
+	case BlackKing:
+		isWhite = false
+		canCastleRight = ctx.blackCanCastleRight
+		canCastleLeft = ctx.blackCanCastleLeft
+		shortCastleSquares = []Square{f8, g8}
+		longCastleSquares = []Square{d8, c8, b8}
+		opponent = White
+	}
+	isBlack = !isWhite
+
 	if canCastleRight {
-		for _, p := range squaresWithoutKing(White, b) {
-			for _, t := range targets(p, b) {
-				if t.toSquare == f8 || t.toSquare == g8 {
+		for _, p := range squaresWithoutKing(opponent, b) {
+			for _, move := range validMoves(p, b, ctx) {
+				if inSquares(move.toSquare, append(shortCastleSquares, kingSquare)) {
 					canCastleRight = false
+					break
 				}
 			}
 		}
-		if (b[f8] != Empty) || (b[g8] != Empty) {
+		if !allEmpty(shortCastleSquares, b) {
 			canCastleRight = false
 		}
 	}
 	if canCastleLeft {
-		for _, p := range squaresWithoutKing(White, b) {
-			for _, t := range targets(p, b) {
-				if t.toSquare == d8 || t.toSquare == c8 || t.toSquare == b8 {
+		for _, p := range squaresWithoutKing(opponent, b) {
+			for _, move := range validMoves(p, b, ctx) {
+				if inSquares(move.toSquare, append(longCastleSquares, kingSquare)) {
 					canCastleLeft = false
+					break
 				}
 			}
 		}
-		if (b[b8] != Empty) || (b[c8] != Empty) || (b[d8] != Empty) {
+		if !allEmpty(longCastleSquares, b) {
 			canCastleLeft = false
 		}
 	}
 
-	if canCastleRight {
-		moves = append(moves, g8)
+	if canCastleRight && isWhite {
+		moves = append(moves, createCastleMove(piece, e1, g1, ShortCastle))
 	}
-	if canCastleLeft {
-		moves = append(moves, c8)
+	if canCastleLeft && isWhite {
+		moves = append(moves, createCastleMove(piece, e1, c1, LongCastle))
+	}
+	if canCastleRight && isBlack {
+		moves = append(moves, createCastleMove(piece, e8, g8, ShortCastle))
+	}
+	if canCastleLeft && isBlack {
+		moves = append(moves, createCastleMove(piece, e8, c8, LongCastle))
 	}
 	return moves
+}
+
+func allEmpty(squares []Square, board [64]Piece) bool {
+	for _, sq := range squares {
+		if board[sq] != Empty {
+			return false
+		}
+	}
+	return true
 }
 
 func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, p Piece, b [64]Piece) []Move {
@@ -509,7 +487,7 @@ func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Sq
 	return moves
 }
 
-func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
+func pawnMoves(fromSquare Square, b [64]Piece) []Move {
 	var moves []Move
 
 	var oneStepWhite Square = 8
@@ -533,7 +511,6 @@ func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 	// Used dependent on if its white or black pawns
 	var pawn Piece
 	var player Player
-	_ = player
 	var oneStep Square
 	var twoStep Square
 	var diagonalLeft Square
@@ -559,7 +536,7 @@ func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 		diagonalLeft = diagonalLeftBlack
 		diagonalRight = diagonalRightBlack
 	default:
-		return nil, errors.New(fmt.Sprintf("illegal method on square: %s, piece: %s\n", fromSquare, b[fromSquare]))
+		panic("pawnMoves called without pawn square")
 	}
 
 	col := fromSquare.col()
@@ -592,7 +569,7 @@ func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 			moves = append(moves, makePawnPromotionMoves(player, fromSquare, one, Promotion)...)
 		}
 	} else {
-		return nil, errors.New("pawn can't be on this rank")
+		panic("pawn can't be on this rank")
 	}
 
 	//kills without promotion
@@ -661,7 +638,7 @@ func pawnMoves(fromSquare Square, b [64]Piece) ([]Move, error) {
 			moves = append(moves, makePawnPromotionMoves(player, fromSquare, oneDiagonal, CapturePromotion)...)
 		}
 	}
-	return moves, nil
+	return moves
 }
 
 func makePawnMoves(p Piece, f, t Square, mt MovementType) Move {
@@ -700,6 +677,87 @@ func makeMove(p Piece, f, t Square, mt MovementType) Move {
 		},
 		moveType: mt,
 	}
+}
+
+func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
+	move := Move{
+		piece:      p,
+		fromSquare: f,
+		toSquare:   t,
+		piecePositions: []piecePosition{
+			{
+				piece:    p,
+				position: t,
+			},
+			{
+				piece:    Empty,
+				position: f,
+			},
+		},
+		moveType: mt,
+	}
+
+	var isWhite bool
+	var isBlack bool
+	var short bool
+	var long bool
+	switch p {
+	case WhiteKing:
+		isWhite = true
+	case BlackKing:
+		isWhite = false
+	}
+	switch mt {
+	case ShortCastle:
+		short = true
+	case LongCastle:
+		short = false
+	}
+	isBlack = !isWhite
+	long = !short
+	if isWhite && short {
+		move.piecePositions = append(move.piecePositions,
+			piecePosition{
+				piece:    WhiteRook,
+				position: f1,
+			},
+			piecePosition{
+				piece:    Empty,
+				position: h1,
+			},
+		)
+	} else if isWhite && long {
+		move.piecePositions = append(move.piecePositions,
+			piecePosition{
+				piece:    WhiteRook,
+				position: d1,
+			}, piecePosition{
+				piece:    Empty,
+				position: a1,
+			},
+		)
+	} else if isBlack && short {
+		move.piecePositions = append(move.piecePositions,
+			piecePosition{
+				piece:    BlackRook,
+				position: f8,
+			}, piecePosition{
+				piece:    Empty,
+				position: h8,
+			},
+		)
+	} else if isBlack && long {
+		move.piecePositions = append(move.piecePositions,
+			piecePosition{
+				piece:    BlackRook,
+				position: d8,
+			}, piecePosition{
+				piece:    Empty,
+				position: a8,
+			},
+		)
+	}
+	return move
 }
 
 func makePawnPromotionMoves(p Player, f, t Square, mt MovementType) []Move {
