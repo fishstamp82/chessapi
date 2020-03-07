@@ -22,6 +22,19 @@ type MailBoxBoard struct {
 	state   State
 	context context
 	winner  Player
+	score   string // 1 - 0, 0-1, \u00BD
+}
+
+func (b *MailBoxBoard) getScore(p Player) string {
+	switch p {
+	case White:
+		return "1-0"
+	case Black:
+		return "0-1"
+	case Noone:
+		return "\u00BD"
+	}
+	panic("cant call this without a valid player")
 }
 
 func (b *MailBoxBoard) CheckMate() bool {
@@ -49,16 +62,6 @@ func (b *MailBoxBoard) Won() (string, error) {
 		return "black", nil
 	}
 	return "", errors.New("no clear winner, bug")
-}
-
-func (b *MailBoxBoard) InCheck() bool {
-	if b.inCheck(White) {
-		return true
-	}
-	if b.inCheck(Black) {
-		return true
-	}
-	return false
 }
 
 func (b *MailBoxBoard) PlayersTurn() string {
@@ -119,15 +122,18 @@ func (b *MailBoxBoard) Move(s, t string) (State, error) {
 
 func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 
+	var opponent Player
 	switch b.context.playersTurn {
 	case White:
 		if b.board[fromSquare] < 0 {
 			return b.state, errors.New("white's turn")
 		}
+		opponent = Black
 	case Black:
 		if b.board[fromSquare] > 0 {
 			return b.state, errors.New("black's turn")
 		}
+		opponent = White
 	}
 
 	availMoves := validMoves(fromSquare, b.board, b.context)
@@ -154,7 +160,8 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	}
 
 	//is check mate for opponent
-	if m.moveType == CheckMate {
+	opponentsKing := getKingSquare(opponent, b.board)
+	if isCheckMated(opponentsKing, b.board) {
 		b.state = Over
 		b.context.winner = b.context.playersTurn
 		return b.state, nil
@@ -220,11 +227,18 @@ func (b *MailBoxBoard) stringRepr(s string) (string, error) {
 	return fmt.Sprintf("%s", p), nil
 }
 
-func (b *MailBoxBoard) inCheck(player Player) bool {
-	ourKingPos := b.kingSquare(player)
+func inCheck(kingSquare Square, board [64]Piece) bool {
 
-	for _, oppPiece := range b.getPieces(b.getOpponent(player)) {
-		if inSquares(ourKingPos, getSquares(targets(oppPiece, b.board))) {
+	var opponent Player
+	switch board[kingSquare] {
+	case WhiteKing:
+		opponent = Black
+	case BlackKing:
+		opponent = White
+	}
+
+	for _, oppPiece := range getPieces(opponent, board) {
+		if inSquares(kingSquare, getSquares(getTargets(oppPiece, board))) {
 			return true
 		}
 	}
@@ -232,70 +246,58 @@ func (b *MailBoxBoard) inCheck(player Player) bool {
 }
 
 //Check if piece on square s check mates player p
-//func (b *MailBoxBoard) isCheckMated(p Player) bool {
-//	if !b.inCheck(p) {
-//		return false
-//	}
-//
-//	var king Piece
-//	switch p {
-//	case White:
-//		king = WhiteKing
-//	case Black:
-//		king = BlackKing
-//	}
-//
-//	//Check possible escapes by the king
-//	kingSquare := b.kingSquare(p)
-//	kingMoves := validMoves(kingSquare, b.board, b.context)
-//	for _, move := range kingMoves {
-//		tmpPiece := b.board[move]
-//		b.board[kingSquare] = Empty
-//		b.board[move] = king
-//		if !b.inCheck(p) {
-//			b.board[kingSquare] = king
-//			b.board[move] = tmpPiece
-//			return false
-//		}
-//		b.board[kingSquare] = king
-//		b.board[move] = tmpPiece
-//	}
-//
-//	//Must Block all attacks from getOpponent in one move
-//	var toBlock []Square
-//	var trgts []Square
-//	for _, square := range b.squaresWithoutKing(b.getOpponent(p)) {
-//		trgts = targets(square, b.board)
-//		if !inSquares(kingSquare, trgts) {
-//			continue
-//		}
-//		for _, sq := range blocks(square, kingSquare, b.board) {
-//			toBlock = append(toBlock, sq)
-//		}
-//	}
-//	toBlock = uniqueSquares(toBlock)
-//
-//	var s, t Piece
-//	//Must Block all attacks from getOpponent in one move
-//	for _, source := range b.squaresWithoutKing(p) {
-//		for _, target := range validMoves(source, b.board, b.context) {
-//			if inSquares(target, toBlock) {
-//				s = b.board[source]
-//				t = b.board[target]
-//				b.board[target] = s
-//				if !b.inCheck(p) {
-//					b.board[source] = s
-//					b.board[target] = t
-//					return false
-//				}
-//				b.board[source] = s
-//				b.board[target] = t
-//			}
-//		}
-//	}
-//
-//	return true
-//}
+func isCheckMated(kingSquare Square, board [64]Piece) bool {
+	if !inCheck(kingSquare, board) {
+		return false
+	}
+
+	var hero, opponent Player
+	switch board[kingSquare] {
+	case WhiteKing:
+		hero = White
+		opponent = Black
+	case BlackKing:
+		hero = Black
+		opponent = White
+	default:
+		panic("called without a king piece")
+	}
+
+	//Must Block all attacks from getOpponent in one move
+	var toBlock []Square
+	var targets []Move
+	for _, square := range squaresWithoutKing(opponent, board) {
+		targets = getTargets(square, board)
+		if !inSquares(kingSquare, getSquares(targets)) {
+			continue
+		}
+		for _, sq := range getBlocks(square, kingSquare, board) {
+			toBlock = append(toBlock, sq)
+		}
+	}
+	toBlock = uniqueSquares(toBlock)
+
+	//Must Block all attacks from opponent in single move
+	for _, source := range squaresWithoutKing(hero, board) {
+		for _, target := range validMoves(source, board, context{}) {
+			if inSquares(target.toSquare, toBlock) {
+				board = issueMove(target.piecePositions, board)
+				if !inCheck(kingSquare, board) {
+					return false
+				}
+				board = issueMove(target.reversePiecePositions, board)
+			}
+		}
+	}
+
+	return true
+}
+func issueMove(piecePos []piecePosition, b [64]Piece) [64]Piece {
+	for _, pp := range piecePos {
+		b[pp.position] = pp.piece
+	}
+	return b
+}
 
 func (b *MailBoxBoard) getOpponent(p Player) Player {
 	switch p {
@@ -308,7 +310,7 @@ func (b *MailBoxBoard) getOpponent(p Player) Player {
 	panic("must be black or white")
 }
 
-func (b *MailBoxBoard) getPieces(p Player) []Square {
+func getPieces(p Player, board [64]Piece) []Square {
 	var isWhite bool
 	switch p {
 	case White:
@@ -319,9 +321,9 @@ func (b *MailBoxBoard) getPieces(p Player) []Square {
 
 	var pieces []Square
 	for pos := a1; pos <= h8; pos += 1 {
-		if b.board[pos] > 0 && isWhite {
+		if board[pos] > 0 && isWhite {
 			pieces = append(pieces, pos)
-		} else if b.board[pos] < 0 && !isWhite {
+		} else if board[pos] < 0 && !isWhite {
 			pieces = append(pieces, pos)
 
 		}

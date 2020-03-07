@@ -42,7 +42,7 @@ func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func (b *MailBoxBoard) kingSquare(p Player) Square {
+func getKingSquare(p Player, b [64]Piece) Square {
 	var king Piece
 	switch p {
 	case White:
@@ -52,7 +52,7 @@ func (b *MailBoxBoard) kingSquare(p Player) Square {
 	}
 
 	for pos := a1; pos <= h8; pos += 1 {
-		if b.board[pos] == king {
+		if b[pos] == king {
 			return pos
 		}
 	}

@@ -39,7 +39,7 @@ func TestPieces(t *testing.T) {
 			b.board[val.pos] = val.piece
 		}
 
-		got := b.getPieces(row.player)
+		got := getPieces(row.player, b.board)
 		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				printPrettySquares(got), printPrettySquares(row.expected), ind+1)
@@ -93,7 +93,7 @@ func TestKingSquare(t *testing.T) {
 			b.board[val.pos] = val.piece
 		}
 
-		got := b.kingSquare(row.player)
+		got := getKingSquare(row.player, b.board)
 		if got != row.expected {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				got, row.expected, ind+1)

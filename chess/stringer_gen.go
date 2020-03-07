@@ -40,11 +40,12 @@ func _() {
 	var x [1]struct{}
 	_ = x[White-1]
 	_ = x[Black-2]
+	_ = x[Noone-3]
 }
 
-const _Player_name = "WhiteBlack"
+const _Player_name = "WhiteBlackNoone"
 
-var _Player_index = [...]uint8{0, 5, 10}
+var _Player_index = [...]uint8{0, 5, 10, 15}
 
 func (i Player) String() string {
 	i -= 1

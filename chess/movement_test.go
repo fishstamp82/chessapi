@@ -19,8 +19,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: d2,
 			expected: []Move{
-				makeMove(WhitePawn, d2, d3, Regular),
-				makeMove(WhitePawn, d2, d4, Regular),
+				createMove(WhitePawn, d2, d3, Regular),
+				createMove(WhitePawn, d2, d4, Regular),
 			},
 		},
 		{
@@ -30,8 +30,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: e4,
 			expected: []Move{
-				makeMove(WhitePawn, e4, e5, Regular),
-				makeMove(WhitePawn, e4, d5, Capture),
+				createMove(WhitePawn, e4, e5, Regular),
+				createMove(WhitePawn, e4, d5, Capture),
 			},
 		},
 		{
@@ -84,11 +84,11 @@ func TestBishopMoves(t *testing.T) {
 			pos:   f1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, f1, e2, Regular),
-				makeMove(piece, f1, d3, Regular),
-				makeMove(piece, f1, c4, Regular),
-				makeMove(piece, f1, b5, Regular),
-				makeMove(piece, f1, a6, Regular),
+				createMove(piece, f1, e2, Regular),
+				createMove(piece, f1, d3, Regular),
+				createMove(piece, f1, c4, Regular),
+				createMove(piece, f1, b5, Regular),
+				createMove(piece, f1, a6, Regular),
 			},
 		},
 		{
@@ -101,15 +101,15 @@ func TestBishopMoves(t *testing.T) {
 			pos:   c4,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, c4, f1, Regular),
-				makeMove(piece, c4, e2, Regular),
-				makeMove(piece, c4, b3, Regular),
-				makeMove(piece, c4, d3, Regular),
-				makeMove(piece, c4, b5, Regular),
-				makeMove(piece, c4, d5, Regular),
-				makeMove(piece, c4, a6, Regular),
-				makeMove(piece, c4, e6, Regular),
-				makeMove(piece, c4, f7, Capture),
+				createMove(piece, c4, f1, Regular),
+				createMove(piece, c4, e2, Regular),
+				createMove(piece, c4, b3, Regular),
+				createMove(piece, c4, d3, Regular),
+				createMove(piece, c4, b5, Regular),
+				createMove(piece, c4, d5, Regular),
+				createMove(piece, c4, a6, Regular),
+				createMove(piece, c4, e6, Regular),
+				createMove(piece, c4, f7, Capture),
 			},
 		},
 	}
@@ -147,8 +147,8 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, g1, f3, Regular),
-				makeMove(piece, g1, h3, Regular),
+				createMove(piece, g1, f3, Regular),
+				createMove(piece, g1, h3, Regular),
 			},
 		},
 		{
@@ -158,9 +158,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, g1, f3, Regular),
-				makeMove(piece, g1, h3, Regular),
-				makeMove(piece, g1, e2, Regular),
+				createMove(piece, g1, f3, Regular),
+				createMove(piece, g1, h3, Regular),
+				createMove(piece, g1, e2, Regular),
 			},
 		},
 		{
@@ -174,9 +174,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g8,
 			piece: BlackKnight,
 			expected: []Move{
-				makeMove(BlackKnight, g8, f6, Capture),
-				makeMove(BlackKnight, g8, h6, Regular),
-				makeMove(BlackKnight, g8, e7, Regular),
+				createMove(BlackKnight, g8, f6, Capture),
+				createMove(BlackKnight, g8, h6, Regular),
+				createMove(BlackKnight, g8, e7, Regular),
 			},
 		},
 	}
@@ -222,8 +222,8 @@ func TestRookMoves(t *testing.T) {
 			pos:   a1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, a1, a2, Regular),
-				makeMove(piece, a1, a3, Regular),
+				createMove(piece, a1, a2, Regular),
+				createMove(piece, a1, a3, Regular),
 			},
 		},
 	}
@@ -271,12 +271,12 @@ func TestQueenMoves(t *testing.T) {
 			pos:   d1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, d1, d2, Regular),
-				makeMove(piece, d1, d3, Regular),
-				makeMove(piece, d1, e2, Regular),
-				makeMove(piece, d1, f3, Regular),
-				makeMove(piece, d1, g4, Regular),
-				makeMove(piece, d1, h5, Capture),
+				createMove(piece, d1, d2, Regular),
+				createMove(piece, d1, d3, Regular),
+				createMove(piece, d1, e2, Regular),
+				createMove(piece, d1, f3, Regular),
+				createMove(piece, d1, g4, Regular),
+				createMove(piece, d1, h5, Capture),
 			},
 		},
 	}
@@ -325,8 +325,8 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, e1, e2, Regular),
-				makeMove(piece, e1, d2, Regular),
+				createMove(piece, e1, e2, Regular),
+				createMove(piece, e1, d2, Regular),
 			},
 		},
 		{
@@ -340,9 +340,9 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, e1, e2, Regular),
-				makeMove(piece, e1, f1, Regular),
-				makeMove(piece, e1, g1, ShortCastle),
+				createMove(piece, e1, e2, Regular),
+				createMove(piece, e1, f1, Regular),
+				createMove(piece, e1, g1, ShortCastle),
 			},
 		},
 		{
@@ -360,7 +360,7 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				makeMove(piece, e1, d1, Regular),
+				createMove(piece, e1, d1, Regular),
 			},
 		},
 	}

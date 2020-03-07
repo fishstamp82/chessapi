@@ -37,6 +37,7 @@ func (nm *NoMoveError) Error() string {
 const (
 	White Player = iota + 1 // 1
 	Black                   // 2
+	Noone                   // 2
 )
 
 const (

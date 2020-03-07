@@ -6,11 +6,12 @@ type piecePosition struct {
 }
 
 type Move struct {
-	piece          Piece
-	fromSquare     Square
-	toSquare       Square
-	piecePositions []piecePosition // Resulting pieces in each square
-	moveType       MovementType
+	piece                 Piece
+	fromSquare            Square
+	toSquare              Square
+	piecePositions        []piecePosition // Resulting pieces in each square
+	moveType              MovementType
+	reversePiecePositions []piecePosition
 }
 
 func validMoves(fromSquare Square, board [64]Piece, ctx context) []Move {
@@ -31,7 +32,6 @@ func validMoves(fromSquare Square, board [64]Piece, ctx context) []Move {
 	case WhiteKing, BlackKing:
 		moves = kingMoves(fromSquare, board)
 		moves = append(moves, castleMoves(fromSquare, board, ctx)...)
-
 	}
 	return moves
 }
@@ -300,11 +300,11 @@ func knightMoves(fromSquare Square, b [64]Piece) []Move {
 			continue
 		}
 		if isWhite && b[toSquare] < 0 {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
 		} else if !isWhite && b[toSquare] > 0 {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
 		} else if b[toSquare] == Empty {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Regular))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Regular))
 		}
 	}
 	return moves
@@ -371,11 +371,11 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 			continue
 		}
 		if (b[toSquare] < 0) && isWhite {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
 		} else if (b[toSquare] < 0) && isBlack {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
 		} else if b[toSquare] == Empty {
-			moves = append(moves, makeMove(piece, fromSquare, toSquare, Regular))
+			moves = append(moves, createMove(piece, fromSquare, toSquare, Regular))
 		}
 	}
 	return moves
@@ -471,17 +471,17 @@ func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Sq
 	var moves []Move
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && b[i] < 0 {
-			moves = append(moves, makeMove(p, fromSquare, i, Capture))
+			moves = append(moves, createMove(p, fromSquare, i, Capture))
 			break
 		} else if isBlack && b[i] > 0 {
-			moves = append(moves, makeMove(p, fromSquare, i, Capture))
+			moves = append(moves, createMove(p, fromSquare, i, Capture))
 			break
 		} else if isWhite && b[i] > 0 {
 			break
 		} else if isBlack && b[i] < 0 {
 			break
 		} else if b[i] == Empty {
-			moves = append(moves, makeMove(p, fromSquare, i, Regular))
+			moves = append(moves, createMove(p, fromSquare, i, Regular))
 		}
 	}
 	return moves
@@ -709,7 +709,7 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt MovementType) Move {
 	return m
 }
 
-func makeMove(p Piece, f, t Square, mt MovementType) Move {
+func createMove(p Piece, f, t Square, mt MovementType) Move {
 	return Move{
 		piece:      p,
 		fromSquare: f,
@@ -725,6 +725,16 @@ func makeMove(p Piece, f, t Square, mt MovementType) Move {
 			},
 		},
 		moveType: mt,
+		reversePiecePositions: []piecePosition{
+			{
+				piece:    p,
+				position: f,
+			},
+			{
+				piece:    Empty,
+				position: t,
+			},
+		},
 	}
 }
 

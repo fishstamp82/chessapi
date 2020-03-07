@@ -1,13 +1,13 @@
 package chess
 
-// Purpose of blocks is to find squares that block a certain piece
+// Purpose of getBlocks is to find squares that block a certain piece
 // from attacking.
 // This is used to be able to calculate check-mate, so that
 // if a king can not move or kill a checking piece, one of the
 // pieces under the player in check need to block the check in some way
 // by standing in front of it
 
-func blocks(s, t Square, b [64]Piece) []Square {
+func getBlocks(s, t Square, b [64]Piece) []Square {
 	p := b[s]
 	var blocks []Square
 	switch p {

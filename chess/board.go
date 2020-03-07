@@ -2,12 +2,17 @@ package chess
 
 type Board interface {
 	CheckMate() bool
+	IsCheck() bool
 	Draw() bool
 	Won() (string, error)
-	InCheck() bool
 	PlayersTurn() string
 	BoardMap() map[string]string
 	Move(s, t string) (State, error)
+}
+
+func (b *MailBoxBoard) IsCheck() bool {
+	kingSquare := getKingSquare(b.context.playersTurn, b.board)
+	return inCheck(kingSquare, b.board)
 }
 
 func NewBoard() Board {

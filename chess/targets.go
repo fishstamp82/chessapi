@@ -1,13 +1,13 @@
 package chess
 
-func targets(s Square, b [64]Piece) []Move {
+func getTargets(s Square, b [64]Piece) []Move {
 	p := b[s]
 	var targets []Move
 	switch p {
 	//case WhitePawn:
-	//	targets = pawnTargets(s, b)
+	//	getTargets = pawnTargets(s, b)
 	//case BlackPawn:
-	//	targets = pawnTargets(s, b)
+	//	getTargets = pawnTargets(s, b)
 	case WhiteBishop:
 		targets = bishopTargets(s, b)
 	case BlackBishop:
@@ -43,7 +43,7 @@ func targets(s Square, b [64]Piece) []Move {
 //	}
 //
 //	var moves []Square
-//	var targets []Square
+//	var getTargets []Square
 //
 //	p := b[s]
 //	switch p {
@@ -56,12 +56,12 @@ func targets(s Square, b [64]Piece) []Move {
 //	}
 //	for _, val := range moves {
 //		if isWhite && b[val] < 0 {
-//			targets = append(targets, val)
+//			getTargets = append(getTargets, val)
 //		} else if !isWhite && b[val] > 0 {
-//			targets = append(targets, val)
+//			getTargets = append(getTargets, val)
 //		}
 //	}
-//	return targets
+//	return getTargets
 //}
 
 func bishopTargets(s Square, b [64]Piece) []Move {
@@ -87,9 +87,9 @@ func bishopTargets(s Square, b [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 		}
 	}
 	return targets
@@ -118,9 +118,9 @@ func knightTargets(s Square, b [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 
 		}
 	}
@@ -166,9 +166,9 @@ func generalTargets(s Square, b [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, makeMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
 
 		}
 	}
