@@ -8,7 +8,6 @@ type Board interface {
 	PlayersTurn() string
 	BoardMap() map[string]string
 	Move(s, t string) (State, error)
-	Promote(Piece) (State, error)
 }
 
 func NewBoard() Board {

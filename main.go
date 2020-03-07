@@ -53,7 +53,7 @@ func main() {
 		} else {
 			moves = append(moves, [2]string{m1, m2})
 		}
-		if state == chess.Promotion {
+		if state == chess.Promo {
 			// read input from player
 			continue
 		}

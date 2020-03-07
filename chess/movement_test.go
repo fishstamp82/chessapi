@@ -1,339 +1,466 @@
 package chess
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 )
 
-func TestWhitePawnMove(t *testing.T) {
+func TestPawnMoves(t *testing.T) {
 	table := []struct {
-		whitePawn Square
-		blackPawn Square
-		expected  []Square
+		moves    [][2]string
+		pawnPos  Square
+		expected []Move
 	}{
 		{
-			whitePawn: a2,
-			blackPawn: a3,
-			expected:  []Square{},
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"e7", "e5"},
+			},
+			pawnPos: d2,
+			expected: []Move{
+				makeMove(WhitePawn, d2, d3, Regular),
+				makeMove(WhitePawn, d2, d4, Regular),
+			},
 		},
 		{
-			whitePawn: b2,
-			blackPawn: a3,
-			expected:  []Square{a3, b3, b4},
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"d7", "d5"},
+			},
+			pawnPos: e4,
+			expected: []Move{
+				makeMove(WhitePawn, e4, e5, Regular),
+				makeMove(WhitePawn, e4, d5, Capture),
+			},
 		},
 		{
-			whitePawn: a3,
-			blackPawn: h8,
-			expected:  []Square{a4},
+			moves: [][2]string{
+				{"g2", "g4"},
+				{"d7", "d5"},
+				{"g4", "g5"},
+				{"d5", "d4"},
+				{"g5", "g6"},
+				{"d4", "d3"},
+				{"g6", "h7"},
+				{"a7", "a6"},
+			},
+			pawnPos:  h7,
+			expected: createPawnPromotionMoves(White, h7, g8, CapturePromotion),
 		},
 	}
 
+	var err error
 	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackPawn] = BlackPawn
+		b := NewMailBoxBoard()
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
+		}
 
-		got := whitePawnMoves(row.whitePawn, b.board)
-		if !sameAfterSort(got, row.expected) {
+		got := pawnMoves(row.pawnPos, b.board, b.context.enPassantSquare)
+		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.whitePawn])
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
 		}
 	}
 }
 
 func TestBishopMoves(t *testing.T) {
+	var piece = WhiteBishop
 	table := []struct {
-		whiteBishop Square
-		blackBishop Square
-		expected    []Square
+		moves    [][2]string
+		pos      Square
+		piece    Piece
+		expected []Move
 	}{
 		{
-			whiteBishop: a1,
-			blackBishop: a2,
-			expected:    []Square{b2, c3, d4, e5, f6, g7, h8},
+			moves: [][2]string{
+				{"e2", "e4"},
+			},
+			pos:   f1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, f1, e2, Regular),
+				makeMove(piece, f1, d3, Regular),
+				makeMove(piece, f1, c4, Regular),
+				makeMove(piece, f1, b5, Regular),
+				makeMove(piece, f1, a6, Regular),
+			},
 		},
 		{
-			whiteBishop: a1,
-			blackBishop: b2,
-			expected:    []Square{b2},
-		},
-		{
-			whiteBishop: e4,
-			blackBishop: d5,
-			expected:    []Square{d3, b1, c2, d5, f5, g6, h7, f3, g2, h1},
-		},
-		{
-			whiteBishop: b1,
-			blackBishop: b2,
-			expected:    []Square{a2, c2, d3, e4, f5, g6, h7},
-		},
-		{
-			whiteBishop: d4,
-			blackBishop: h8,
-			expected:    []Square{c3, b2, a1, c5, b6, a7, e3, f2, g1, e5, f6, g7, h8},
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"d7", "d5"},
+				{"f1", "c4"},
+				{"d5", "d4"},
+			},
+			pos:   c4,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, c4, f1, Regular),
+				makeMove(piece, c4, e2, Regular),
+				makeMove(piece, c4, b3, Regular),
+				makeMove(piece, c4, d3, Regular),
+				makeMove(piece, c4, b5, Regular),
+				makeMove(piece, c4, d5, Regular),
+				makeMove(piece, c4, a6, Regular),
+				makeMove(piece, c4, e6, Regular),
+				makeMove(piece, c4, f7, Capture),
+			},
 		},
 	}
 
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whiteBishop] = WhiteBishop
-		b.board[row.blackBishop] = BlackBishop
-		got := bishopMoves(row.whiteBishop, b.board)
-
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteBishop], squareToString[row.whiteBishop])
-		}
-	}
-}
-
-func TestRookMoves(t *testing.T) {
-	table := []struct {
-		whiteRook Square
-		blackRook Square
-		whitePawn Square
-		expected  []Square
-	}{
-		{
-			whiteRook: h1,
-			blackRook: a2,
-			whitePawn: d5,
-			expected:  []Square{a1, b1, c1, d1, e1, f1, g1, h2, h3, h4, h5, h6, h7, h8},
-		},
-		{
-			whiteRook: e1,
-			blackRook: e5,
-			whitePawn: d5,
-			expected:  []Square{a1, b1, c1, d1, e2, e3, e4, e5, f1, g1, h1},
-		},
-		{
-			whiteRook: e2,
-			blackRook: e5,
-			whitePawn: d2,
-			expected:  []Square{e1, e3, e4, e5, f2, g2, h2},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whiteRook] = WhiteRook
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackRook] = BlackRook
-		got := rookMoves(row.whiteRook, b.board)
-
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteRook], squareToString[row.whiteRook])
-		}
-	}
-}
-
-func TestQueenMoves(t *testing.T) {
-	table := []struct {
-		whiteQueen Square
-		blackQueen Square
-		whitePawn  Square
-		expected   []Square
-	}{
-		{
-			whiteQueen: a8,
-			blackQueen: a1,
-			whitePawn:  a3,
-			expected:   []Square{a4, a5, a6, a7, b8, c8, d8, e8, f8, g8, h8, b7, c6, d5, e4, f3, g2, h1},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whiteQueen] = WhiteQueen
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackQueen] = BlackQueen
-		got := queenMoves(row.whiteQueen, b.board)
-
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteQueen], squareToString[row.whiteQueen])
-		}
-	}
-}
-
-func TestBlackQueenMovesBeginningPosition(t *testing.T) {
-	table := []struct {
-		expected []Square
-	}{
-		{
-			expected: []Square{},
-		},
-	}
-
+	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		got := queenMoves(d8, b.board)
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
+		}
 
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteQueen], squareToString[d8])
+		got := bishopMoves(row.pos, b.board)
+		if !sameAfterMoveSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s\n",
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
 	}
 }
 
 func TestKnightMoves(t *testing.T) {
+	var piece = WhiteKnight
+	var fun = knightMoves
 	table := []struct {
-		whiteKnight Square
-		blackKnight Square
-		expected    []Square
-		fullBoard   bool
+		moves    [][2]string
+		pos      Square
+		piece    Piece
+		expected []Move
 	}{
 		{
-			whiteKnight: a1,
-			blackKnight: a2,
-			expected:    []Square{b3, c2},
-			fullBoard:   false,
+			moves: [][2]string{},
+			pos:   g1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, g1, f3, Regular),
+				makeMove(piece, g1, h3, Regular),
+			},
 		},
 		{
-			whiteKnight: e3,
-			blackKnight: f5,
-			expected:    []Square{d5, f5, g2, g4, d1, f1, c2, c4},
-			fullBoard:   false,
+			moves: [][2]string{
+				{"e2", "e4"},
+			},
+			pos:   g1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, g1, f3, Regular),
+				makeMove(piece, g1, h3, Regular),
+				makeMove(piece, g1, e2, Regular),
+			},
 		},
 		{
-			whiteKnight: g1,
-			blackKnight: g8,
-			expected:    []Square{f3, h3},
-			fullBoard:   true,
+			moves: [][2]string{
+				{"f2", "f4"},
+				{"e7", "e5"},
+				{"f4", "f5"},
+				{"e5", "e4"},
+				{"f5", "f6"},
+			},
+			pos:   g8,
+			piece: BlackKnight,
+			expected: []Move{
+				makeMove(BlackKnight, g8, f6, Capture),
+				makeMove(BlackKnight, g8, h6, Regular),
+				makeMove(BlackKnight, g8, e7, Regular),
+			},
 		},
 	}
-	var b *MailBoxBoard
+
+	var err error
 	for _, row := range table {
-		if row.fullBoard {
-			b = NewMailBoxBoard()
-		} else {
-			b = NewEmptyMailBoxBoard()
+		b := NewMailBoxBoard()
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
 		}
 
-		b.board[row.whiteKnight] = WhiteKnight
-		b.board[row.blackKnight] = BlackKnight
-		got := knightMoves(row.whiteKnight, b.board)
+		got := fun(row.pos, b.board)
+		if !sameAfterMoveSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s\n",
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
+		}
+	}
+}
 
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKnight], squareToString[row.whiteKnight])
+func TestRookMoves(t *testing.T) {
+	var piece = WhiteRook
+	var fun = rookMoves
+	table := []struct {
+		moves    [][2]string
+		pos      Square
+		piece    Piece
+		expected []Move
+	}{
+		{
+			moves:    [][2]string{},
+			pos:      a1,
+			piece:    piece,
+			expected: []Move{},
+		},
+		{
+			moves: [][2]string{
+				{"a2", "a4"},
+			},
+			pos:   a1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, a1, a2, Regular),
+				makeMove(piece, a1, a3, Regular),
+			},
+		},
+	}
+
+	var err error
+	for _, row := range table {
+		b := NewMailBoxBoard()
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
+		}
+
+		got := fun(row.pos, b.board)
+		if !sameAfterMoveSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s\n",
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
+		}
+	}
+}
+
+func TestQueenMoves(t *testing.T) {
+	var piece = WhiteQueen
+	var fun = queenMoves
+	table := []struct {
+		moves    [][2]string
+		pos      Square
+		piece    Piece
+		expected []Move
+	}{
+		{
+			moves:    [][2]string{},
+			pos:      d1,
+			piece:    piece,
+			expected: []Move{},
+		},
+		{
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"h7", "h5"},
+				{"d2", "d4"},
+			},
+			pos:   d1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, d1, d2, Regular),
+				makeMove(piece, d1, d3, Regular),
+				makeMove(piece, d1, e2, Regular),
+				makeMove(piece, d1, f3, Regular),
+				makeMove(piece, d1, g4, Regular),
+				makeMove(piece, d1, h5, Capture),
+			},
+		},
+	}
+
+	var err error
+	for _, row := range table {
+		b := NewMailBoxBoard()
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
+		}
+
+		got := fun(row.pos, b.board)
+		if !sameAfterMoveSort(got, row.expected) {
+			t.Errorf("got: %v, expected: %v for %s\n",
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
 	}
 }
 
 func TestKingMoves(t *testing.T) {
+	var piece = WhiteKing
+	var fun1 = kingMoves
+	var fun2 = castleMoves
 	table := []struct {
-		whiteKing Square
-		blackKing Square
-		expected  []Square
-		fullBoard bool
-	}{
-		{
-			whiteKing: a1,
-			blackKing: a2,
-			expected:  []Square{a2, b1, b2},
-			fullBoard: false,
-		},
-		{
-			whiteKing: e2,
-			blackKing: d8,
-			expected:  []Square{d1, d2, d3, e1, e3, f1, f2, f3},
-			fullBoard: false,
-		},
-	}
-	var b *MailBoxBoard
-	var got []Square
-	for _, row := range table {
-		if row.fullBoard {
-			b = NewMailBoxBoard()
-		} else {
-			b = NewEmptyMailBoxBoard()
-		}
-
-		b.board[row.whiteKing] = WhiteKing
-		b.board[row.blackKing] = BlackKing
-		got = whiteKingMoves(row.whiteKing, b.board)
-
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKing], squareToString[row.whiteKing])
-		}
-	}
-}
-
-func TestWhiteKingCastle(t *testing.T) {
-	type piecePosition struct {
-		position Square
+		moves    [][2]string
+		pos      Square
 		piece    Piece
-	}
-	table := []struct {
-		pieces   []piecePosition
-		expected []Square
+		expected []Move
 	}{
 		{
-			pieces: []piecePosition{
-				{e1, WhiteKing},
-				{h1, WhiteRook},
-				{a1, WhiteRook},
+			moves:    [][2]string{},
+			pos:      e1,
+			piece:    piece,
+			expected: []Move{},
+		},
+		{
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"d2", "d4"},
 			},
-			expected: []Square{c1, g1},
+			pos:   e1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, e1, e2, Regular),
+				makeMove(piece, e1, d2, Regular),
+			},
+		},
+		{
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"e7", "e5"},
+				{"f1", "c4"},
+				{"d7", "d5"},
+				{"g1", "f3"},
+			},
+			pos:   e1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, e1, e2, Regular),
+				makeMove(piece, e1, f1, Regular),
+				makeMove(piece, e1, g1, ShortCastle),
+			},
+		},
+		{
+			moves: [][2]string{
+				{"d2", "d4"},
+				{"d7", "d5"},
+				{"c1", "f4"},
+				{"e7", "e5"},
+				{"b1", "c3"},
+				{"a7", "a5"},
+				{"d1", "d2"},
+				{"a8", "a6"},
+				{"a1", "b1"},
+			},
+			pos:   e1,
+			piece: piece,
+			expected: []Move{
+				makeMove(piece, e1, d1, Regular),
+			},
 		},
 	}
-	var b *MailBoxBoard
-	var got []Square
+
+	var err error
 	for _, row := range table {
-		b = NewEmptyMailBoxBoard()
-		for _, val := range row.pieces {
-			b.board[val.position] = val.piece
+		b := NewMailBoxBoard()
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, err = b.Move(s, to)
+			if err != nil {
+				t.Error(err)
+			}
 		}
-		b.context.whiteCanCastleRight = true
-		b.context.whiteCanCastleLeft = true
 
-		got = append(got, whiteKingCastleMoves(e1, b.board, b.context)...)
-
-		if !sameAfterSort(got, row.expected) {
-			t.Errorf("got: %v, expected: %v for %s on %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), pieceToString[WhiteKing], squareToString[e1])
-		}
-	}
-}
-
-func TestBlackPawnMove(t *testing.T) {
-	table := []struct {
-		whitePawn Square
-		blackPawn Square
-		expected  []Square
-	}{
-		{
-			whitePawn: a2,
-			blackPawn: a3,
-			expected:  []Square{},
-		},
-		{
-			whitePawn: b2,
-			blackPawn: a3,
-			expected:  []Square{b2, a2},
-		},
-		{
-			whitePawn: g6,
-			blackPawn: h7,
-			expected:  []Square{h5, h6, g6},
-		},
-	}
-
-	for _, row := range table {
-		b := NewEmptyMailBoxBoard()
-		b.board[row.whitePawn] = WhitePawn
-		b.board[row.blackPawn] = BlackPawn
-
-		got := blackPawnMoves(row.blackPawn, b.board)
-		if !sameAfterSort(got, row.expected) {
+		got := fun1(row.pos, b.board)
+		got = append(got, fun2(row.pos, b.board, b.context)...)
+		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
-				printPrettySquares(got), printPrettySquares(row.expected), squareToString[row.blackPawn])
+				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
 	}
 }
+
+//func TestKingMoves(t *testing.T) {
+//	table := []struct {
+//		whiteKing Square
+//		blackKing Square
+//		expected  []Square
+//		fullBoard bool
+//	}{
+//		{
+//			whiteKing: a1,
+//			blackKing: a2,
+//			expected:  []Square{a2, b1, b2},
+//			fullBoard: false,
+//		},
+//		{
+//			whiteKing: e2,
+//			blackKing: d8,
+//			expected:  []Square{d1, d2, d3, e1, e3, f1, f2, f3},
+//			fullBoard: false,
+//		},
+//	}
+//	var b *MailBoxBoard
+//	var got []Square
+//	for _, row := range table {
+//		if row.fullBoard {
+//			b = NewMailBoxBoard()
+//		} else {
+//			b = NewEmptyMailBoxBoard()
+//		}
+//
+//		b.board[row.whiteKing] = WhiteKing
+//		b.board[row.blackKing] = BlackKing
+//		got = whiteKingMoves(row.whiteKing, b.board)
+//
+//		if !sameAfterSquareSort(got, row.expected) {
+//			t.Errorf("got: %v, expected: %v for %s on %s\n",
+//				printPrettySquares(got), printPrettySquares(row.expected), WhiteKing, squareToString[row.whiteKing])
+//		}
+//	}
+//}
+
+//func TestWhiteKingCastle(t *testing.T) {
+//	type piecePosition struct {
+//		position Square
+//		piece    Piece
+//	}
+//	table := []struct {
+//		pieces   []piecePosition
+//		expected []Square
+//	}{
+//		{
+//			pieces: []piecePosition{
+//				{e1, WhiteKing},
+//				{h1, WhiteRook},
+//				{a1, WhiteRook},
+//			},
+//			expected: []Square{c1, g1},
+//		},
+//	}
+//	var b *MailBoxBoard
+//	var got []Square
+//	for _, row := range table {
+//		b = NewEmptyMailBoxBoard()
+//		for _, val := range row.pieces {
+//			b.board[val.position] = val.piece
+//		}
+//		b.context.whiteCanCastleRight = true
+//		b.context.whiteCanCastleLeft = true
+//
+//		got = append(got, whiteKingCastleMoves(e1, b.board, b.context)...)
+//
+//		if !sameAfterSquareSort(got, row.expected) {
+//			t.Errorf("got: %v, expected: %v for %s on %s\n",
+//				printPrettySquares(got), printPrettySquares(row.expected), WhiteKing, squareToString[e1])
+//		}
+//	}
+//}
 
 func printPrettySquares(s []Square) []string {
 	var str []string
@@ -342,7 +469,16 @@ func printPrettySquares(s []Square) []string {
 	}
 	return str
 }
-func sameAfterSort(a, b []Square) bool {
+
+func printPrettyMoves(s []Move) []string {
+	var str []string
+	for i := 0; i < len(s); i++ {
+		str = append(str, fmt.Sprintf("%s%s;%s", s[i].fromSquare, s[i].toSquare, s[i].moveType))
+	}
+	return str
+}
+
+func sameAfterSquareSort(a, b []Square) bool {
 	sort.Slice(a, func(i, j int) bool { return a[i] < a[j] })
 	sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })
 	if len(a) != len(b) {
@@ -350,6 +486,20 @@ func sameAfterSort(a, b []Square) bool {
 	}
 	for i := 0; i < len(a); i++ {
 		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func sameAfterMoveSort(a, b []Move) bool {
+	sort.Slice(a, func(i, j int) bool { return a[i].toSquare < a[j].toSquare })
+	sort.Slice(b, func(i, j int) bool { return b[i].toSquare < b[j].toSquare })
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		if (a[i].piece != b[i].piece || a[i].toSquare != b[i].toSquare) || a[i].fromSquare != b[i].fromSquare || a[i].moveType != b[i].moveType {
 			return false
 		}
 	}

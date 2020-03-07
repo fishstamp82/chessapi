@@ -10,6 +10,11 @@ func (s Square) col() Square {
 	return s % 8
 }
 
+// rank goes from 1 to 8
+func (s Square) rank() Square {
+	return s/8 + 1
+}
+
 func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece
