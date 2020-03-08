@@ -4,14 +4,14 @@ func getTargets(s Square, b [64]Piece) []Move {
 	p := b[s]
 	var targets []Move
 	switch p {
-	//case WhitePawn:
-	//	getTargets = pawnTargets(s, b)
-	//case BlackPawn:
-	//	getTargets = pawnTargets(s, b)
+	case WhitePawn:
+		targets = pawnTargets(s, b)
+	case BlackPawn:
+		targets = pawnTargets(s, b)
 	case WhiteBishop:
-		targets = bishopTargets(s, b)
+		targets = generalTargets(s, b)
 	case BlackBishop:
-		targets = bishopTargets(s, b)
+		targets = generalTargets(s, b)
 	case WhiteKnight:
 		targets = knightTargets(s, b)
 	case BlackKnight:
@@ -32,39 +32,7 @@ func getTargets(s Square, b [64]Piece) []Move {
 	return targets
 }
 
-//
-//func pawnTargets(s Square, b [64]Piece) []Square {
-//	var isWhite bool
-//	switch b[s] > 0 {
-//	case true:
-//		isWhite = true
-//	case false:
-//		isWhite = false
-//	}
-//
-//	var moves []Square
-//	var getTargets []Square
-//
-//	p := b[s]
-//	switch p {
-//	case WhitePawn:
-//		moves = whitePawnMoves(s, b)
-//	case BlackPawn:
-//		moves = blackPawnMoves(s, b)
-//	default:
-//		moves = []Square{}
-//	}
-//	for _, val := range moves {
-//		if isWhite && b[val] < 0 {
-//			getTargets = append(getTargets, val)
-//		} else if !isWhite && b[val] > 0 {
-//			getTargets = append(getTargets, val)
-//		}
-//	}
-//	return getTargets
-//}
-
-func bishopTargets(s Square, b [64]Piece) []Move {
+func pawnTargets(s Square, b [64]Piece) []Move {
 	var isWhite bool
 	switch b[s] > 0 {
 	case true:
@@ -78,26 +46,26 @@ func bishopTargets(s Square, b [64]Piece) []Move {
 
 	piece := b[s]
 	switch piece {
-	case WhiteBishop:
-		moves = bishopMoves(s, b)
-	case BlackBishop:
-		moves = bishopMoves(s, b)
+	case WhitePawn:
+		moves = pawnMoves(s, b, none)
+	case BlackPawn:
+		moves = pawnMoves(s, b, none)
 	default:
 		moves = []Move{}
 	}
 	for _, move := range moves {
 		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, Capture))
 		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, Capture))
 		}
 	}
 	return targets
 }
 
-func knightTargets(s Square, b [64]Piece) []Move {
+func knightTargets(s Square, board [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	switch board[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -107,29 +75,29 @@ func knightTargets(s Square, b [64]Piece) []Move {
 	var moves []Move
 	var targets []Move
 
-	piece := b[s]
+	piece := board[s]
 	switch piece {
 	case WhiteKnight:
-		moves = knightMoves(s, b)
+		moves = knightMoves(s, board)
 	case BlackKnight:
-		moves = knightMoves(s, b)
+		moves = knightMoves(s, board)
 	default:
 		moves = []Move{}
 	}
 	for _, move := range moves {
-		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
-		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
+		if isWhite && board[move.toSquare] < 0 {
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+		} else if !isWhite && board[move.toSquare] > 0 {
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
 
 		}
 	}
 	return targets
 }
 
-func generalTargets(s Square, b [64]Piece) []Move {
+func generalTargets(s Square, board [64]Piece) []Move {
 	var isWhite bool
-	switch b[s] > 0 {
+	switch board[s] > 0 {
 	case true:
 		isWhite = true
 	case false:
@@ -139,36 +107,36 @@ func generalTargets(s Square, b [64]Piece) []Move {
 	var moves []Move
 	var targets []Move
 
-	piece := b[s]
+	piece := board[s]
 	switch piece {
 	case WhiteBishop:
-		moves = bishopMoves(s, b)
+		moves = bishopMoves(s, board)
 	case BlackBishop:
-		moves = bishopMoves(s, b)
+		moves = bishopMoves(s, board)
 	case WhiteKnight:
-		moves = knightMoves(s, b)
+		moves = knightMoves(s, board)
 	case BlackKnight:
-		moves = knightMoves(s, b)
+		moves = knightMoves(s, board)
 	case WhiteRook:
-		moves = rookMoves(s, b)
+		moves = rookMoves(s, board)
 	case BlackRook:
-		moves = rookMoves(s, b)
+		moves = rookMoves(s, board)
 	case WhiteQueen:
-		moves = queenMoves(s, b)
+		moves = queenMoves(s, board)
 	case BlackQueen:
-		moves = queenMoves(s, b)
+		moves = queenMoves(s, board)
 	case WhiteKing:
-		moves = kingMoves(s, b)
+		moves = kingMoves(s, board)
 	case BlackKing:
-		moves = kingMoves(s, b)
+		moves = kingMoves(s, board)
 	default:
 		moves = []Move{}
 	}
 	for _, move := range moves {
-		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
-		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, createMove(piece, move.fromSquare, move.toSquare, Capture))
+		if isWhite && board[move.toSquare] < 0 {
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+		} else if !isWhite && board[move.toSquare] > 0 {
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
 
 		}
 	}

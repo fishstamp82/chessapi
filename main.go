@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"chessapi/chess"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"sort"
-	"strings"
+	"time"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	var reader *bufio.Reader
+	_ = reader
 	var m1, m2 string
 	var err error
 	var moves [][2]string
@@ -38,34 +40,45 @@ func main() {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
 		}
-		fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
+		//fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
 		reader = bufio.NewReader(os.Stdin)
-		m1, _ = reader.ReadString('\n')
-		m1 = strings.TrimSuffix(m1, "\n")
-		fmt.Printf("move from: %s\nto:", m1)
-		reader = bufio.NewReader(os.Stdin)
-		m2, _ = reader.ReadString('\n')
-		m2 = strings.TrimSuffix(m2, "\n")
+		m1, m2 = pickRandom()
+		//m1, _ = reader.ReadString('\n')
+		//m1 = strings.TrimSuffix(m1, "\n")
+		//fmt.Printf("move from: %s\nto:", m1)
+		//reader = bufio.NewReader(os.Stdin)
+		//m2, _ = reader.ReadString('\n')
+		//m2 = strings.TrimSuffix(m2, "\n")
 		state, err = b.Move(m1, m2)
 
 		if err != nil {
-			fmt.Println(err)
+			//fmt.Println(err)
 		} else {
 			moves = append(moves, [2]string{m1, m2})
 		}
 		if state == chess.Promo {
-			// read input from player
+			//read input from player
 			continue
 		}
 		if b.CheckMate() {
 			winner, _ := b.Won()
 			fmt.Printf("game over, %s won", winner)
+			fmt.Println(pretty(b.BoardMap()))
 			break
 		}
 	}
 	for _, val := range moves {
 		fmt.Println(val)
 	}
+}
+
+func pickRandom() (string, string) {
+	rand.Seed(time.Now().UnixNano())
+	lane := [8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
+	rank := [8]string{"1", "2", "3", "4", "5", "6", "7", "8"}
+	moveFrom := lane[rand.Intn(8)] + rank[rand.Intn(8)]
+	moveTo := lane[rand.Intn(8)] + rank[rand.Intn(8)]
+	return moveFrom, moveTo
 }
 
 func pretty(m map[string]string) string {

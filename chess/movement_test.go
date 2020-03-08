@@ -7,6 +7,10 @@ import (
 )
 
 func TestPawnMoves(t *testing.T) {
+	var piece = WhitePawn
+	b := NewMailBoxBoard()
+	be4 := NewMailBoxBoard()
+	be4.board[e4] = piece
 	table := []struct {
 		moves    [][2]string
 		pawnPos  Square
@@ -19,8 +23,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: d2,
 			expected: []Move{
-				createMove(WhitePawn, d2, d3, Regular),
-				createMove(WhitePawn, d2, d4, Regular),
+				createMove(b.board, d2, d3, Regular),
+				createMove(b.board, d2, d4, Regular),
 			},
 		},
 		{
@@ -30,8 +34,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: e4,
 			expected: []Move{
-				createMove(WhitePawn, e4, e5, Regular),
-				createMove(WhitePawn, e4, d5, Capture),
+				createMove(be4.board, e4, e5, Regular),
+				createMove(be4.board, e4, d5, Capture),
 			},
 		},
 		{
@@ -46,7 +50,7 @@ func TestPawnMoves(t *testing.T) {
 				{"a7", "a6"},
 			},
 			pawnPos:  h7,
-			expected: createPawnPromotionMoves(White, h7, g8, CapturePromotion),
+			expected: createPawnPromotionMoves(White, h7, g8, BlackBishop, CapturePromotion),
 		},
 	}
 
@@ -71,6 +75,10 @@ func TestPawnMoves(t *testing.T) {
 
 func TestBishopMoves(t *testing.T) {
 	var piece = WhiteBishop
+	bf1 := NewMailBoxBoard()
+	bc4 := NewMailBoxBoard()
+	bf1.board[f1] = piece
+	bc4.board[c4] = piece
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -84,11 +92,11 @@ func TestBishopMoves(t *testing.T) {
 			pos:   f1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, f1, e2, Regular),
-				createMove(piece, f1, d3, Regular),
-				createMove(piece, f1, c4, Regular),
-				createMove(piece, f1, b5, Regular),
-				createMove(piece, f1, a6, Regular),
+				createMove(bf1.board, f1, e2, Regular),
+				createMove(bf1.board, f1, d3, Regular),
+				createMove(bf1.board, f1, c4, Regular),
+				createMove(bf1.board, f1, b5, Regular),
+				createMove(bf1.board, f1, a6, Regular),
 			},
 		},
 		{
@@ -101,15 +109,15 @@ func TestBishopMoves(t *testing.T) {
 			pos:   c4,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, c4, f1, Regular),
-				createMove(piece, c4, e2, Regular),
-				createMove(piece, c4, b3, Regular),
-				createMove(piece, c4, d3, Regular),
-				createMove(piece, c4, b5, Regular),
-				createMove(piece, c4, d5, Regular),
-				createMove(piece, c4, a6, Regular),
-				createMove(piece, c4, e6, Regular),
-				createMove(piece, c4, f7, Capture),
+				createMove(bc4.board, c4, f1, Regular),
+				createMove(bc4.board, c4, e2, Regular),
+				createMove(bc4.board, c4, b3, Regular),
+				createMove(bc4.board, c4, d3, Regular),
+				createMove(bc4.board, c4, b5, Regular),
+				createMove(bc4.board, c4, d5, Regular),
+				createMove(bc4.board, c4, a6, Regular),
+				createMove(bc4.board, c4, e6, Regular),
+				createMove(bc4.board, c4, f7, Capture),
 			},
 		},
 	}
@@ -136,6 +144,7 @@ func TestBishopMoves(t *testing.T) {
 func TestKnightMoves(t *testing.T) {
 	var piece = WhiteKnight
 	var fun = knightMoves
+	b := NewMailBoxBoard()
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -147,8 +156,8 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, g1, f3, Regular),
-				createMove(piece, g1, h3, Regular),
+				createMove(b.board, g1, f3, Regular),
+				createMove(b.board, g1, h3, Regular),
 			},
 		},
 		{
@@ -158,9 +167,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, g1, f3, Regular),
-				createMove(piece, g1, h3, Regular),
-				createMove(piece, g1, e2, Regular),
+				createMove(b.board, g1, f3, Regular),
+				createMove(b.board, g1, h3, Regular),
+				createMove(b.board, g1, e2, Regular),
 			},
 		},
 		{
@@ -174,9 +183,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g8,
 			piece: BlackKnight,
 			expected: []Move{
-				createMove(BlackKnight, g8, f6, Capture),
-				createMove(BlackKnight, g8, h6, Regular),
-				createMove(BlackKnight, g8, e7, Regular),
+				createMove(b.board, g8, f6, Capture),
+				createMove(b.board, g8, h6, Regular),
+				createMove(b.board, g8, e7, Regular),
 			},
 		},
 	}
@@ -203,6 +212,7 @@ func TestKnightMoves(t *testing.T) {
 func TestRookMoves(t *testing.T) {
 	var piece = WhiteRook
 	var fun = rookMoves
+	b := NewMailBoxBoard()
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -222,8 +232,8 @@ func TestRookMoves(t *testing.T) {
 			pos:   a1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, a1, a2, Regular),
-				createMove(piece, a1, a3, Regular),
+				createMove(b.board, a1, a2, Regular),
+				createMove(b.board, a1, a3, Regular),
 			},
 		},
 	}
@@ -250,6 +260,7 @@ func TestRookMoves(t *testing.T) {
 func TestQueenMoves(t *testing.T) {
 	var piece = WhiteQueen
 	var fun = queenMoves
+	b := NewMailBoxBoard()
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -271,12 +282,12 @@ func TestQueenMoves(t *testing.T) {
 			pos:   d1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, d1, d2, Regular),
-				createMove(piece, d1, d3, Regular),
-				createMove(piece, d1, e2, Regular),
-				createMove(piece, d1, f3, Regular),
-				createMove(piece, d1, g4, Regular),
-				createMove(piece, d1, h5, Capture),
+				createMove(b.board, d1, d2, Regular),
+				createMove(b.board, d1, d3, Regular),
+				createMove(b.board, d1, e2, Regular),
+				createMove(b.board, d1, f3, Regular),
+				createMove(b.board, d1, g4, Regular),
+				createMove(b.board, d1, h5, Capture),
 			},
 		},
 	}
@@ -304,6 +315,7 @@ func TestKingMoves(t *testing.T) {
 	var piece = WhiteKing
 	var fun1 = kingMoves
 	var fun2 = castleMoves
+	b := NewMailBoxBoard()
 	table := []struct {
 		moves    [][2]string
 		pos      Square
@@ -325,8 +337,8 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, e1, e2, Regular),
-				createMove(piece, e1, d2, Regular),
+				createMove(b.board, e1, e2, Regular),
+				createMove(b.board, e1, d2, Regular),
 			},
 		},
 		{
@@ -340,9 +352,9 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, e1, e2, Regular),
-				createMove(piece, e1, f1, Regular),
-				createMove(piece, e1, g1, ShortCastle),
+				createMove(b.board, e1, e2, Regular),
+				createMove(b.board, e1, f1, Regular),
+				createMove(b.board, e1, g1, ShortCastle),
 			},
 		},
 		{
@@ -360,7 +372,7 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(piece, e1, d1, Regular),
+				createMove(b.board, e1, d1, Regular),
 			},
 		},
 	}
@@ -384,83 +396,6 @@ func TestKingMoves(t *testing.T) {
 		}
 	}
 }
-
-//func TestKingMoves(t *testing.T) {
-//	table := []struct {
-//		whiteKing Square
-//		blackKing Square
-//		expected  []Square
-//		fullBoard bool
-//	}{
-//		{
-//			whiteKing: a1,
-//			blackKing: a2,
-//			expected:  []Square{a2, b1, b2},
-//			fullBoard: false,
-//		},
-//		{
-//			whiteKing: e2,
-//			blackKing: d8,
-//			expected:  []Square{d1, d2, d3, e1, e3, f1, f2, f3},
-//			fullBoard: false,
-//		},
-//	}
-//	var b *MailBoxBoard
-//	var got []Square
-//	for _, row := range table {
-//		if row.fullBoard {
-//			b = NewMailBoxBoard()
-//		} else {
-//			b = NewEmptyMailBoxBoard()
-//		}
-//
-//		b.board[row.whiteKing] = WhiteKing
-//		b.board[row.blackKing] = BlackKing
-//		got = whiteKingMoves(row.whiteKing, b.board)
-//
-//		if !sameAfterSquareSort(got, row.expected) {
-//			t.Errorf("got: %v, expected: %v for %s on %s\n",
-//				printPrettySquares(got), printPrettySquares(row.expected), WhiteKing, squareToString[row.whiteKing])
-//		}
-//	}
-//}
-
-//func TestWhiteKingCastle(t *testing.T) {
-//	type piecePosition struct {
-//		position Square
-//		piece    Piece
-//	}
-//	table := []struct {
-//		pieces   []piecePosition
-//		expected []Square
-//	}{
-//		{
-//			pieces: []piecePosition{
-//				{e1, WhiteKing},
-//				{h1, WhiteRook},
-//				{a1, WhiteRook},
-//			},
-//			expected: []Square{c1, g1},
-//		},
-//	}
-//	var b *MailBoxBoard
-//	var got []Square
-//	for _, row := range table {
-//		b = NewEmptyMailBoxBoard()
-//		for _, val := range row.pieces {
-//			b.board[val.position] = val.piece
-//		}
-//		b.context.whiteCanCastleRight = true
-//		b.context.whiteCanCastleLeft = true
-//
-//		got = append(got, whiteKingCastleMoves(e1, b.board, b.context)...)
-//
-//		if !sameAfterSquareSort(got, row.expected) {
-//			t.Errorf("got: %v, expected: %v for %s on %s\n",
-//				printPrettySquares(got), printPrettySquares(row.expected), WhiteKing, squareToString[e1])
-//		}
-//	}
-//}
 
 func printPrettySquares(s []Square) []string {
 	var str []string

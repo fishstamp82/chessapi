@@ -1,5 +1,5 @@
-un pasant -
-    - refactoring movements, test fail in getting captures for white moving e6 to f7
+implement checks
+- fix bugg return piece on capture in reverse move
 50 move draw rule
 3 repetition draw rule
 draws
