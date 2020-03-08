@@ -80,7 +80,7 @@ func verticalTop(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -104,7 +104,7 @@ func upperRightDiag(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -128,7 +128,7 @@ func horizontalRight(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -152,7 +152,7 @@ func lowerRightDiag(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -177,7 +177,7 @@ func verticalBottom(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -202,7 +202,7 @@ func lowerLeftDiag(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -227,7 +227,7 @@ func horizontalLeft(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
@@ -252,13 +252,13 @@ func upperLeftDiag(s Square, b [64]Piece) []Move {
 	startPos := pos + movePos
 	startRow := row + moveRow
 	startCol := col + moveCol
-	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, piece, b)
+	return movementAlgorithm(s, startPos, startRow, startCol, movePos, moveRow, moveCol, isWhite, b)
 
 }
 
-func knightMoves(fromSquare Square, b [64]Piece) []Move {
+func knightMoves(fromSquare Square, board [64]Piece) []Move {
 	var isWhite bool
-	piece := b[fromSquare]
+	piece := board[fromSquare]
 	switch piece > 0 {
 	case true:
 		isWhite = true
@@ -322,20 +322,20 @@ func knightMoves(fromSquare Square, b [64]Piece) []Move {
 		if toSquare < a1 || h8 < toSquare {
 			continue
 		}
-		if isWhite && b[toSquare] < 0 {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
-		} else if !isWhite && b[toSquare] > 0 {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
-		} else if b[toSquare] == Empty {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Regular))
+		if isWhite && board[toSquare] < 0 {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+		} else if !isWhite && board[toSquare] > 0 {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+		} else if board[toSquare] == Empty {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Regular))
 		}
 	}
 	return moves
 }
 
-func kingMoves(fromSquare Square, b [64]Piece) []Move {
+func kingMoves(fromSquare Square, board [64]Piece) []Move {
 
-	piece := b[fromSquare]
+	piece := board[fromSquare]
 	var isWhite, isBlack bool
 	switch piece {
 	case WhiteKing:
@@ -344,8 +344,8 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 	case BlackKing:
 		isWhite = false
 		isBlack = true
-
 	}
+
 	col := fromSquare.col()
 	row := fromSquare.row()
 	pos := row*8 + col
@@ -393,12 +393,12 @@ func kingMoves(fromSquare Square, b [64]Piece) []Move {
 		if toSquare < a1 || h8 < toSquare {
 			continue
 		}
-		if (b[toSquare] < 0) && isWhite {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
-		} else if (b[toSquare] < 0) && isBlack {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Capture))
-		} else if b[toSquare] == Empty {
-			moves = append(moves, createMove(piece, fromSquare, toSquare, Regular))
+		if (board[toSquare] < 0) && isWhite {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+		} else if (board[toSquare] > 0) && isBlack {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+		} else if board[toSquare] == Empty {
+			moves = append(moves, createMove(board, fromSquare, toSquare, Regular))
 		}
 	}
 	return moves
@@ -489,22 +489,22 @@ func allEmpty(squares []Square, board [64]Piece) bool {
 	return true
 }
 
-func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, p Piece, b [64]Piece) []Move {
+func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Square, movePos Square, moveRow Square, moveCol Square, isWhite bool, board [64]Piece) []Move {
 	isBlack := !isWhite
 	var moves []Move
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
-		if isWhite && b[i] < 0 {
-			moves = append(moves, createMove(p, fromSquare, i, Capture))
+		if isWhite && board[i] < 0 {
+			moves = append(moves, createMove(board, fromSquare, i, Capture))
 			break
-		} else if isBlack && b[i] > 0 {
-			moves = append(moves, createMove(p, fromSquare, i, Capture))
+		} else if isBlack && board[i] > 0 {
+			moves = append(moves, createMove(board, fromSquare, i, Capture))
 			break
-		} else if isWhite && b[i] > 0 {
+		} else if isWhite && board[i] > 0 {
 			break
-		} else if isBlack && b[i] < 0 {
+		} else if isBlack && board[i] < 0 {
 			break
-		} else if b[i] == Empty {
-			moves = append(moves, createMove(p, fromSquare, i, Regular))
+		} else if board[i] == Empty {
+			moves = append(moves, createMove(board, fromSquare, i, Regular))
 		}
 	}
 	return moves
@@ -763,31 +763,37 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt MovementType) Move {
 	return m
 }
 
-func createMove(p Piece, f, t Square, mt MovementType) Move {
+func createMove(b [64]Piece, fromSquare, toSquare Square, mt MovementType) Move {
+	fromPiece := b[fromSquare]
+	toPiece := b[toSquare]
 	return Move{
-		piece:      p,
-		fromSquare: f,
-		toSquare:   t,
+		piece:      fromPiece,
+		fromSquare: fromSquare,
+		toSquare:   toSquare,
 		piecePositions: []piecePosition{
 			{
-				piece:    p,
-				position: t,
+				piece:    fromPiece,
+				position: toSquare,
 			},
 			{
 				piece:    Empty,
-				position: f,
+				position: fromSquare,
 			},
 		},
 		moveType: mt,
 		reverseMove: &Move{
 			piecePositions: []piecePosition{
 				{
-					piece:    p,
-					position: f,
+					piece:    fromPiece,
+					position: fromSquare,
 				},
 				{
 					piece:    Empty,
-					position: t,
+					position: toSquare,
+				},
+				{
+					piece:    toPiece,
+					position: toSquare,
 				},
 			},
 		},

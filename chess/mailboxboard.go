@@ -268,9 +268,21 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 		panic("called without a king piece")
 	}
 
-	//Must Block all attacks from getOpponent in one move
 	var toBlock []Square
 	var targets []Move
+
+	//Try to escape with king
+	var tmpKingSquare Square
+	for _, move := range kingMoves(kingSquare, board) {
+		board = makeMove(move, board)
+		tmpKingSquare = getKingSquare(hero, board)
+		if !inCheck(tmpKingSquare, board) {
+			return false
+		}
+		board = makeMove(*move.reverseMove, board)
+	}
+
+	//get all attacks from opponent to block
 	for _, square := range squaresWithoutKing(opponent, board) {
 		targets = getTargets(square, board)
 		if !inSquares(kingSquare, getSquares(targets)) {

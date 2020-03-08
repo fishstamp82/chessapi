@@ -73,11 +73,15 @@ func TestCheckMate(t *testing.T) {
 		},
 	}
 
+	var err error
 	for ind, row := range table {
 		b := chess.NewBoard()
 		for _, val := range row.moves {
-			s, t := val[0], val[1]
-			_, _ = b.Move(s, t)
+			fromSquare, toSquare := val[0], val[1]
+			_, err = b.Move(fromSquare, toSquare)
+			if err != nil {
+				t.Error("error")
+			}
 		}
 		if b.CheckMate() != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)

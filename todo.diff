@@ -1,6 +1,5 @@
 implement checks
-- make reversible moves where needed
-
+- fix bugg return piece on capture in reverse move
 50 move draw rule
 3 repetition draw rule
 draws
