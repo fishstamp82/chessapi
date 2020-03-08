@@ -155,9 +155,7 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	}
 
 	// Make Move
-	for _, pp := range m.piecePositions {
-		b.board[pp.position] = pp.piece
-	}
+	b.board = makeMove(m, b.board)
 
 	//is check mate for opponent
 	opponentsKing := getKingSquare(opponent, b.board)
@@ -174,6 +172,13 @@ func (b *MailBoxBoard) move(fromSquare, toSquare Square) (State, error) {
 	// Switch to other player
 	b.switchTurn()
 	return b.state, nil
+}
+
+func makeMove(m Move, b [64]Piece) [64]Piece {
+	for _, pp := range m.piecePositions {
+		b[pp.position] = pp.piece
+	}
+	return b
 }
 
 func getSquares(m []Move) []Square {
@@ -281,22 +286,16 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	for _, source := range squaresWithoutKing(hero, board) {
 		for _, target := range validMoves(source, board, context{}) {
 			if inSquares(target.toSquare, toBlock) {
-				board = issueMove(target.piecePositions, board)
+				board = makeMove(target, board)
 				if !inCheck(kingSquare, board) {
 					return false
 				}
-				board = issueMove(target.reversePiecePositions, board)
+				board = makeMove(*target.reverseMove, board)
 			}
 		}
 	}
 
 	return true
-}
-func issueMove(piecePos []piecePosition, b [64]Piece) [64]Piece {
-	for _, pp := range piecePos {
-		b[pp.position] = pp.piece
-	}
-	return b
 }
 
 func (b *MailBoxBoard) getOpponent(p Player) Player {

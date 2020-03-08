@@ -46,7 +46,7 @@ func TestPawnMoves(t *testing.T) {
 				{"a7", "a6"},
 			},
 			pawnPos:  h7,
-			expected: createPawnPromotionMoves(White, h7, g8, CapturePromotion),
+			expected: createPawnPromotionMoves(White, h7, g8, BlackBishop, CapturePromotion),
 		},
 	}
 
