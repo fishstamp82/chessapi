@@ -3,7 +3,7 @@ package chess
 type Board interface {
 	CheckMate() bool
 	IsCheck() bool
-	Draw() bool
+	IsDraw() bool
 	Won() (string, error)
 	PlayersTurn() string
 	BoardMap() map[string]string

@@ -25,14 +25,17 @@ type MailBoxBoard struct {
 	score   string // 1 - 0, 0-1, \u00BD
 }
 
-func (b *MailBoxBoard) getScore(p Player) string {
-	switch p {
+func (b *MailBoxBoard) GetScore() string {
+	if !(b.state == Over) {
+		return "0-0"
+	}
+	switch b.context.winner {
 	case White:
 		return "1-0"
 	case Black:
 		return "0-1"
 	case Noone:
-		return "\u00BD"
+		return "\u00BD-\u00BD"
 	}
 	panic("cant call this without a valid player")
 }
@@ -44,7 +47,7 @@ func (b *MailBoxBoard) CheckMate() bool {
 	return false
 }
 
-func (b *MailBoxBoard) Draw() bool {
+func (b *MailBoxBoard) IsDraw() bool {
 	if b.state == Draw {
 		return true
 	}

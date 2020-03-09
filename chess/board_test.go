@@ -59,34 +59,37 @@ func TestInitialization(t *testing.T) {
 
 }
 
-//
-//func TestEnPassant(t *testing.T) {
-//	table := []struct {
-//		moves         [][2]string
-//		expectedMoves []Square
-//	}{
-//		{
-//			moves: [][2]string{
-//				{"e2", "e4"},
-//				{"d7", "d5"},
-//				{"e4", "e5"},
-//				{"f7", "f5"},
-//			},
-//			expectedMoves: []Square{e6, f6},
-//		},
-//	}
-//
-//	for _, row := range table {
-//		b := NewMailBoxBoard()
-//
-//		for _, val := range row.moves {
-//			s, t := val[0], val[1]
-//			_, _ = b.Move(s, t)
-//		}
-//		moves := whitePawnMoves(e5 ,b.board)
-//		if !sameAfterSquareSort(moves, row.expectedMoves){
-//			t.Errorf("got: %s, expected: %s\n", moves, row.expectedMoves)
-//		}
-//	}
-//
-//}
+func TestEnPassant(t *testing.T) {
+	var piece = WhitePawn
+	table := []struct {
+		moves         [][2]string
+		expectedMoves []Move
+	}{
+		{
+			moves: [][2]string{
+				{"e2", "e4"},
+				{"d7", "d5"},
+				{"e4", "e5"},
+				{"f7", "f5"},
+			},
+			expectedMoves: []Move{
+				createPawnMove(piece, e5, e6, Regular),
+				createPawnEnPassantMove(piece, e5, f6, CaptureEnPassant),
+			},
+		},
+	}
+
+	for _, row := range table {
+		b := NewMailBoxBoard()
+
+		for _, val := range row.moves {
+			s, to := val[0], val[1]
+			_, _ = b.Move(s, to)
+		}
+		moves := pawnMoves(e5, b.board, b.context.enPassantSquare)
+		if !sameAfterMoveSort(moves, row.expectedMoves) {
+			t.Errorf("got: %s, expected: %s\n", printPrettyMoves(moves), printPrettyMoves(row.expectedMoves))
+		}
+	}
+
+}
