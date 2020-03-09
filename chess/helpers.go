@@ -15,7 +15,7 @@ func (s Square) rank() Square {
 	return s/8 + 1
 }
 
-func (b *MailBoxBoard) squaresWithoutKing(p Player) []Square {
+func (b *Board) squaresWithoutKing(p Player) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {
