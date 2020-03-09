@@ -25,6 +25,11 @@ type MailBoxBoard struct {
 	score   string // 1 - 0, 0-1, \u00BD
 }
 
+func (b *MailBoxBoard) IsCheck() bool {
+	kingSquare := getKingSquare(b.context.playersTurn, b.board)
+	return inCheck(kingSquare, b.board)
+}
+
 func (b *MailBoxBoard) GetScore() string {
 	if !(b.state == Over) {
 		return "0-0"

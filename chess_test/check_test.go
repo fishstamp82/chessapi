@@ -31,7 +31,7 @@ func TestCheck(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := chess.NewBoard()
+		b := chess.NewMailBoxBoard()
 		for _, val := range row.moves {
 			s, t := val[0], val[1]
 			_, _ = b.Move(s, t)
@@ -75,7 +75,7 @@ func TestCheckMate(t *testing.T) {
 
 	var err error
 	for ind, row := range table {
-		b := chess.NewBoard()
+		b := chess.NewMailBoxBoard()
 		for _, val := range row.moves {
 			fromSquare, toSquare := val[0], val[1]
 			_, err = b.Move(fromSquare, toSquare)
