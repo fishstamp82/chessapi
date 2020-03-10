@@ -14,10 +14,13 @@ type Move struct {
 	reverseMove    *Move
 }
 
-func validMoves(fromSquare Square, board [64]Piece, ctx Context) []Move {
+func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move {
 	p := board[fromSquare]
 	var moves []Move
 	var player Player
+	if fromSquare == none {
+		return moves
+	}
 
 	switch {
 	case p > 0:
@@ -43,6 +46,36 @@ func validMoves(fromSquare Square, board [64]Piece, ctx Context) []Move {
 	}
 	moves = cleanMovesInCheck(moves, board, player)
 	return moves
+}
+
+func validMovesForPlayer(player Player, board [64]Piece, ctx Context) []Move {
+	var moves []Move
+	var pieces []Piece
+	var square Square
+
+	switch player {
+	case White:
+		pieces = append(pieces, WhitePawn, WhiteBishop, WhiteKnight, WhiteRook, WhiteQueen, WhiteKing)
+	case Black:
+		pieces = append(pieces, BlackPawn, BlackBishop, BlackKnight, BlackRook, BlackQueen, BlackKing)
+	}
+	for _, piece := range pieces {
+		square = getPieceSquare(piece, board)
+		moves = append(moves, validMovesForSquare(square, board, ctx)...)
+	}
+	moves = cleanMovesInCheck(moves, board, player)
+	return moves
+}
+
+func getPieceSquare(piece Piece, board [64]Piece) Square {
+	var p Piece
+	var i int
+	for i, p = range board {
+		if piece == p {
+			return Square(i)
+		}
+	}
+	return none
 }
 
 //remove moves that result in player being in check
@@ -440,7 +473,7 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 
 	if canCastleRight {
 		for _, p := range squaresWithoutKing(opponent, b) {
-			for _, move := range validMoves(p, b, ctx) {
+			for _, move := range validMovesForSquare(p, b, ctx) {
 				if inSquares(move.toSquare, append(shortCastleSquares, kingSquare)) {
 					canCastleRight = false
 					break
@@ -453,7 +486,7 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	}
 	if canCastleLeft {
 		for _, p := range squaresWithoutKing(opponent, b) {
-			for _, move := range validMoves(p, b, ctx) {
+			for _, move := range validMovesForSquare(p, b, ctx) {
 				if inSquares(move.toSquare, append(longCastleSquares, kingSquare)) {
 					canCastleLeft = false
 					break

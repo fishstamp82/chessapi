@@ -87,14 +87,14 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 		opponent = White
 	}
 
-	availMoves := validMoves(fromSquare, b.board, b.Context)
+	availMoves := validMovesForSquare(fromSquare, b.board, b.Context)
 
 	availSquares := getSquares(availMoves)
 	if !inSquares(toSquare, availSquares) {
 		return b.Context, errors.New(fmt.Sprintf("%s can't go to %s\n", b.board[fromSquare], squareToString[toSquare]))
 	}
 
-	//
+	//todo: replace with function thate uses chess algebraic notation
 	m := Move{}
 	for _, move := range availMoves {
 		if move.fromSquare == fromSquare && move.toSquare == toSquare {
@@ -118,12 +118,26 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 		return b.Context, nil
 	}
 
+	if isDraw(opponent, b.board, b.Context) {
+		b.Context.State = Draw
+		b.Context.Winner = Both
+		return b.Context, nil
+	}
+
 	b.abortCastling(m)
 	b.Context.enPassantSquare = b.getEnPassantSquare(m)
 
 	// Switch to other player
 	b.switchTurn()
 	return b.Context, nil
+}
+
+func isDraw(player Player, board [64]Piece, ctx Context) bool {
+	moves := validMovesForPlayer(player, board, ctx)
+	if moves == nil {
+		return true
+	}
+	return false
 }
 
 func makeMove(m Move, b [64]Piece) [64]Piece {
@@ -248,7 +262,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 
 	//Must Block all attacks from opponent in single move
 	for _, source := range squaresWithoutKing(hero, board) {
-		for _, target := range validMoves(source, board, Context{}) {
+		for _, target := range validMovesForSquare(source, board, Context{}) {
 			if inSquares(target.toSquare, toBlock) {
 				board = makeMove(target, board)
 				if !inCheck(kingSquare, board) {
