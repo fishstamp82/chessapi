@@ -130,6 +130,8 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 	opponentsKing := getKingSquare(opponent, b.board)
 	if inCheck(opponentsKing, b.board) {
 		b.Context.State = Check
+	} else {
+		b.Context.State = Playing
 	}
 
 	if isCheckMated(opponentsKing, b.board) {
@@ -158,7 +160,20 @@ func isDraw(player Player, board [64]Piece, ctx Context) bool {
 	if moves == nil {
 		return true
 	}
+	if twoKings(board) {
+		return true
+	}
 	return false
+}
+
+func twoKings(b [64]Piece) bool {
+	for i := a1; i <= h8; i++ {
+		switch b[i] {
+		case WhitePawn, WhiteBishop, WhiteKnight, WhiteRook, WhiteQueen, BlackPawn, BlackBishop, BlackKnight, BlackRook, BlackQueen:
+			return false
+		}
+	}
+	return true
 }
 
 func makeMove(m Move, b [64]Piece) [64]Piece {

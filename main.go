@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"sort"
-	"strings"
 	"time"
 )
 
@@ -38,6 +37,7 @@ func main() {
 
 	b := chess.NewMailBoxBoard()
 	var allMoves string
+	_ = allMoves
 	for {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
@@ -48,17 +48,12 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-
-		allMoves = ""
-		for _, moveStr := range validMoves {
-			allMoves += ";" + moveStr
-		}
-		fmt.Printf("possible moves: %s", allMoves)
-		reader = bufio.NewReader(os.Stdin)
-		move, _ = reader.ReadString('\n')
-		move = strings.TrimSuffix(move, "\n")
-		fmt.Printf("move : %s\n", move)
+		//reader = bufio.NewReader(os.Stdin)
+		//move, _ = reader.ReadString('\n')
+		//move = strings.TrimSuffix(move, "\n")
+		//fmt.Printf("move : %s\n", move)
 		//move = pickRandom()
+		move = pickRandomString(validMoves)
 		context, err = b.Move(move)
 
 		if err != nil {
@@ -68,16 +63,20 @@ func main() {
 		}
 		fmt.Println("state: " + context.State.String())
 		if context.State == chess.CheckMate {
-			winner := context.Winner
-			fmt.Printf("game over, %s won", winner)
+			fmt.Printf("game over, %s won", context.Winner)
+			fmt.Println(pretty(b.BoardMap()))
+			break
+		}
+		if context.State == chess.Draw {
+			fmt.Printf("game over, draw")
 			fmt.Println(pretty(b.BoardMap()))
 			break
 		}
 		fmt.Println(pretty(b.BoardMap()))
 	}
-	for _, val := range moves {
-		fmt.Println(val)
-	}
+	//for _, val := range moves {
+	//	fmt.Println(val)
+	//}
 }
 
 func pickRandom() string {
@@ -87,6 +86,12 @@ func pickRandom() string {
 	moveFrom := lane[rand.Intn(8)] + rank[rand.Intn(8)]
 	moveTo := lane[rand.Intn(8)] + rank[rand.Intn(8)]
 	return moveFrom + moveTo
+}
+
+func pickRandomString(s []string) string {
+	rand.Seed(time.Now().UnixNano())
+	var pick = rand.Intn(len(s))
+	return s[pick]
 }
 
 func pretty(m map[string]string) string {
