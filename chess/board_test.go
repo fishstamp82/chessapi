@@ -62,15 +62,15 @@ func TestInitialization(t *testing.T) {
 func TestEnPassant(t *testing.T) {
 	var piece = WhitePawn
 	table := []struct {
-		moves         [][2]string
+		moves         []string
 		expectedMoves []Move
 	}{
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"d7", "d5"},
-				{"e4", "e5"},
-				{"f7", "f5"},
+			moves: []string{
+				"e2e4",
+				"d7d5",
+				"e4e5",
+				"f7f5",
 			},
 			expectedMoves: []Move{
 				createPawnMove(piece, e5, e6, Regular),
@@ -82,9 +82,8 @@ func TestEnPassant(t *testing.T) {
 	for _, row := range table {
 		b := NewMailBoxBoard()
 
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, _ = b.Move(s, to)
+		for _, move := range row.moves {
+			_, _ = b.Move(move)
 		}
 		moves := pawnMoves(e5, b.board, b.Context.enPassantSquare)
 		if !sameAfterMoveSort(moves, row.expectedMoves) {

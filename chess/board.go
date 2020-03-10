@@ -37,18 +37,14 @@ func (b *Board) BoardMap() map[string]string {
 
 // Move gets squares in human readable form, and performs a move
 // error is nil on successful move
-// arguments are algebraic chess notation 'e2' -> 'e4'
-func (b *Board) Move(s, t string) (Context, error) {
+// arguments are two squares : "e2e4"
+func (b *Board) Move(moveStr string) (Context, error) {
 	if b.Context.State != Playing {
 		return b.Context, errors.New("not in playing state")
 	}
-	fromSquare, err := b.getSquare(s)
+	fromSquare, toSquare, err := b.getSquare(moveStr)
 	if err != nil {
-		return b.Context, errors.New(fmt.Sprintf("bad move input, got: %v, good format: 'e2'", s))
-	}
-	toSquare, err := b.getSquare(t)
-	if err != nil {
-		return b.Context, errors.New(fmt.Sprintf("bad second input, got: %v, good format: 'e4'", t))
+		return b.Context, err
 	}
 
 	return b.move(fromSquare, toSquare)
@@ -187,17 +183,6 @@ func (b *Board) abortCastling(m Move) {
 
 }
 
-// Given human readable string input "e2", return string
-// repr of piece. if none, return "-"
-func (b *Board) stringRepr(s string) (string, error) {
-	sq, err := b.getSquare(s)
-	if err != nil {
-		return "", errors.New("bad move input, good format should be: 'e2', 'd3', etc")
-	}
-	p := b.board[sq]
-	return fmt.Sprintf("%s", p), nil
-}
-
 func inCheck(kingSquare Square, board [64]Piece) bool {
 
 	var opponent Player
@@ -309,15 +294,19 @@ func getPieces(p Player, board [64]Piece) []Square {
 	return pieces
 }
 
-func (b *Board) getSquare(s string) (Square, error) {
-	if len(s) != 2 {
-		return 0, errors.New("wrong length")
+func (b *Board) getSquare(s string) (Square, Square, error) {
+	if len(s) != 4 {
+		return none, none, errors.New("wrong length")
 	}
-	sq, found := stringToSquare[s]
+	sq1, found := stringToSquare[s[:2]]
 	if !found {
-		return 0, errors.New(fmt.Sprintf("no such square: %s", s))
+		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
 	}
-	return sq, nil
+	sq2, found := stringToSquare[s[2:]]
+	if !found {
+		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
+	}
+	return sq1, sq2, nil
 }
 
 func (b *Board) getEnPassantSquare(m Move) Square {

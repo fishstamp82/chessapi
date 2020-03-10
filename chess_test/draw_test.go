@@ -2,15 +2,15 @@ package chess
 
 //func TestDraw(t *testing.T) {
 //	table := []struct {
-//		moves    [][2]string
+//		moves    []string
 //		expected string
 //	}{
 //		{
-//			moves: [][2]string{
-//				{"e2", "e4"},
-//				{"e7", "e5"},
-//				{"f2", "f4"},
-//				{"d8", "h4"},
+//			moves:    []string{
+//				"e2e4",
+//				"e7e5",
+//				"f2f4",
+//				"d8h4",
 //			},
 //			expected: "Draw",
 //		},

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -17,7 +18,7 @@ func main() {
 
 	var reader *bufio.Reader
 	_ = reader
-	var m1, m2 string
+	var move string
 	var err error
 	var moves [][2]string
 	var context chess.Context
@@ -40,26 +41,20 @@ func main() {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
 		}
-		//fmt.Printf("%s's turn\nmake a move...\n", b.PlayersTurn())
+		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
 		reader = bufio.NewReader(os.Stdin)
-		m1, m2 = pickRandom()
-		//m1, _ = reader.ReadString('\n')
-		//m1 = strings.TrimSuffix(m1, "\n")
-		//fmt.Printf("move from: %s\nto:", m1)
-		//reader = bufio.NewReader(os.Stdin)
-		//m2, _ = reader.ReadString('\n')
-		//m2 = strings.TrimSuffix(m2, "\n")
-		context, err = b.Move(m1, m2)
+		//m1, m2 = pickRandom()
+		move, _ = reader.ReadString('\n')
+		move = strings.TrimSuffix(move, "\n")
+		fmt.Printf("move : %s\n", move)
+		context, err = b.Move(move)
 
 		if err != nil {
-			//fmt.Println(err)
+			fmt.Println(err)
 		} else {
-			moves = append(moves, [2]string{m1, m2})
+			moves = append(moves, [2]string{move})
 		}
-		if context.State == chess.Promo {
-			//read input from player
-			continue
-		}
+		fmt.Println("state: " + context.State.String())
 		if context.State == chess.CheckMate {
 			winner := context.Winner
 			fmt.Printf("game over, %s won", winner)

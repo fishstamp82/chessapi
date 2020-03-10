@@ -7,24 +7,24 @@ import (
 
 func TestCheck(t *testing.T) {
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		expected string
 	}{
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"f2", "f4"},
-				{"d8", "h4"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"f2f4",
+				"d8h4",
 			},
 			expected: "Check",
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"f2", "f4"},
-				{"d8", "g5"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"f2f4",
+				"d8g5",
 			},
 			expected: "Playing",
 		},
@@ -34,9 +34,8 @@ func TestCheck(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := chess.NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, toSquare := val[0], val[1]
-			ctx, err = b.Move(s, toSquare)
+		for _, move := range row.moves {
+			ctx, err = b.Move(move)
 			if err != nil {
 				t.Errorf("error: %s\n", err)
 			}
@@ -50,29 +49,29 @@ func TestCheck(t *testing.T) {
 
 func TestCheckMate(t *testing.T) {
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		expected string
 		won      string
 	}{
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"d1", "f3"},
-				{"a7", "a6"},
-				{"f1", "c4"},
-				{"b7", "b6"},
-				{"f3", "f7"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"d1f3",
+				"a7a6",
+				"f1c4",
+				"b7b6",
+				"f3f7",
 			},
 			expected: "CheckMate",
 			won:      "White",
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"f2", "f4"},
-				{"d8", "g5"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"f2f4",
+				"d8g5",
 			},
 			expected: "Playing",
 			won:      "Noone",
@@ -82,9 +81,8 @@ func TestCheckMate(t *testing.T) {
 	var err error
 	for ind, row := range table {
 		b := chess.NewMailBoxBoard()
-		for _, val := range row.moves {
-			fromSquare, toSquare := val[0], val[1]
-			_, err = b.Move(fromSquare, toSquare)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error("error")
 			}
