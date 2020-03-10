@@ -12,14 +12,14 @@ func TestPawnMoves(t *testing.T) {
 	be4 := NewMailBoxBoard()
 	be4.board[e4] = piece
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pawnPos  Square
 		expected []Move
 	}{
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
 			},
 			pawnPos: d2,
 			expected: []Move{
@@ -28,9 +28,9 @@ func TestPawnMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"d7", "d5"},
+			moves: []string{
+				"e2e4",
+				"d7d5",
 			},
 			pawnPos: e4,
 			expected: []Move{
@@ -39,15 +39,15 @@ func TestPawnMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"g2", "g4"},
-				{"d7", "d5"},
-				{"g4", "g5"},
-				{"d5", "d4"},
-				{"g5", "g6"},
-				{"d4", "d3"},
-				{"g6", "h7"},
-				{"a7", "a6"},
+			moves: []string{
+				"g2g4",
+				"d7d5",
+				"g4g5",
+				"d5d4",
+				"g5g6",
+				"d4d3",
+				"g6h7",
+				"a7a6",
 			},
 			pawnPos:  h7,
 			expected: createPawnPromotionMoves(White, h7, g8, BlackBishop, CapturePromotion),
@@ -57,15 +57,14 @@ func TestPawnMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := pawnMoves(row.pawnPos, b.board, b.context.enPassantSquare)
+		got := pawnMoves(row.pawnPos, b.board, b.Context.enPassantSquare)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
@@ -80,14 +79,14 @@ func TestBishopMoves(t *testing.T) {
 	bf1.board[f1] = piece
 	bc4.board[c4] = piece
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pos      Square
 		piece    Piece
 		expected []Move
 	}{
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
+			moves: []string{
+				"e2e4",
 			},
 			pos:   f1,
 			piece: piece,
@@ -100,11 +99,11 @@ func TestBishopMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"d7", "d5"},
-				{"f1", "c4"},
-				{"d5", "d4"},
+			moves: []string{
+				"e2e4",
+				"d7d5",
+				"f1c4",
+				"d5d4",
 			},
 			pos:   c4,
 			piece: piece,
@@ -125,9 +124,8 @@ func TestBishopMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -146,13 +144,13 @@ func TestKnightMoves(t *testing.T) {
 	var fun = knightMoves
 	b := NewMailBoxBoard()
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pos      Square
 		piece    Piece
 		expected []Move
 	}{
 		{
-			moves: [][2]string{},
+			moves: []string{},
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
@@ -161,8 +159,8 @@ func TestKnightMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
+			moves: []string{
+				"e2e4",
 			},
 			pos:   g1,
 			piece: piece,
@@ -173,12 +171,12 @@ func TestKnightMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"f2", "f4"},
-				{"e7", "e5"},
-				{"f4", "f5"},
-				{"e5", "e4"},
-				{"f5", "f6"},
+			moves: []string{
+				"f2f4",
+				"e7e5",
+				"f4f5",
+				"e5e4",
+				"f5f6",
 			},
 			pos:   g8,
 			piece: BlackKnight,
@@ -193,9 +191,8 @@ func TestKnightMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -214,20 +211,20 @@ func TestRookMoves(t *testing.T) {
 	var fun = rookMoves
 	b := NewMailBoxBoard()
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pos      Square
 		piece    Piece
 		expected []Move
 	}{
 		{
-			moves:    [][2]string{},
+			moves:    []string{},
 			pos:      a1,
 			piece:    piece,
 			expected: []Move{},
 		},
 		{
-			moves: [][2]string{
-				{"a2", "a4"},
+			moves: []string{
+				"a2a4",
 			},
 			pos:   a1,
 			piece: piece,
@@ -241,9 +238,8 @@ func TestRookMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -262,22 +258,22 @@ func TestQueenMoves(t *testing.T) {
 	var fun = queenMoves
 	b := NewMailBoxBoard()
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pos      Square
 		piece    Piece
 		expected []Move
 	}{
 		{
-			moves:    [][2]string{},
+			moves:    []string{},
 			pos:      d1,
 			piece:    piece,
 			expected: []Move{},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"h7", "h5"},
-				{"d2", "d4"},
+			moves: []string{
+				"e2e4",
+				"h7h5",
+				"d2d4",
 			},
 			pos:   d1,
 			piece: piece,
@@ -295,9 +291,8 @@ func TestQueenMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -317,22 +312,22 @@ func TestKingMoves(t *testing.T) {
 	var fun2 = castleMoves
 	b := NewMailBoxBoard()
 	table := []struct {
-		moves    [][2]string
+		moves    []string
 		pos      Square
 		piece    Piece
 		expected []Move
 	}{
 		{
-			moves:    [][2]string{},
+			moves:    []string{},
 			pos:      e1,
 			piece:    piece,
 			expected: []Move{},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"d2", "d4"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"d2d4",
 			},
 			pos:   e1,
 			piece: piece,
@@ -342,12 +337,12 @@ func TestKingMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"e2", "e4"},
-				{"e7", "e5"},
-				{"f1", "c4"},
-				{"d7", "d5"},
-				{"g1", "f3"},
+			moves: []string{
+				"e2e4",
+				"e7e5",
+				"f1c4",
+				"d7d5",
+				"g1f3",
 			},
 			pos:   e1,
 			piece: piece,
@@ -358,16 +353,16 @@ func TestKingMoves(t *testing.T) {
 			},
 		},
 		{
-			moves: [][2]string{
-				{"d2", "d4"},
-				{"d7", "d5"},
-				{"c1", "f4"},
-				{"e7", "e5"},
-				{"b1", "c3"},
-				{"a7", "a5"},
-				{"d1", "d2"},
-				{"a8", "a6"},
-				{"a1", "b1"},
+			moves: []string{
+				"d2d4",
+				"d7d5",
+				"c1f4",
+				"e7e5",
+				"b1c3",
+				"a7a5",
+				"d1d2",
+				"a8a6",
+				"a1b1",
 			},
 			pos:   e1,
 			piece: piece,
@@ -380,16 +375,15 @@ func TestKingMoves(t *testing.T) {
 	var err error
 	for _, row := range table {
 		b := NewMailBoxBoard()
-		for _, val := range row.moves {
-			s, to := val[0], val[1]
-			_, err = b.Move(s, to)
+		for _, move := range row.moves {
+			_, err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
 		got := fun1(row.pos, b.board)
-		got = append(got, fun2(row.pos, b.board, b.context)...)
+		got = append(got, fun2(row.pos, b.board, b.Context)...)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
