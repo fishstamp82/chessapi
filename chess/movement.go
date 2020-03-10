@@ -1,5 +1,7 @@
 package chess
 
+import "fmt"
+
 type piecePosition struct {
 	piece    Piece
 	position Square
@@ -14,13 +16,22 @@ type Move struct {
 	reverseMove    *Move
 }
 
+func (m Move) String() string {
+	var pp string
+	for _, each := range m.piecePositions {
+		pp += fmt.Sprintf("%s on %s;", each.piece, each.position)
+	}
+	return fmt.Sprintf("move: \"%s%s\", pp's: %s", m.fromSquare, m.toSquare, pp)
+}
+
 func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move {
-	p := board[fromSquare]
 	var moves []Move
-	var player Player
 	if fromSquare == none {
 		return moves
 	}
+
+	p := board[fromSquare]
+	var player Player
 
 	switch {
 	case p > 0:

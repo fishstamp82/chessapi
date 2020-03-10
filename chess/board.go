@@ -3,6 +3,8 @@ package chess
 import (
 	"errors"
 	"fmt"
+	"os"
+	"runtime/debug"
 	"strings"
 )
 
@@ -10,7 +12,8 @@ type Context struct {
 	State               State
 	PlayersTurn         Player
 	Winner              Player
-	Score               string
+	Score               string // 1-0, 0-1, 1/2-1/2
+	moves               []Move
 	whiteCanCastleRight bool
 	whiteCanCastleLeft  bool
 	blackCanCastleRight bool
@@ -21,8 +24,6 @@ type Context struct {
 type Board struct {
 	board   [64]Piece
 	Context Context
-	winner  Player
-	score   string // 1 - 0, 0-1, \u00BD
 }
 
 //CLI repr of board
@@ -39,7 +40,7 @@ func (b *Board) BoardMap() map[string]string {
 // error is nil on successful move
 // arguments are two squares : "e2e4"
 func (b *Board) Move(moveStr string) (Context, error) {
-	if b.Context.State != Playing {
+	if b.Context.State != Playing && b.Context.State != Check {
 		return b.Context, errors.New("not in playing state")
 	}
 	fromSquare, toSquare, err := b.getSquare(moveStr)
@@ -101,6 +102,18 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 		return b.Context, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
 	}
 
+	defer func() {
+		// runtime error and move sequence dump
+		if r := recover(); r != nil {
+			fmt.Println(r)
+			fmt.Printf("%s\n", debug.Stack())
+			fmt.Printf("Recovered in move, %s\n", m)
+			for _, mov := range b.Context.moves {
+				fmt.Printf("\"%s%s\"\n", mov.fromSquare, mov.toSquare)
+			}
+			os.Exit(0)
+		}
+	}()
 	b.board = makeMove(m, b.board)
 
 	opponentsKing := getKingSquare(opponent, b.board)
@@ -123,6 +136,7 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 	b.abortCastling(m)
 	b.Context.enPassantSquare = b.getEnPassantSquare(m)
 
+	b.Context.moves = append(b.Context.moves, m)
 	// Switch to other player
 	b.switchTurn()
 	return b.Context, nil

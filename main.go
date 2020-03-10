@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"sort"
-	"strings"
 	"time"
 )
 
@@ -42,11 +41,11 @@ func main() {
 			fmt.Println(pretty(b.BoardMap()))
 		}
 		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
-		reader = bufio.NewReader(os.Stdin)
-		//m1, m2 = pickRandom()
-		move, _ = reader.ReadString('\n')
-		move = strings.TrimSuffix(move, "\n")
-		fmt.Printf("move : %s\n", move)
+		//reader = bufio.NewReader(os.Stdin)
+		//move, _ = reader.ReadString('\n')
+		//move = strings.TrimSuffix(move, "\n")
+		//fmt.Printf("move : %s\n", move)
+		move = pickRandom()
 		context, err = b.Move(move)
 
 		if err != nil {
@@ -61,19 +60,20 @@ func main() {
 			fmt.Println(pretty(b.BoardMap()))
 			break
 		}
+		fmt.Println(pretty(b.BoardMap()))
 	}
 	for _, val := range moves {
 		fmt.Println(val)
 	}
 }
 
-func pickRandom() (string, string) {
+func pickRandom() string {
 	rand.Seed(time.Now().UnixNano())
 	lane := [8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
 	rank := [8]string{"1", "2", "3", "4", "5", "6", "7", "8"}
 	moveFrom := lane[rand.Intn(8)] + rank[rand.Intn(8)]
 	moveTo := lane[rand.Intn(8)] + rank[rand.Intn(8)]
-	return moveFrom, moveTo
+	return moveFrom + moveTo
 }
 
 func pretty(m map[string]string) string {
