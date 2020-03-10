@@ -8,7 +8,7 @@ import (
 func TestCheck(t *testing.T) {
 	table := []struct {
 		moves    [][2]string
-		expected bool
+		expected string
 	}{
 		{
 			moves: [][2]string{
@@ -17,7 +17,7 @@ func TestCheck(t *testing.T) {
 				{"f2", "f4"},
 				{"d8", "h4"},
 			},
-			expected: true,
+			expected: "Check",
 		},
 		{
 			moves: [][2]string{
@@ -26,17 +26,23 @@ func TestCheck(t *testing.T) {
 				{"f2", "f4"},
 				{"d8", "g5"},
 			},
-			expected: false,
+			expected: "Playing",
 		},
 	}
 
+	var ctx chess.Context
+	var err error
 	for _, row := range table {
 		b := chess.NewMailBoxBoard()
 		for _, val := range row.moves {
-			s, t := val[0], val[1]
-			_, _ = b.Move(s, t)
+			s, toSquare := val[0], val[1]
+			ctx, err = b.Move(s, toSquare)
+			if err != nil {
+				t.Errorf("error: %s\n", err)
+			}
+
 		}
-		if b.IsCheck() != row.expected {
+		if ctx.State.String() != row.expected {
 			t.Errorf("not in check ")
 		}
 	}
@@ -45,7 +51,7 @@ func TestCheck(t *testing.T) {
 func TestCheckMate(t *testing.T) {
 	table := []struct {
 		moves    [][2]string
-		expected bool
+		expected string
 		won      string
 	}{
 		{
@@ -58,8 +64,8 @@ func TestCheckMate(t *testing.T) {
 				{"b7", "b6"},
 				{"f3", "f7"},
 			},
-			expected: true,
-			won:      "white",
+			expected: "CheckMate",
+			won:      "White",
 		},
 		{
 			moves: [][2]string{
@@ -68,8 +74,8 @@ func TestCheckMate(t *testing.T) {
 				{"f2", "f4"},
 				{"d8", "g5"},
 			},
-			expected: false,
-			won:      "",
+			expected: "Playing",
+			won:      "Noone",
 		},
 	}
 
@@ -83,10 +89,10 @@ func TestCheckMate(t *testing.T) {
 				t.Error("error")
 			}
 		}
-		if b.CheckMate() != row.expected {
+		if b.Context.State.String() != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)
 		}
-		if won, _ := b.Won(); won != row.won {
+		if won := b.Context.Winner; won.String() != row.won {
 			t.Errorf("expected: %s, got: %s for case %d\n", row.won, won, ind+1)
 		}
 	}

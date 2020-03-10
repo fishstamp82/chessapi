@@ -24,7 +24,7 @@ package chess
 //			},
 //			promotion:        WhiteRook,
 //			expectedStateOne: Promo,
-//			expectedStateTwo: Over,
+//			expectedStateTwo: CheckMate,
 //			checkMate:        true,
 //		},
 //	}

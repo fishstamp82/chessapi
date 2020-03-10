@@ -20,7 +20,7 @@ func main() {
 	var m1, m2 string
 	var err error
 	var moves [][2]string
-	var state chess.State
+	var context chess.Context
 
 	go func(moves *[][2]string) {
 		for _ = range c {
@@ -49,19 +49,19 @@ func main() {
 		//reader = bufio.NewReader(os.Stdin)
 		//m2, _ = reader.ReadString('\n')
 		//m2 = strings.TrimSuffix(m2, "\n")
-		state, err = b.Move(m1, m2)
+		context, err = b.Move(m1, m2)
 
 		if err != nil {
 			//fmt.Println(err)
 		} else {
 			moves = append(moves, [2]string{m1, m2})
 		}
-		if state == chess.Promo {
+		if context.State == chess.Promo {
 			//read input from player
 			continue
 		}
-		if b.CheckMate() {
-			winner, _ := b.Won()
+		if context.State == chess.CheckMate {
+			winner := context.Winner
 			fmt.Printf("game over, %s won", winner)
 			fmt.Println(pretty(b.BoardMap()))
 			break

@@ -38,19 +38,19 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
+	_ = x[Noone-0]
 	_ = x[White-1]
 	_ = x[Black-2]
-	_ = x[Noone-3]
+	_ = x[Both-3]
 }
 
-const _Player_name = "WhiteBlackNoone"
+const _Player_name = "NooneWhiteBlackBoth"
 
-var _Player_index = [...]uint8{0, 5, 10, 15}
+var _Player_index = [...]uint8{0, 5, 10, 15, 19}
 
 func (i Player) String() string {
-	i -= 1
 	if i >= Player(len(_Player_index)-1) {
-		return "Player(" + strconv.FormatInt(int64(i+1), 10) + ")"
+		return "Player(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 	return _Player_name[_Player_index[i]:_Player_index[i+1]]
 }
@@ -141,14 +141,15 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[Playing-1]
-	_ = x[Over-2]
-	_ = x[Draw-3]
-	_ = x[Promo-4]
+	_ = x[Check-2]
+	_ = x[CheckMate-3]
+	_ = x[Draw-4]
+	_ = x[Promo-5]
 }
 
-const _State_name = "PlayingOverDrawPromo"
+const _State_name = "PlayingCheckCheckMateDrawPromo"
 
-var _State_index = [...]uint8{0, 7, 11, 15, 20}
+var _State_index = [...]uint8{0, 7, 12, 21, 25, 30}
 
 func (i State) String() string {
 	i -= 1
@@ -168,13 +169,12 @@ func _() {
 	_ = x[Promotion-4]
 	_ = x[CapturePromotion-5]
 	_ = x[CaptureEnPassant-6]
-	_ = x[Check-7]
-	_ = x[CheckMate-8]
+	_ = x[CheckMove-7]
 }
 
-const _MovementType_name = "RegularCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckCheckMate"
+const _MovementType_name = "RegularCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckMove"
 
-var _MovementType_index = [...]uint8{0, 7, 14, 25, 35, 44, 60, 76, 81, 90}
+var _MovementType_index = [...]uint8{0, 7, 14, 25, 35, 44, 60, 76, 85}
 
 func (i MovementType) String() string {
 	if i >= MovementType(len(_MovementType_index)-1) {

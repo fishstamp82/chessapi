@@ -14,7 +14,7 @@ type Move struct {
 	reverseMove    *Move
 }
 
-func validMoves(fromSquare Square, board [64]Piece, ctx context) []Move {
+func validMoves(fromSquare Square, board [64]Piece, ctx Context) []Move {
 	p := board[fromSquare]
 	var moves []Move
 	var player Player
@@ -404,7 +404,7 @@ func kingMoves(fromSquare Square, board [64]Piece) []Move {
 	return moves
 }
 
-func castleMoves(kingSquare Square, b [64]Piece, ctx context) []Move {
+func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	var moves []Move
 	var piece = b[kingSquare]
 

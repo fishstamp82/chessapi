@@ -6,7 +6,7 @@ import (
 
 func TestInitialization(t *testing.T) {
 	b := NewMailBoxBoard()
-	if b.PlayersTurn() != "white" {
+	if b.Context.PlayersTurn != White {
 		t.Error("not white's turn on start of the game")
 	}
 
@@ -86,7 +86,7 @@ func TestEnPassant(t *testing.T) {
 			s, to := val[0], val[1]
 			_, _ = b.Move(s, to)
 		}
-		moves := pawnMoves(e5, b.board, b.context.enPassantSquare)
+		moves := pawnMoves(e5, b.board, b.Context.enPassantSquare)
 		if !sameAfterMoveSort(moves, row.expectedMoves) {
 			t.Errorf("got: %s, expected: %s\n", printPrettyMoves(moves), printPrettyMoves(row.expectedMoves))
 		}

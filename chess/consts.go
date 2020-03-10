@@ -35,14 +35,16 @@ func (nm *NoMoveError) Error() string {
 }
 
 const (
-	White Player = iota + 1 // 1
-	Black                   // 2
-	Noone                   // 2
+	Noone Player = iota
+	White        // 1
+	Black        // 2
+	Both         // 2
 )
 
 const (
 	Playing State = iota + 1
-	Over
+	Check
+	CheckMate
 	Draw
 	Promo
 )
@@ -55,8 +57,7 @@ const (
 	Promotion
 	CapturePromotion
 	CaptureEnPassant
-	Check
-	CheckMate
+	CheckMove
 )
 
 const (

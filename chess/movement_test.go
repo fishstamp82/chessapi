@@ -65,7 +65,7 @@ func TestPawnMoves(t *testing.T) {
 			}
 		}
 
-		got := pawnMoves(row.pawnPos, b.board, b.context.enPassantSquare)
+		got := pawnMoves(row.pawnPos, b.board, b.Context.enPassantSquare)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
@@ -389,7 +389,7 @@ func TestKingMoves(t *testing.T) {
 		}
 
 		got := fun1(row.pos, b.board)
-		got = append(got, fun2(row.pos, b.board, b.context)...)
+		got = append(got, fun2(row.pos, b.board, b.Context)...)
 		if !sameAfterMoveSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
