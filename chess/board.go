@@ -49,7 +49,18 @@ func (b *Board) Move(moveStr string) (Context, error) {
 	}
 
 	return b.move(fromSquare, toSquare)
+}
 
+func (b *Board) ValidMoves() ([]string, error) {
+	if b.Context.State != Playing && b.Context.State != Check {
+		return nil, errors.New("not in playing state")
+	}
+	moves := validMovesForPlayer(b.Context.PlayersTurn, b.board, b.Context)
+	var strMoves []string
+	for _, move := range moves {
+		strMoves = append(strMoves, move.fromSquare.String()+move.toSquare.String())
+	}
+	return strMoves, nil
 }
 
 //func (b *Board) Promote(p Piece) (State, error) {

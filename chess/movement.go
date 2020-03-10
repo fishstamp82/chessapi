@@ -62,7 +62,7 @@ func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move
 func validMovesForPlayer(player Player, board [64]Piece, ctx Context) []Move {
 	var moves []Move
 	var pieces []Piece
-	var square Square
+	var squares []Square
 
 	switch player {
 	case White:
@@ -71,22 +71,25 @@ func validMovesForPlayer(player Player, board [64]Piece, ctx Context) []Move {
 		pieces = append(pieces, BlackPawn, BlackBishop, BlackKnight, BlackRook, BlackQueen, BlackKing)
 	}
 	for _, piece := range pieces {
-		square = getPieceSquare(piece, board)
-		moves = append(moves, validMovesForSquare(square, board, ctx)...)
+		squares = getPieceSquares(piece, board)
+		for _, square := range squares {
+			moves = append(moves, validMovesForSquare(square, board, ctx)...)
+		}
 	}
 	moves = cleanMovesInCheck(moves, board, player)
 	return moves
 }
 
-func getPieceSquare(piece Piece, board [64]Piece) Square {
+func getPieceSquares(piece Piece, board [64]Piece) []Square {
 	var p Piece
 	var i int
+	var squares []Square
 	for i, p = range board {
 		if piece == p {
-			return Square(i)
+			squares = append(squares, Square(i))
 		}
 	}
-	return none
+	return squares
 }
 
 //remove moves that result in player being in check

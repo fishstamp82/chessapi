@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -36,16 +37,28 @@ func main() {
 	}(&moves)
 
 	b := chess.NewMailBoxBoard()
+	var allMoves string
 	for {
 		if err == nil {
 			fmt.Println(pretty(b.BoardMap()))
 		}
 		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
-		//reader = bufio.NewReader(os.Stdin)
-		//move, _ = reader.ReadString('\n')
-		//move = strings.TrimSuffix(move, "\n")
-		//fmt.Printf("move : %s\n", move)
-		move = pickRandom()
+		validMoves, err := b.ValidMoves()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		allMoves = ""
+		for _, moveStr := range validMoves {
+			allMoves += ";" + moveStr
+		}
+		fmt.Printf("possible moves: %s", allMoves)
+		reader = bufio.NewReader(os.Stdin)
+		move, _ = reader.ReadString('\n')
+		move = strings.TrimSuffix(move, "\n")
+		fmt.Printf("move : %s\n", move)
+		//move = pickRandom()
 		context, err = b.Move(move)
 
 		if err != nil {
