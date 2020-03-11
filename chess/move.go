@@ -1,6 +1,8 @@
 package chess
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type piecePosition struct {
 	piece    Piece
@@ -973,6 +975,37 @@ func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
 				position: d8,
 			},
 		)
+	}
+	return move
+}
+
+func createPawnPromotionMove(f, t Square, pawn, targetPiece, promotionPiece Piece, mt MovementType) Move {
+	move := Move{
+		fromSquare: f,
+		toSquare:   t,
+		piecePositions: []piecePosition{
+			{
+				piece:    promotionPiece,
+				position: t,
+			},
+			{
+				piece:    Empty,
+				position: f,
+			},
+		},
+		reverseMove: &Move{
+			piecePositions: []piecePosition{
+				{
+					piece:    pawn,
+					position: f,
+				},
+				{
+					piece:    targetPiece,
+					position: t,
+				},
+			},
+		},
+		moveType: mt,
 	}
 	return move
 }
