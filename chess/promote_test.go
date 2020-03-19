@@ -33,7 +33,7 @@ package chess
 //	var err error
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		for _, pp := range row.initialBoard {
 //			b.board[pp.position] = pp.piece
 //		}

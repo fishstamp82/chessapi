@@ -370,7 +370,7 @@ func (b *Board) switchTurn() {
 	}
 }
 
-func NewMailBoxBoard() *Board {
+func NewBoard() *Board {
 	b := &Board{
 		Context: Context{
 			State:               Playing,
@@ -417,7 +417,7 @@ func NewMailBoxBoard() *Board {
 	return b
 }
 
-func NewEmptyMailBoxBoard() *Board {
+func NewEmptyBoard() *Board {
 	b := &Board{
 		Context: Context{
 			State:       Playing,
@@ -425,4 +425,33 @@ func NewEmptyMailBoxBoard() *Board {
 		},
 	}
 	return b
+}
+
+func NewFromFEN(fen string) *Board {
+	var i int
+	var skip Square
+	//rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+	board := strings.Split(fen, " ")[0]
+	ranks := strings.Split(board, "/")
+
+	boardIdx := a1
+	finalBoard := map[Square]Piece{}
+	for _, rank := range ranks {
+		for i = 0; i < len(rank); i++ {
+			skip = 1
+			switch rank[i] {
+			case 'p':
+				finalBoard[boardIdx] = WhitePawn
+			case 'b':
+				finalBoard[boardIdx] = WhiteBishop
+			}
+			boardIdx += skip
+		}
+	}
+
+	eb := NewEmptyBoard()
+	for key, val := range finalBoard {
+		eb.board[key] = val
+	}
+	return eb
 }

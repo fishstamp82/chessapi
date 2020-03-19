@@ -25,7 +25,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whitePawn] = WhitePawn
 //		for _, val := range row.blackPawns {
 //			b.board[val] = BlackPawn
@@ -63,7 +63,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whiteBishop] = WhiteBishop
 //		for _, val := range row.blackBishops {
 //			b.board[val] = BlackBishop
@@ -101,7 +101,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whiteKnight] = WhiteKnight
 //		for _, val := range row.blackKnights {
 //			b.board[val] = BlackKnight
@@ -139,7 +139,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whiteRook] = WhiteRook
 //		for _, val := range row.blackRooks {
 //			b.board[val] = BlackRook
@@ -175,7 +175,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whiteQueen] = WhiteQueen
 //		for _, val := range row.blackQueens {
 //			b.board[val] = BlackQueen
@@ -206,7 +206,7 @@ package chess
 //	}
 //
 //	for _, row := range table {
-//		b := NewEmptyMailBoxBoard()
+//		b := NewEmptyBoard()
 //		b.board[row.whiteKing] = WhiteKing
 //		for _, val := range row.blackBishop {
 //			b.board[val] = BlackKing

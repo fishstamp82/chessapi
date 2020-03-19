@@ -8,8 +8,8 @@ import (
 
 func TestPawnMoves(t *testing.T) {
 	var piece = WhitePawn
-	b := NewMailBoxBoard()
-	be4 := NewMailBoxBoard()
+	b := NewBoard()
+	be4 := NewBoard()
 	be4.board[e4] = piece
 	table := []struct {
 		moves    []string
@@ -56,7 +56,7 @@ func TestPawnMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -65,7 +65,7 @@ func TestPawnMoves(t *testing.T) {
 		}
 
 		got := pawnMoves(row.pawnPos, b.board, b.Context.enPassantSquare)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
 		}
@@ -74,8 +74,8 @@ func TestPawnMoves(t *testing.T) {
 
 func TestBishopMoves(t *testing.T) {
 	var piece = WhiteBishop
-	bf1 := NewMailBoxBoard()
-	bc4 := NewMailBoxBoard()
+	bf1 := NewBoard()
+	bc4 := NewBoard()
 	bf1.board[f1] = piece
 	bc4.board[c4] = piece
 	table := []struct {
@@ -123,7 +123,7 @@ func TestBishopMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -132,7 +132,7 @@ func TestBishopMoves(t *testing.T) {
 		}
 
 		got := bishopMoves(row.pos, b.board)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
@@ -142,7 +142,7 @@ func TestBishopMoves(t *testing.T) {
 func TestKnightMoves(t *testing.T) {
 	var piece = WhiteKnight
 	var fun = knightMoves
-	b := NewMailBoxBoard()
+	b := NewBoard()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -190,7 +190,7 @@ func TestKnightMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -199,7 +199,7 @@ func TestKnightMoves(t *testing.T) {
 		}
 
 		got := fun(row.pos, b.board)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
@@ -209,7 +209,7 @@ func TestKnightMoves(t *testing.T) {
 func TestRookMoves(t *testing.T) {
 	var piece = WhiteRook
 	var fun = rookMoves
-	b := NewMailBoxBoard()
+	b := NewBoard()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -237,7 +237,7 @@ func TestRookMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -246,7 +246,7 @@ func TestRookMoves(t *testing.T) {
 		}
 
 		got := fun(row.pos, b.board)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
@@ -256,7 +256,7 @@ func TestRookMoves(t *testing.T) {
 func TestQueenMoves(t *testing.T) {
 	var piece = WhiteQueen
 	var fun = queenMoves
-	b := NewMailBoxBoard()
+	b := NewBoard()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -290,7 +290,7 @@ func TestQueenMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -299,7 +299,7 @@ func TestQueenMoves(t *testing.T) {
 		}
 
 		got := fun(row.pos, b.board)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
@@ -310,7 +310,7 @@ func TestKingMoves(t *testing.T) {
 	var piece = WhiteKing
 	var fun1 = kingMoves
 	var fun2 = castleMoves
-	b := NewMailBoxBoard()
+	b := NewBoard()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -374,7 +374,7 @@ func TestKingMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -384,7 +384,7 @@ func TestKingMoves(t *testing.T) {
 
 		got := fun1(row.pos, b.board)
 		got = append(got, fun2(row.pos, b.board, b.Context)...)
-		if !sameAfterMoveSort(got, row.expected) {
+		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
 		}
@@ -421,7 +421,7 @@ func sameAfterSquareSort(a, b []Square) bool {
 	return true
 }
 
-func sameAfterMoveSort(a, b []Move) bool {
+func isMovesEqual(a, b []Move) bool {
 	sort.Slice(a, func(i, j int) bool { return a[i].toSquare < a[j].toSquare })
 	sort.Slice(b, func(i, j int) bool { return b[i].toSquare < b[j].toSquare })
 	if len(a) != len(b) {

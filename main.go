@@ -35,7 +35,7 @@ func main() {
 		}
 	}(&moves)
 
-	b := chess.NewMailBoxBoard()
+	b := chess.NewBoard()
 	var allMoves string
 	_ = allMoves
 	for {

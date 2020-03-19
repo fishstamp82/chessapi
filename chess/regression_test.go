@@ -23,7 +23,7 @@ func TestWhitesTurn(t *testing.T) {
 	}
 	var ctx Context
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 		for _, move := range row.moves {
 			ctx, _ = b.Move(move)
 		}

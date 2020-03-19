@@ -18,7 +18,7 @@ func TestBoardMap(t *testing.T) {
 	}
 
 	for ind, row := range table {
-		b := chess.NewMailBoxBoard()
+		b := chess.NewBoard()
 		bMap := b.BoardMap()
 		for key, _ := range bMap {
 			if key == row.square {

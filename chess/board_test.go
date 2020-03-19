@@ -5,7 +5,7 @@ import (
 )
 
 func TestInitialization(t *testing.T) {
-	b := NewMailBoxBoard()
+	b := NewBoard()
 	if b.Context.PlayersTurn != White {
 		t.Error("not white's turn on start of the game")
 	}
@@ -80,13 +80,13 @@ func TestEnPassant(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewMailBoxBoard()
+		b := NewBoard()
 
 		for _, move := range row.moves {
 			_, _ = b.Move(move)
 		}
 		moves := pawnMoves(e5, b.board, b.Context.enPassantSquare)
-		if !sameAfterMoveSort(moves, row.expectedMoves) {
+		if !isMovesEqual(moves, row.expectedMoves) {
 			t.Errorf("got: %s, expected: %s\n", printPrettyMoves(moves), printPrettyMoves(row.expectedMoves))
 		}
 	}
