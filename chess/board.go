@@ -532,11 +532,9 @@ func NewEmptyBoard() *Board {
 }
 
 func NewFromFEN(fen string) *Board {
-	//rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 	board := strings.Split(fen, " ")[0]
 	ranks := strings.Split(board, "/")
 
-	//boardIdx := a8
 	finalBoard := map[Square]Piece{}
 	var i, j, row, skip int
 	var boardIdx Square
@@ -552,24 +550,8 @@ func NewFromFEN(fen string) *Board {
 				finalBoard[boardIdx] = piece
 				skip = 1
 			}
-			//boardIdx += skip
-
 		}
 	}
-	//for _, rank := range ranks {
-	//	boardIdx -= 8
-	//	for i = 0; i < len(rank); i++ {
-	//		switch piece := fenToPiece[strconv.Itoa(int(rank[i]))]; {
-	//		case piece == Empty:
-	//			skip = Square(rank[i])
-	//		default:
-	//			finalBoard[Square(rank[i])] = piece
-	//			skip = Square(1)
-	//		}
-	//		boardIdx += skip
-	//	}
-	//}
-
 	eb := NewEmptyBoard()
 	for key, val := range finalBoard {
 		eb.board[key] = val
