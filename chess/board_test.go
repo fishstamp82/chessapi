@@ -202,6 +202,25 @@ func TestNewFromFEN(t *testing.T) {
 				fullMove:            1,
 			},
 		},
+		{
+			fen: "8/8/8/8/8/8/8/7R w KQkq - 0 1",
+			piecePositions: []piecePosition{
+				{h1, WhiteRook},
+			},
+			context: Context{
+				State:               Playing,
+				PlayersTurn:         White,
+				Winner:              Noone,
+				Score:               "",
+				whiteCanCastleRight: true,
+				whiteCanCastleLeft:  true,
+				blackCanCastleRight: true,
+				blackCanCastleLeft:  true,
+				enPassantSquare:     none,
+				halfMove:            0,
+				fullMove:            1,
+			},
+		},
 	}
 
 	for _, row := range table {

@@ -536,19 +536,20 @@ func NewFromFEN(fen string) *Board {
 	ranks := strings.Split(board, "/")
 
 	finalBoard := map[Square]Piece{}
-	var i, j, row, skip int
+	var i, j, row, col, toSkip int
 	var boardIdx Square
 	for i = 0; i < len(ranks); i++ {
 		row = 7 - i
-		skip = 1
-		for j = 0; j < 8; j += skip {
-			boardIdx = Square(row*8 + j)
+		col = 0
+		for j = 0; j < len(ranks[i]); j++ {
+			boardIdx = Square(row*8 + col)
 			switch piece := fenToPiece[ranks[i][j]]; {
 			case piece == Empty:
-				skip, _ = strconv.Atoi(ranks[i][j : j+1])
+				toSkip, _ = strconv.Atoi(ranks[i][j : j+1])
+				col += toSkip
 			default:
 				finalBoard[boardIdx] = piece
-				skip = 1
+				col += 1
 			}
 		}
 	}
