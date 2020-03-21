@@ -3,15 +3,24 @@ package main
 import (
 	"bufio"
 	"chessapi/chess"
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
 	"os/signal"
 	"sort"
+	"strings"
 	"time"
 )
 
+var random bool
+
+func init() {
+	flag.BoolVar(&random, "random", false, "turn on random game")
+}
+
 func main() {
+	flag.Parse()
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
@@ -21,10 +30,12 @@ func main() {
 	var err error
 	var moves [][2]string
 	var context chess.Context
+	var b *chess.Board
 
 	go func(moves *[][2]string) {
 		for _ = range c {
-			fmt.Printf("starting dump for reg test\n")
+			fmt.Printf("fen:\n")
+			fmt.Printf("%s\n", b)
 			fmt.Printf("moves: [][2]string{\n")
 			for _, each := range *moves {
 				fmt.Printf("\t{\"%s\", \"%s\"},\n", each[0], each[1])
@@ -35,7 +46,7 @@ func main() {
 		}
 	}(&moves)
 
-	b := chess.NewBoard()
+	b = chess.NewBoard()
 	var allMoves string
 	_ = allMoves
 	for {
@@ -48,12 +59,18 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		//reader = bufio.NewReader(os.Stdin)
-		//move, _ = reader.ReadString('\n')
-		//move = strings.TrimSuffix(move, "\n")
-		//fmt.Printf("move : %s\n", move)
-		//move = pickRandom()
-		move = pickRandomString(validMoves)
+
+		if random {
+			move = pickRandom()
+			move = pickRandomString(validMoves)
+
+		} else {
+			reader = bufio.NewReader(os.Stdin)
+			move, _ = reader.ReadString('\n')
+			move = strings.TrimSuffix(move, "\n")
+			fmt.Printf("move : %s\n", move)
+
+		}
 		context, err = b.Move(move)
 
 		if err != nil {

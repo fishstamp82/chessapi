@@ -94,6 +94,7 @@ func TestEnPassant(t *testing.T) {
 }
 
 func TestNewFromFEN(t *testing.T) {
+	startingFen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	type piecePosition struct {
 		position Square
 		piece    Piece
@@ -104,7 +105,7 @@ func TestNewFromFEN(t *testing.T) {
 		context        Context
 	}{
 		{
-			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			fen: startingFen,
 			piecePositions: []piecePosition{
 				{a2, WhitePawn},
 				{b2, WhitePawn},

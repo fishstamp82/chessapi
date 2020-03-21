@@ -99,8 +99,8 @@ func (b *Board) fenString() string {
 	} else {
 		enpassant = "-"
 	}
-	fullMove := strconv.Itoa(b.Context.fullMove)
 	halfMove := strconv.Itoa(b.Context.halfMove)
+	fullMove := strconv.Itoa(b.Context.fullMove)
 	return fmt.Sprintf("%s %s %s %s %s %s", board, toMove, castle, enpassant, halfMove, fullMove)
 }
 
@@ -163,22 +163,6 @@ func (b *Board) ValidMoves() ([]string, error) {
 	}
 	return strMoves, nil
 }
-
-//func (b *Board) Promote(p Piece) (State, error) {
-//	if !validPromotion(p, b.Context.PlayersTurn) {
-//		return b.state, errors.New(fmt.Sprintf("%s not a valid piece \n", pieceToUnicode[p]))
-//	}
-//	b.board[b.Context.PawnPromotionSquare] = p
-//
-//if b.isCheckMated(b.getOpponent(b.Context.PlayersTurn)) {
-//	b.state = CheckMate
-//	return b.state, nil
-//}
-//
-//	b.state = Playing
-//	b.switchTurn()
-//	return Playing, nil
-//}
 
 func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 
@@ -486,6 +470,8 @@ func NewBoard() *Board {
 			whiteCanCastleLeft:  true,
 			blackCanCastleRight: true,
 			blackCanCastleLeft:  true,
+			halfMove:            0,
+			fullMove:            1,
 		},
 	}
 
