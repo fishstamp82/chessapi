@@ -42,7 +42,7 @@ func (b *Board) squaresWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func getKingSquare(p Player, b [64]Piece) Square {
+func getKingSquareMust(p Player, b [64]Piece) Square {
 	var king Piece
 	switch p {
 	case White:

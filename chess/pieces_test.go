@@ -93,7 +93,7 @@ func TestKingSquare(t *testing.T) {
 			b.board[val.pos] = val.piece
 		}
 
-		got := getKingSquare(row.player, b.board)
+		got := getKingSquareMust(row.player, b.board)
 		if got != row.expected {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				got, row.expected, ind+1)

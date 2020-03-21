@@ -216,7 +216,7 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 
 	b.board = makeMove(m, b.board)
 
-	opponentsKing := getKingSquare(opponent, b.board)
+	opponentsKing := getKingSquareMust(opponent, b.board)
 	if inCheck(opponentsKing, b.board) {
 		b.Context.State = Check
 	} else {
@@ -372,7 +372,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	var tmpKingSquare Square
 	for _, move := range kingMoves(kingSquare, board) {
 		board = makeMove(move, board)
-		tmpKingSquare = getKingSquare(hero, board)
+		tmpKingSquare = getKingSquareMust(hero, board)
 		if !inCheck(tmpKingSquare, board) {
 			return false
 		}

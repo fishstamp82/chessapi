@@ -97,7 +97,7 @@ func cleanMovesInCheck(m []Move, b [64]Piece, p Player) []Move {
 	var cleanMoves []Move
 	for _, move := range m {
 		b = makeMove(move, b)
-		ks := getKingSquare(p, b)
+		ks := getKingSquareMust(p, b)
 		if !inCheck(ks, b) {
 			cleanMoves = append(cleanMoves, move)
 		}
