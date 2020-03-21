@@ -244,12 +244,16 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 	}
 
 	//Increment half move if this was not a pawn move and not a capture
-	switch m.moveType {
-	//TODO: checkmove will increment for pawns, fix this to list
-	case Regular, LongCastle, ShortCastle, CheckMove:
-		b.Context.halfMove += 1
-	case Promotion, CapturePromotion, CaptureEnPassant:
+	isPawnMove := false
+	for _, moveType := range m.moveTypes {
+		if moveType == PawnMove {
+			isPawnMove = true
+		}
+	}
+	if isPawnMove {
 		b.Context.halfMove = 0
+	} else {
+		b.Context.halfMove += 1
 	}
 
 	// Switch to other player

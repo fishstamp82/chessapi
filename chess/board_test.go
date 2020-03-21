@@ -73,8 +73,8 @@ func TestEnPassant(t *testing.T) {
 				"f7f5",
 			},
 			expectedMoves: []Move{
-				createPawnMove(piece, e5, e6, Regular),
-				createPawnEnPassantMove(piece, e5, f6, CaptureEnPassant),
+				createPawnMove(piece, e5, e6, []MovementType{Regular, PawnMove}),
+				createPawnEnPassantMove(piece, e5, f6, []MovementType{CaptureEnPassant, PawnMove}),
 			},
 		},
 	}

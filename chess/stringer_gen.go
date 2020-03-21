@@ -163,18 +163,19 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[Regular-0]
-	_ = x[Capture-1]
-	_ = x[ShortCastle-2]
-	_ = x[LongCastle-3]
-	_ = x[Promotion-4]
-	_ = x[CapturePromotion-5]
-	_ = x[CaptureEnPassant-6]
-	_ = x[CheckMove-7]
+	_ = x[PawnMove-1]
+	_ = x[Capture-2]
+	_ = x[ShortCastle-3]
+	_ = x[LongCastle-4]
+	_ = x[Promotion-5]
+	_ = x[CapturePromotion-6]
+	_ = x[CaptureEnPassant-7]
+	_ = x[CheckMove-8]
 }
 
-const _MovementType_name = "RegularCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckMove"
+const _MovementType_name = "RegularPawnMoveCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckMove"
 
-var _MovementType_index = [...]uint8{0, 7, 14, 25, 35, 44, 60, 76, 85}
+var _MovementType_index = [...]uint8{0, 7, 15, 22, 33, 43, 52, 68, 84, 93}
 
 func (i MovementType) String() string {
 	if i >= MovementType(len(_MovementType_index)-1) {

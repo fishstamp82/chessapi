@@ -12,7 +12,7 @@ type Move struct {
 	fromSquare     Square
 	toSquare       Square
 	piecePositions []piecePosition // Resulting pieces in each square
-	moveType       MovementType
+	moveTypes      []MovementType
 	reverseMove    *Move
 }
 
@@ -370,11 +370,11 @@ func knightMoves(fromSquare Square, board [64]Piece) []Move {
 			continue
 		}
 		if isWhite && board[toSquare] < 0 {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Capture}))
 		} else if !isWhite && board[toSquare] > 0 {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Capture}))
 		} else if board[toSquare] == Empty {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Regular))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Regular}))
 		}
 	}
 	return moves
@@ -441,11 +441,11 @@ func kingMoves(fromSquare Square, board [64]Piece) []Move {
 			continue
 		}
 		if (board[toSquare] < 0) && isWhite {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Capture}))
 		} else if (board[toSquare] > 0) && isBlack {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Capture))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Capture}))
 		} else if board[toSquare] == Empty {
-			moves = append(moves, createMove(board, fromSquare, toSquare, Regular))
+			moves = append(moves, createMove(board, fromSquare, toSquare, []MovementType{Regular}))
 		}
 	}
 	return moves
@@ -513,16 +513,16 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	}
 
 	if canCastleRight && isWhite {
-		moves = append(moves, createCastleMove(piece, e1, g1, ShortCastle))
+		moves = append(moves, createCastleMove(piece, e1, g1, []MovementType{ShortCastle}))
 	}
 	if canCastleLeft && isWhite {
-		moves = append(moves, createCastleMove(piece, e1, c1, LongCastle))
+		moves = append(moves, createCastleMove(piece, e1, c1, []MovementType{LongCastle}))
 	}
 	if canCastleRight && isBlack {
-		moves = append(moves, createCastleMove(piece, e8, g8, ShortCastle))
+		moves = append(moves, createCastleMove(piece, e8, g8, []MovementType{ShortCastle}))
 	}
 	if canCastleLeft && isBlack {
-		moves = append(moves, createCastleMove(piece, e8, c8, LongCastle))
+		moves = append(moves, createCastleMove(piece, e8, c8, []MovementType{LongCastle}))
 	}
 	return moves
 }
@@ -541,17 +541,17 @@ func movementAlgorithm(fromSquare, startPos Square, startRow Square, startCol Sq
 	var moves []Move
 	for i, r, c := startPos, startRow, startCol; (i.row() == r && i.col() == c) && ((i <= h8) && (i >= a1)); i, r, c = i+movePos, i.row()+moveRow, i.col()+moveCol {
 		if isWhite && board[i] < 0 {
-			moves = append(moves, createMove(board, fromSquare, i, Capture))
+			moves = append(moves, createMove(board, fromSquare, i, []MovementType{Capture}))
 			break
 		} else if isBlack && board[i] > 0 {
-			moves = append(moves, createMove(board, fromSquare, i, Capture))
+			moves = append(moves, createMove(board, fromSquare, i, []MovementType{Capture}))
 			break
 		} else if isWhite && board[i] > 0 {
 			break
 		} else if isBlack && board[i] < 0 {
 			break
 		} else if board[i] == Empty {
-			moves = append(moves, createMove(board, fromSquare, i, Regular))
+			moves = append(moves, createMove(board, fromSquare, i, []MovementType{Regular}))
 		}
 	}
 	return moves
@@ -618,25 +618,25 @@ func pawnMoves(fromSquare Square, b [64]Piece, enPassant Square) []Move {
 		one = pos + oneStep
 		two = pos + twoStep
 		if b[one] == Empty {
-			moves = append(moves, createPawnMove(pawn, fromSquare, one, Regular))
+			moves = append(moves, createPawnMove(pawn, fromSquare, one, []MovementType{Regular, PawnMove}))
 		}
 		if b[one] == Empty && b[two] == Empty {
-			moves = append(moves, createPawnMove(pawn, fromSquare, two, Regular))
+			moves = append(moves, createPawnMove(pawn, fromSquare, two, []MovementType{Regular, PawnMove}))
 		}
 	} else if (rank < finalRank) && (player == White) {
 		one = pos + oneStep
 		if b[one] == Empty {
-			moves = append(moves, createPawnMove(pawn, fromSquare, one, Regular))
+			moves = append(moves, createPawnMove(pawn, fromSquare, one, []MovementType{Regular, PawnMove}))
 		}
 	} else if (rank > finalRank) && (player == Black) {
 		one = pos + oneStep
 		if b[one] == Empty {
-			moves = append(moves, createPawnMove(pawn, fromSquare, one, Regular))
+			moves = append(moves, createPawnMove(pawn, fromSquare, one, []MovementType{Regular, PawnMove}))
 		}
 	} else if rank == finalRank {
 		one = pos + oneStep
 		if b[one] == Empty {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, one, Empty, Promotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, one, Empty, []MovementType{Promotion, PawnMove})...)
 		}
 	} else {
 		panic("pawn can't be on this rank")
@@ -646,90 +646,90 @@ func pawnMoves(fromSquare Square, b [64]Piece, enPassant Square) []Move {
 	if (col == leftmostCol) && (rank < finalRank) && (player == White) {
 		oneDiagonal = pos + diagonalRight
 		if b[oneDiagonal] < 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (col == leftmostCol) && (rank > finalRank) && (player == Black) {
 		oneDiagonal = pos + diagonalRight
 		if b[oneDiagonal] > 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (col == rightmostCol) && (rank < finalRank) && (player == White) {
 		oneDiagonal = pos + diagonalLeft
 		if b[oneDiagonal] < 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (col == rightmostCol) && (rank > finalRank) && (player == Black) {
 		oneDiagonal = pos + diagonalLeft
 		if (player == Black) && (b[oneDiagonal] > 0) {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (rank < finalRank) && (player == White) {
 		oneDiagonal = pos + diagonalRight
 		if b[oneDiagonal] < 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 		oneDiagonal = pos + diagonalLeft
 		if b[oneDiagonal] < 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (rank > finalRank) && (player == Black) {
 		oneDiagonal = pos + diagonalRight
 		if b[oneDiagonal] > 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 		oneDiagonal = pos + diagonalLeft
 		if b[oneDiagonal] > 0 {
-			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, Capture))
+			moves = append(moves, createPawnMove(pawn, fromSquare, oneDiagonal, []MovementType{Capture, PawnMove}))
 		} else if oneDiagonal == enPassant {
-			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, CaptureEnPassant))
+			moves = append(moves, createPawnEnPassantMove(pawn, fromSquare, oneDiagonal, []MovementType{CaptureEnPassant, PawnMove}))
 		}
 	} else if (col == leftmostCol) && (rank == finalRank) {
 		// killing plus promotion
 		oneDiagonal = pos + diagonalRight
 		if (player == White) && (b[oneDiagonal] < 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		} else if (player == Black) && (b[oneDiagonal] > 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		}
 	} else if (col == rightmostCol) && (rank == finalRank) {
 		oneDiagonal = pos + diagonalLeft
 		if (player == White) && (b[oneDiagonal] < 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		} else if (player == Black) && (b[oneDiagonal] > 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		}
 	} else if rank == finalRank {
 		oneDiagonal = pos + diagonalRight
 		if (player == White) && (b[oneDiagonal] < 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		} else if (player == Black) && (b[oneDiagonal] > 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		}
 		oneDiagonal = pos + diagonalLeft
 		if (player == White) && (b[oneDiagonal] < 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		} else if (player == Black) && (b[oneDiagonal] > 0) {
-			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], CapturePromotion)...)
+			moves = append(moves, createPawnPromotionMoves(player, fromSquare, oneDiagonal, b[oneDiagonal], []MovementType{CapturePromotion, PawnMove})...)
 		}
 	}
 	return moves
 }
 
-func createPawnMove(p Piece, f, t Square, mt MovementType) Move {
+func createPawnMove(p Piece, f, t Square, mt []MovementType) Move {
 	return Move{
 		piece:      p,
 		fromSquare: f,
@@ -744,7 +744,7 @@ func createPawnMove(p Piece, f, t Square, mt MovementType) Move {
 				position: f,
 			},
 		},
-		moveType: mt,
+		moveTypes: mt,
 		reverseMove: &Move{
 			piecePositions: []piecePosition{
 				{
@@ -760,7 +760,7 @@ func createPawnMove(p Piece, f, t Square, mt MovementType) Move {
 	}
 }
 
-func createPawnEnPassantMove(p Piece, f, t Square, mt MovementType) Move {
+func createPawnEnPassantMove(p Piece, f, t Square, mt []MovementType) Move {
 	var killPosition Square
 	var killPawn Piece
 	switch p {
@@ -789,7 +789,7 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt MovementType) Move {
 				position: killPosition,
 			},
 		},
-		moveType: mt,
+		moveTypes: mt,
 		reverseMove: &Move{
 			piecePositions: []piecePosition{
 				{
@@ -810,7 +810,7 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt MovementType) Move {
 	return m
 }
 
-func createMove(b [64]Piece, fromSquare, toSquare Square, mt MovementType) Move {
+func createMove(b [64]Piece, fromSquare, toSquare Square, mt []MovementType) Move {
 	fromPiece := b[fromSquare]
 	toPiece := b[toSquare]
 	return Move{
@@ -827,7 +827,7 @@ func createMove(b [64]Piece, fromSquare, toSquare Square, mt MovementType) Move 
 				position: fromSquare,
 			},
 		},
-		moveType: mt,
+		moveTypes: mt,
 		reverseMove: &Move{
 			piecePositions: []piecePosition{
 				{
@@ -847,7 +847,7 @@ func createMove(b [64]Piece, fromSquare, toSquare Square, mt MovementType) Move 
 	}
 }
 
-func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
+func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	move := Move{
 		piece:      p,
 		fromSquare: f,
@@ -874,7 +874,7 @@ func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
 				},
 			},
 		},
-		moveType: mt,
+		moveTypes: mt,
 	}
 
 	var isWhite, isBlack, short, long bool
@@ -887,11 +887,14 @@ func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
 		isWhite = false
 		rook = BlackRook
 	}
-	switch mt {
-	case ShortCastle:
-		short = true
-	case LongCastle:
-		short = false
+
+	for _, moveType := range mt {
+		if moveType == ShortCastle {
+			short = true
+		}
+		if moveType == LongCastle {
+			short = false
+		}
 	}
 	isBlack = !isWhite
 	long = !short
@@ -980,7 +983,7 @@ func createCastleMove(p Piece, f, t Square, mt MovementType) Move {
 	return move
 }
 
-func createPawnPromotionMoves(p Player, f, t Square, targetPiece Piece, mt MovementType) []Move {
+func createPawnPromotionMoves(p Player, f, t Square, targetPiece Piece, mt []MovementType) []Move {
 	var pawn, bishop, knight, rook, queen, target Piece
 	target = targetPiece
 	switch p {
@@ -1024,7 +1027,7 @@ func createPawnPromotionMoves(p Player, f, t Square, targetPiece Piece, mt Movem
 					},
 				},
 			},
-			moveType: mt,
+			moveTypes: mt,
 		})
 	}
 	return moves

@@ -23,8 +23,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: d2,
 			expected: []Move{
-				createMove(b.board, d2, d3, Regular),
-				createMove(b.board, d2, d4, Regular),
+				createMove(b.board, d2, d3, []MovementType{Regular, PawnMove}),
+				createMove(b.board, d2, d4, []MovementType{Regular, PawnMove}),
 			},
 		},
 		{
@@ -34,8 +34,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: e4,
 			expected: []Move{
-				createMove(be4.board, e4, e5, Regular),
-				createMove(be4.board, e4, d5, Capture),
+				createMove(be4.board, e4, e5, []MovementType{Regular, PawnMove}),
+				createMove(be4.board, e4, d5, []MovementType{Capture, PawnMove}),
 			},
 		},
 		{
@@ -50,7 +50,7 @@ func TestPawnMoves(t *testing.T) {
 				"a7a6",
 			},
 			pawnPos:  h7,
-			expected: createPawnPromotionMoves(White, h7, g8, BlackBishop, CapturePromotion),
+			expected: createPawnPromotionMoves(White, h7, g8, BlackBishop, []MovementType{CapturePromotion, PawnMove}),
 		},
 	}
 
@@ -91,11 +91,11 @@ func TestBishopMoves(t *testing.T) {
 			pos:   f1,
 			piece: piece,
 			expected: []Move{
-				createMove(bf1.board, f1, e2, Regular),
-				createMove(bf1.board, f1, d3, Regular),
-				createMove(bf1.board, f1, c4, Regular),
-				createMove(bf1.board, f1, b5, Regular),
-				createMove(bf1.board, f1, a6, Regular),
+				createMove(bf1.board, f1, e2, []MovementType{Regular}),
+				createMove(bf1.board, f1, d3, []MovementType{Regular}),
+				createMove(bf1.board, f1, c4, []MovementType{Regular}),
+				createMove(bf1.board, f1, b5, []MovementType{Regular}),
+				createMove(bf1.board, f1, a6, []MovementType{Regular}),
 			},
 		},
 		{
@@ -108,15 +108,15 @@ func TestBishopMoves(t *testing.T) {
 			pos:   c4,
 			piece: piece,
 			expected: []Move{
-				createMove(bc4.board, c4, f1, Regular),
-				createMove(bc4.board, c4, e2, Regular),
-				createMove(bc4.board, c4, b3, Regular),
-				createMove(bc4.board, c4, d3, Regular),
-				createMove(bc4.board, c4, b5, Regular),
-				createMove(bc4.board, c4, d5, Regular),
-				createMove(bc4.board, c4, a6, Regular),
-				createMove(bc4.board, c4, e6, Regular),
-				createMove(bc4.board, c4, f7, Capture),
+				createMove(bc4.board, c4, f1, []MovementType{Regular}),
+				createMove(bc4.board, c4, e2, []MovementType{Regular}),
+				createMove(bc4.board, c4, b3, []MovementType{Regular}),
+				createMove(bc4.board, c4, d3, []MovementType{Regular}),
+				createMove(bc4.board, c4, b5, []MovementType{Regular}),
+				createMove(bc4.board, c4, d5, []MovementType{Regular}),
+				createMove(bc4.board, c4, a6, []MovementType{Regular}),
+				createMove(bc4.board, c4, e6, []MovementType{Regular}),
+				createMove(bc4.board, c4, f7, []MovementType{Capture}),
 			},
 		},
 	}
@@ -154,8 +154,8 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, g1, f3, Regular),
-				createMove(b.board, g1, h3, Regular),
+				createMove(b.board, g1, f3, []MovementType{Regular}),
+				createMove(b.board, g1, h3, []MovementType{Regular}),
 			},
 		},
 		{
@@ -165,9 +165,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, g1, f3, Regular),
-				createMove(b.board, g1, h3, Regular),
-				createMove(b.board, g1, e2, Regular),
+				createMove(b.board, g1, f3, []MovementType{Regular}),
+				createMove(b.board, g1, h3, []MovementType{Regular}),
+				createMove(b.board, g1, e2, []MovementType{Regular}),
 			},
 		},
 		{
@@ -181,9 +181,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g8,
 			piece: BlackKnight,
 			expected: []Move{
-				createMove(b.board, g8, f6, Capture),
-				createMove(b.board, g8, h6, Regular),
-				createMove(b.board, g8, e7, Regular),
+				createMove(b.board, g8, f6, []MovementType{Capture}),
+				createMove(b.board, g8, h6, []MovementType{Regular}),
+				createMove(b.board, g8, e7, []MovementType{Regular}),
 			},
 		},
 	}
@@ -229,8 +229,8 @@ func TestRookMoves(t *testing.T) {
 			pos:   a1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, a1, a2, Regular),
-				createMove(b.board, a1, a3, Regular),
+				createMove(b.board, a1, a2, []MovementType{Regular}),
+				createMove(b.board, a1, a3, []MovementType{Regular}),
 			},
 		},
 	}
@@ -278,12 +278,12 @@ func TestQueenMoves(t *testing.T) {
 			pos:   d1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, d1, d2, Regular),
-				createMove(b.board, d1, d3, Regular),
-				createMove(b.board, d1, e2, Regular),
-				createMove(b.board, d1, f3, Regular),
-				createMove(b.board, d1, g4, Regular),
-				createMove(b.board, d1, h5, Capture),
+				createMove(b.board, d1, d2, []MovementType{Regular}),
+				createMove(b.board, d1, d3, []MovementType{Regular}),
+				createMove(b.board, d1, e2, []MovementType{Regular}),
+				createMove(b.board, d1, f3, []MovementType{Regular}),
+				createMove(b.board, d1, g4, []MovementType{Regular}),
+				createMove(b.board, d1, h5, []MovementType{Capture}),
 			},
 		},
 	}
@@ -332,8 +332,8 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, e2, Regular),
-				createMove(b.board, e1, d2, Regular),
+				createMove(b.board, e1, e2, []MovementType{Regular}),
+				createMove(b.board, e1, d2, []MovementType{Regular}),
 			},
 		},
 		{
@@ -347,9 +347,9 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, e2, Regular),
-				createMove(b.board, e1, f1, Regular),
-				createMove(b.board, e1, g1, ShortCastle),
+				createMove(b.board, e1, e2, []MovementType{Regular}),
+				createMove(b.board, e1, f1, []MovementType{Regular}),
+				createMove(b.board, e1, g1, []MovementType{ShortCastle}),
 			},
 		},
 		{
@@ -367,7 +367,7 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, d1, Regular),
+				createMove(b.board, e1, d1, []MovementType{Regular}),
 			},
 		},
 	}
@@ -402,7 +402,7 @@ func printPrettySquares(s []Square) []string {
 func printPrettyMoves(s []Move) []string {
 	var str []string
 	for i := 0; i < len(s); i++ {
-		str = append(str, fmt.Sprintf("%s%s;%s", s[i].fromSquare, s[i].toSquare, s[i].moveType))
+		str = append(str, fmt.Sprintf("%s%s;%s", s[i].fromSquare, s[i].toSquare, s[i].moveTypes))
 	}
 	return str
 }
@@ -428,8 +428,16 @@ func isMovesEqual(a, b []Move) bool {
 		return false
 	}
 	for i := 0; i < len(a); i++ {
-		if (a[i].piece != b[i].piece || a[i].toSquare != b[i].toSquare) || a[i].fromSquare != b[i].fromSquare || a[i].moveType != b[i].moveType {
+		if (a[i].piece != b[i].piece || a[i].toSquare != b[i].toSquare) || a[i].fromSquare != b[i].fromSquare {
 			return false
+		}
+		if len(a[i].moveTypes) != len(b[i].moveTypes) {
+			return false
+		}
+		for j := range a[i].moveTypes {
+			if a[i].moveTypes[j] != b[i].moveTypes[j] {
+				return false
+			}
 		}
 	}
 	return true

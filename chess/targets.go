@@ -55,9 +55,9 @@ func pawnTargets(s Square, b [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, []MovementType{Capture, PawnMove}))
 		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, []MovementType{Capture, PawnMove}))
 		}
 	}
 	return targets
@@ -86,9 +86,9 @@ func knightTargets(s Square, board [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && board[move.toSquare] < 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
 		} else if !isWhite && board[move.toSquare] > 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
 
 		}
 	}
@@ -134,9 +134,9 @@ func generalTargets(s Square, board [64]Piece) []Move {
 	}
 	for _, move := range moves {
 		if isWhite && board[move.toSquare] < 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
 		} else if !isWhite && board[move.toSquare] > 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, Capture))
+			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
 
 		}
 	}
