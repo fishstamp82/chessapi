@@ -92,3 +92,132 @@ func TestEnPassant(t *testing.T) {
 	}
 
 }
+
+func TestNewFromFEN(t *testing.T) {
+	type piecePosition struct {
+		position Square
+		piece    Piece
+	}
+	table := []struct {
+		fen            string
+		piecePositions []piecePosition
+		context        Context
+	}{
+		{
+			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			piecePositions: []piecePosition{
+				{a2, WhitePawn},
+				{b2, WhitePawn},
+				{c2, WhitePawn},
+				{d2, WhitePawn},
+				{e2, WhitePawn},
+				{f2, WhitePawn},
+				{g2, WhitePawn},
+				{h2, WhitePawn},
+				{a1, WhiteRook},
+				{b1, WhiteKnight},
+				{c1, WhiteBishop},
+				{d1, WhiteQueen},
+				{e1, WhiteKing},
+				{f1, WhiteBishop},
+				{g1, WhiteKnight},
+				{h1, WhiteRook},
+				{a7, BlackPawn},
+				{b7, BlackPawn},
+				{c7, BlackPawn},
+				{d7, BlackPawn},
+				{e7, BlackPawn},
+				{f7, BlackPawn},
+				{g7, BlackPawn},
+				{h7, BlackPawn},
+				{a8, BlackRook},
+				{b8, BlackKnight},
+				{c8, BlackBishop},
+				{d8, BlackQueen},
+				{e8, BlackKing},
+				{f8, BlackBishop},
+				{g8, BlackKnight},
+				{h8, BlackRook},
+			},
+			context: Context{
+				State:               Playing,
+				PlayersTurn:         White,
+				Winner:              Noone,
+				Score:               "",
+				whiteCanCastleRight: true,
+				whiteCanCastleLeft:  true,
+				blackCanCastleRight: true,
+				blackCanCastleLeft:  true,
+				enPassantSquare:     none,
+				halfMove:            0,
+				fullMove:            1,
+			},
+		},
+		{
+			fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1",
+			piecePositions: []piecePosition{
+				{a2, WhitePawn},
+				{b2, WhitePawn},
+				{c2, WhitePawn},
+				{d2, WhitePawn},
+				{e2, WhitePawn},
+				{f2, WhitePawn},
+				{g2, WhitePawn},
+				{h2, WhitePawn},
+				{a1, WhiteRook},
+				{b1, WhiteKnight},
+				{c1, WhiteBishop},
+				{e1, WhiteKing},
+				{f1, WhiteBishop},
+				{g1, WhiteKnight},
+				{h1, WhiteRook},
+				{a7, BlackPawn},
+				{b7, BlackPawn},
+				{c7, BlackPawn},
+				{d7, BlackPawn},
+				{e7, BlackPawn},
+				{f7, BlackPawn},
+				{g7, BlackPawn},
+				{h7, BlackPawn},
+				{a8, BlackRook},
+				{b8, BlackKnight},
+				{c8, BlackBishop},
+				{d8, BlackQueen},
+				{e8, BlackKing},
+				{f8, BlackBishop},
+				{g8, BlackKnight},
+				{h8, BlackRook},
+			},
+			context: Context{
+				State:               Playing,
+				PlayersTurn:         White,
+				Winner:              Noone,
+				Score:               "",
+				whiteCanCastleRight: true,
+				whiteCanCastleLeft:  true,
+				blackCanCastleRight: true,
+				blackCanCastleLeft:  true,
+				enPassantSquare:     none,
+				halfMove:            0,
+				fullMove:            1,
+			},
+		},
+	}
+
+	for _, row := range table {
+		b := NewFromFEN(row.fen)
+		expectedBoard := NewEmptyBoard()
+		for _, pp := range row.piecePositions {
+			expectedBoard.board[pp.position] = pp.piece
+		}
+
+		if b.Context != row.context {
+			t.Errorf("got: %s, expected: %s\n", b.Context, row.context)
+		}
+
+		if b.board != expectedBoard.board {
+			t.Errorf("got: %s, expected: %s\n", b.fenString(), expectedBoard.fenString())
+
+		}
+	}
+}

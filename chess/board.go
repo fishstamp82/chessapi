@@ -3,8 +3,7 @@ package chess
 import (
 	"errors"
 	"fmt"
-	"os"
-	"runtime/debug"
+	"strconv"
 	"strings"
 )
 
@@ -13,17 +12,115 @@ type Context struct {
 	PlayersTurn         Player
 	Winner              Player
 	Score               string // 1-0, 0-1, 1/2-1/2
-	moves               []Move
 	whiteCanCastleRight bool
 	whiteCanCastleLeft  bool
 	blackCanCastleRight bool
 	blackCanCastleLeft  bool
 	enPassantSquare     Square
+	fullMove            int
+	halfMove            int
+}
+
+func (c Context) String() string {
+	return fmt.Sprintf("%s/%s/%s/%s/%v/%v/%v/%v/%s/%d/%d",
+		c.State,
+		c.PlayersTurn,
+		c.Winner,
+		c.Score,
+		c.whiteCanCastleRight,
+		c.whiteCanCastleLeft,
+		c.blackCanCastleRight,
+		c.blackCanCastleLeft,
+		c.enPassantSquare,
+		c.halfMove,
+		c.fullMove,
+	)
 }
 
 type Board struct {
 	board   [64]Piece
 	Context Context
+}
+
+func (b *Board) fenString() string {
+	var cnt int
+	var board string
+	var sq Square
+	for i := 7; i >= 0; i-- {
+		cnt = 0
+		for j := 0; j < 8; j++ {
+			sq = Square(i*8 + j)
+
+			switch p := b.board[sq]; {
+			case p == Empty:
+				cnt += 1
+			default:
+				if cnt > 0 {
+					board += strconv.Itoa(cnt)
+				}
+				cnt = 0
+				board += pieceToFen[p]
+			}
+			if j == 7 {
+				if cnt == 0 {
+					board += "/"
+					continue
+				}
+				board += strconv.Itoa(cnt) + "/"
+				cnt = 0
+			}
+		}
+	}
+	board = strings.TrimSuffix(board, "/")
+
+	toMove := playerToFen[b.Context.PlayersTurn]
+
+	var castle string
+	if b.Context.whiteCanCastleRight {
+		castle += pieceToFen[WhiteKing]
+	}
+	if b.Context.whiteCanCastleLeft {
+		castle += pieceToFen[WhiteQueen]
+	}
+	if b.Context.blackCanCastleRight {
+		castle += pieceToFen[BlackKing]
+	}
+	if b.Context.whiteCanCastleRight {
+		castle += pieceToFen[BlackQueen]
+	}
+
+	var enpassant string
+	if b.Context.enPassantSquare >= a1 {
+		enpassant = b.Context.enPassantSquare.String()
+	} else {
+		enpassant = "-"
+	}
+	fullMove := strconv.Itoa(b.Context.fullMove)
+	halfMove := strconv.Itoa(b.Context.halfMove)
+	return fmt.Sprintf("%s %s %s %s %s %s", board, toMove, castle, enpassant, halfMove, fullMove)
+}
+
+var playerToFen = map[Player]string{
+	White: "w",
+	Black: "b",
+}
+var pieceToFen = map[Piece]string{
+	WhitePawn:   "P",
+	WhiteBishop: "B",
+	WhiteKnight: "N",
+	WhiteRook:   "R",
+	WhiteQueen:  "Q",
+	WhiteKing:   "K",
+	BlackPawn:   "p",
+	BlackBishop: "b",
+	BlackKnight: "n",
+	BlackRook:   "r",
+	BlackQueen:  "q",
+	BlackKing:   "k",
+}
+
+func (b *Board) String() string {
+	return b.fenString()
 }
 
 //CLI repr of board
@@ -113,18 +210,6 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 		return b.Context, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
 	}
 
-	defer func() {
-		// runtime error and move sequence dump
-		if r := recover(); r != nil {
-			fmt.Println(r)
-			fmt.Printf("%s\n", debug.Stack())
-			fmt.Printf("Recovered in move, %s\n", m)
-			for _, mov := range b.Context.moves {
-				fmt.Printf("\"%s%s\"\n", mov.fromSquare, mov.toSquare)
-			}
-			os.Exit(0)
-		}
-	}()
 	b.board = makeMove(m, b.board)
 
 	opponentsKing := getKingSquare(opponent, b.board)
@@ -149,7 +234,20 @@ func (b *Board) move(fromSquare, toSquare Square) (Context, error) {
 	b.abortCastling(m)
 	b.Context.enPassantSquare = b.getEnPassantSquare(m)
 
-	b.Context.moves = append(b.Context.moves, m)
+	//Increment full move if this was blacks move
+	if b.Context.PlayersTurn == Black {
+		b.Context.fullMove += 1
+	}
+
+	//Increment half move if this was not a pawn move and not a capture
+	switch m.moveType {
+	//TODO: checkmove will increment for pawns, fix this to list
+	case Regular, LongCastle, ShortCastle, CheckMove:
+		b.Context.halfMove += 1
+	case Promotion, CapturePromotion, CaptureEnPassant:
+		b.Context.halfMove = 0
+	}
+
 	// Switch to other player
 	b.switchTurn()
 	return b.Context, nil
@@ -420,38 +518,84 @@ func NewBoard() *Board {
 func NewEmptyBoard() *Board {
 	b := &Board{
 		Context: Context{
-			State:       Playing,
-			PlayersTurn: White,
+			State:               Playing,
+			PlayersTurn:         White,
+			enPassantSquare:     none,
+			whiteCanCastleLeft:  true,
+			whiteCanCastleRight: true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+			fullMove:            1,
 		},
 	}
 	return b
 }
 
 func NewFromFEN(fen string) *Board {
-	var i int
-	var skip Square
 	//rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 	board := strings.Split(fen, " ")[0]
 	ranks := strings.Split(board, "/")
 
-	boardIdx := a1
+	//boardIdx := a8
 	finalBoard := map[Square]Piece{}
-	for _, rank := range ranks {
-		for i = 0; i < len(rank); i++ {
-			skip = 1
-			switch rank[i] {
-			case 'p':
-				finalBoard[boardIdx] = WhitePawn
-			case 'b':
-				finalBoard[boardIdx] = WhiteBishop
+	var i, j, row, skip int
+	var boardIdx Square
+	for i = 0; i < len(ranks); i++ {
+		row = 7 - i
+		skip = 1
+		for j = 0; j < 8; j += skip {
+			boardIdx = Square(row*8 + j)
+			switch piece := fenToPiece[ranks[i][j]]; {
+			case piece == Empty:
+				skip, _ = strconv.Atoi(ranks[i][j : j+1])
+			default:
+				finalBoard[boardIdx] = piece
+				skip = 1
 			}
-			boardIdx += skip
+			//boardIdx += skip
+
 		}
 	}
+	//for _, rank := range ranks {
+	//	boardIdx -= 8
+	//	for i = 0; i < len(rank); i++ {
+	//		switch piece := fenToPiece[strconv.Itoa(int(rank[i]))]; {
+	//		case piece == Empty:
+	//			skip = Square(rank[i])
+	//		default:
+	//			finalBoard[Square(rank[i])] = piece
+	//			skip = Square(1)
+	//		}
+	//		boardIdx += skip
+	//	}
+	//}
 
 	eb := NewEmptyBoard()
 	for key, val := range finalBoard {
 		eb.board[key] = val
 	}
 	return eb
+}
+
+var fenToPiece = map[byte]Piece{
+	'P': WhitePawn,
+	'B': WhiteBishop,
+	'N': WhiteKnight,
+	'R': WhiteRook,
+	'Q': WhiteQueen,
+	'K': WhiteKing,
+	'p': BlackPawn,
+	'b': BlackBishop,
+	'n': BlackKnight,
+	'r': BlackRook,
+	'q': BlackQueen,
+	'k': BlackKing,
+	'1': Empty,
+	'2': Empty,
+	'3': Empty,
+	'4': Empty,
+	'5': Empty,
+	'6': Empty,
+	'7': Empty,
+	'8': Empty,
 }
