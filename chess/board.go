@@ -89,6 +89,10 @@ func (b *Board) fenString() string {
 		castle += pieceToFen[BlackQueen]
 	}
 
+	if castle == "" {
+		castle = "-"
+	}
+
 	var enpassant string
 	if b.Context.enPassantSquare >= a1 {
 		enpassant = b.Context.enPassantSquare.String()
@@ -532,7 +536,14 @@ func NewEmptyBoard() *Board {
 }
 
 func NewFromFEN(fen string) *Board {
-	board := strings.Split(fen, " ")[0]
+	var err error
+	splitted := strings.Split(fen, " ")
+	board := splitted[0]
+	turn := splitted[1]
+	castle := splitted[2]
+	enPassant := splitted[3]
+	halfMove := splitted[4]
+	fullMove := splitted[5]
 	ranks := strings.Split(board, "/")
 
 	finalBoard := map[Square]Piece{}
@@ -557,6 +568,48 @@ func NewFromFEN(fen string) *Board {
 	for key, val := range finalBoard {
 		eb.board[key] = val
 	}
+	switch turn {
+	case "w":
+		eb.Context.PlayersTurn = White
+	case "b":
+		eb.Context.PlayersTurn = Black
+	}
+
+	eb.Context.whiteCanCastleLeft = false
+	eb.Context.whiteCanCastleRight = false
+	eb.Context.blackCanCastleRight = false
+	eb.Context.blackCanCastleLeft = false
+	for _, b := range castle {
+		switch b {
+		case 'K':
+			eb.Context.whiteCanCastleRight = true
+		case 'Q':
+			eb.Context.whiteCanCastleLeft = true
+		case 'k':
+			eb.Context.blackCanCastleRight = true
+		case 'q':
+			eb.Context.blackCanCastleLeft = true
+		}
+	}
+
+	switch sq := enPassant; {
+	case sq == "-":
+		eb.Context.enPassantSquare = none
+	default:
+		eb.Context.enPassantSquare = stringToSquare[sq]
+	}
+
+	var halfMoveInt, fullMoveInt int
+	halfMoveInt, err = strconv.Atoi(halfMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.halfMove = halfMoveInt
+	fullMoveInt, err = strconv.Atoi(fullMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.fullMove = fullMoveInt
 	return eb
 }
 
