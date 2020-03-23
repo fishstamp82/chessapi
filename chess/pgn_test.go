@@ -146,6 +146,37 @@ func TestIsCapture(t *testing.T) {
 	}
 }
 
+func TestIsPawn(t *testing.T) {
+	table := []struct {
+		playerMove string
+		expected   bool
+	}{
+		{
+			"exd5",
+			true,
+		},
+		{
+			"Ng3",
+			false,
+		},
+		{
+			"f3",
+			true,
+		},
+		{
+			"O-O",
+			false,
+		},
+	}
+
+	for _, row := range table {
+		got := isPawn(row.playerMove)
+		if got != row.expected {
+			t.Errorf("got: %v, expected: %v\n", got, row.expected)
+		}
+	}
+}
+
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {
 		return false

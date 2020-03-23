@@ -55,11 +55,16 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	}
 //	return []Move{}
 //}
+
+//func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
+//	targetSquare := playerMove[len(playerMove)-2:]
+//	if isCapture(playerMove){
+//		fromInformation := strings.Split(playerMove, "x")[0]
+//	}
+//	if isPawn(playerMove) {
 //
-//func parseNotation(player Player, playerMove string, board [64]Piece) Move {
-//	targetSquare := move[len(move)-2:]
-//	isCapture := isCapture(playerMove)
-//	fromSquare := findFromSquares(WhitePawn)
+//	}
+//	fromSquare := findFromSquares(targetSquare, board, context)
 //	_, _ = targetSquare, fromSquare
 //	return Move{}
 //}
@@ -71,6 +76,14 @@ func isCapture(playerMove string) bool {
 		}
 	}
 	return false
+}
+
+func isPawn(playerMove string) bool {
+	switch playerMove[0] {
+	case 'B', 'N', 'R', 'Q', 'K', 'O':
+		return false
+	}
+	return true
 }
 
 func findFromSquares(piece Piece, target Square, board [64]Piece, ctx Context) []Square {
