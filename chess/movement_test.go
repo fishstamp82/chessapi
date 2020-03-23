@@ -349,7 +349,7 @@ func TestKingMoves(t *testing.T) {
 			expected: []Move{
 				createMove(b.board, e1, e2, []MovementType{Regular}),
 				createMove(b.board, e1, f1, []MovementType{Regular}),
-				createMove(b.board, e1, g1, []MovementType{ShortCastle}),
+				createMove(b.board, e1, g1, []MovementType{Castle}),
 			},
 		},
 		{

@@ -59,8 +59,7 @@ const (
 	Regular MovementType = iota
 	PawnMove
 	Capture
-	ShortCastle
-	LongCastle
+	Castle
 	Promotion
 	CapturePromotion
 	CaptureEnPassant

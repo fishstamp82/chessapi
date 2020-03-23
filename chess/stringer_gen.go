@@ -21,11 +21,17 @@ func _() {
 	_ = x[WhiteRook-4]
 	_ = x[WhiteQueen-5]
 	_ = x[WhiteKing-6]
+	_ = x[Pawn-7]
+	_ = x[Knight-8]
+	_ = x[Bishop-9]
+	_ = x[Rook-10]
+	_ = x[Queen-11]
+	_ = x[King-12]
 }
 
-const _Piece_name = "BlackKingBlackQueenBlackRookBlackBishopBlackKnightBlackPawnEmptyWhitePawnWhiteKnightWhiteBishopWhiteRookWhiteQueenWhiteKing"
+const _Piece_name = "BlackKingBlackQueenBlackRookBlackBishopBlackKnightBlackPawnEmptyWhitePawnWhiteKnightWhiteBishopWhiteRookWhiteQueenWhiteKingPawnKnightBishopRookQueenKing"
 
-var _Piece_index = [...]uint8{0, 9, 19, 28, 39, 50, 59, 64, 73, 84, 95, 104, 114, 123}
+var _Piece_index = [...]uint8{0, 9, 19, 28, 39, 50, 59, 64, 73, 84, 95, 104, 114, 123, 127, 133, 139, 143, 148, 152}
 
 func (i Piece) String() string {
 	i -= -6
@@ -165,17 +171,16 @@ func _() {
 	_ = x[Regular-0]
 	_ = x[PawnMove-1]
 	_ = x[Capture-2]
-	_ = x[ShortCastle-3]
-	_ = x[LongCastle-4]
-	_ = x[Promotion-5]
-	_ = x[CapturePromotion-6]
-	_ = x[CaptureEnPassant-7]
-	_ = x[CheckMove-8]
+	_ = x[Castle-3]
+	_ = x[Promotion-4]
+	_ = x[CapturePromotion-5]
+	_ = x[CaptureEnPassant-6]
+	_ = x[CheckMove-7]
 }
 
-const _MovementType_name = "RegularPawnMoveCaptureShortCastleLongCastlePromotionCapturePromotionCaptureEnPassantCheckMove"
+const _MovementType_name = "RegularPawnMoveCaptureCastlePromotionCapturePromotionCaptureEnPassantCheckMove"
 
-var _MovementType_index = [...]uint8{0, 7, 15, 22, 33, 43, 52, 68, 84, 93}
+var _MovementType_index = [...]uint8{0, 7, 15, 22, 28, 37, 53, 69, 78}
 
 func (i MovementType) String() string {
 	if i >= MovementType(len(_MovementType_index)-1) {

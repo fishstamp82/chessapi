@@ -513,16 +513,16 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	}
 
 	if canCastleRight && isWhite {
-		moves = append(moves, createCastleMove(piece, e1, g1, []MovementType{ShortCastle}))
+		moves = append(moves, createCastleMove(piece, e1, g1, []MovementType{Castle}))
 	}
 	if canCastleLeft && isWhite {
-		moves = append(moves, createCastleMove(piece, e1, c1, []MovementType{LongCastle}))
+		moves = append(moves, createCastleMove(piece, e1, c1, []MovementType{Castle}))
 	}
 	if canCastleRight && isBlack {
-		moves = append(moves, createCastleMove(piece, e8, g8, []MovementType{ShortCastle}))
+		moves = append(moves, createCastleMove(piece, e8, g8, []MovementType{Castle}))
 	}
 	if canCastleLeft && isBlack {
-		moves = append(moves, createCastleMove(piece, e8, c8, []MovementType{LongCastle}))
+		moves = append(moves, createCastleMove(piece, e8, c8, []MovementType{Castle}))
 	}
 	return moves
 }
@@ -889,10 +889,10 @@ func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	}
 
 	for _, moveType := range mt {
-		if moveType == ShortCastle {
+		if moveType == Castle {
 			short = true
 		}
-		if moveType == LongCastle {
+		if moveType == Castle {
 			short = false
 		}
 	}

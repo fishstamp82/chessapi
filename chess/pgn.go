@@ -58,12 +58,29 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 
 //func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
 //	targetSquare := playerMove[len(playerMove)-2:]
+//	var fromInformation string
+//	var piece Piece
+//	var lane, rank rune
+//	if isCastle(playerMove){
+//		switch player {
+//		case White:
+//			piece = WhiteKing
+//		case Black:
+//			piece = BlackKing
+//		}
+//		fromSquare, toSquare := decodeCastle(player, playerMove)
+//		createCastleMove(piece, fromSquare, toSquare, []MovementType{Castle})
+//	}
 //	if isCapture(playerMove){
-//		fromInformation := strings.Split(playerMove, "x")[0]
+//		fromInformation = strings.Split(playerMove, "x")[0]
+//	} else {
+//		fromInformation = playerMove[:len(playerMove)-2]
 //	}
 //	if isPawn(playerMove) {
-//
+//		piece = Pawn
 //	}
+//	_ = fromInformation
+//	_ = piece
 //	fromSquare := findFromSquares(targetSquare, board, context)
 //	_, _ = targetSquare, fromSquare
 //	return Move{}
