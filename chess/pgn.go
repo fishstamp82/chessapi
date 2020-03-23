@@ -56,12 +56,16 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	}
 //	return []Move{}
 //}
-
+//
 //func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
 //	targetSquare := playerMove[len(playerMove)-2:]
 //	var fromInformation string
 //	var piece Piece
 //	var lane, rank rune
+//
+//	//if isPromotion(playerMove){
+//	//
+//	//}
 //	if isCastle(playerMove){
 //		switch player {
 //		case White:
@@ -69,8 +73,8 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //		case Black:
 //			piece = BlackKing
 //		}
-//		fromSquare, toSquare := decodeCastle(player, playerMove)
-//		createCastleMove(piece, fromSquare, toSquare, []MovementType{Castle})
+//		fromSquare, toSquare := decodeCastleMust(player, playerMove)
+//		return createCastleMove(piece, fromSquare, toSquare, []MovementType{Castle})
 //	}
 //	if isCapture(playerMove){
 //		fromInformation = strings.Split(playerMove, "x")[0]
@@ -101,6 +105,15 @@ func decodeCastleMust(player Player, move string) (Square, Square) {
 		return e8, c8
 	}
 	panic(fmt.Sprintf("called decode Castle with player: %v, move: %v\n", player, move))
+}
+
+func isPromotion(playerMove string) bool {
+	for i := range playerMove {
+		if playerMove[i] == '=' {
+			return true
+		}
+	}
+	return false
 }
 
 func isCastle(playerMove string) bool {

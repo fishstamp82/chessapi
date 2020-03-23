@@ -212,6 +212,45 @@ func TestIsCastle(t *testing.T) {
 	}
 }
 
+func TestIsPromotion(t *testing.T) {
+	table := []struct {
+		playerMove string
+		expected   bool
+	}{
+		{
+			"exd5",
+			false,
+		},
+		{
+			"Ng3",
+			false,
+		},
+		{
+			"a8=N",
+			true,
+		},
+		{
+			"f3",
+			false,
+		},
+		{
+			"dxe8=Q",
+			true,
+		},
+		{
+			"O-O",
+			false,
+		},
+	}
+
+	for _, row := range table {
+		got := isPromotion(row.playerMove)
+		if got != row.expected {
+			t.Errorf("got: %v, expected: %v\n", got, row.expected)
+		}
+	}
+}
+
 func TestDecodeCastleMust(t *testing.T) {
 	table := []struct {
 		player     Player
