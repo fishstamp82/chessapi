@@ -24,6 +24,12 @@ const (
 	WhiteRook         // 4
 	WhiteQueen        // 5
 	WhiteKing         // 6
+	Pawn              // Used for parsing PGN
+	Knight
+	Bishop
+	Rook
+	Queen
+	King
 )
 
 type NoMoveError struct {
