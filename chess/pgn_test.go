@@ -212,6 +212,42 @@ func TestIsCastle(t *testing.T) {
 	}
 }
 
+func TestDecodeCastleMust(t *testing.T) {
+	table := []struct {
+		player     Player
+		playerMove string
+		expected   [2]Square
+	}{
+		{
+			White,
+			"O-O",
+			[2]Square{e1, g1},
+		},
+		{
+			White,
+			"O-O-O",
+			[2]Square{e1, c1},
+		},
+		{
+			Black,
+			"O-O",
+			[2]Square{e8, g8},
+		},
+		{
+			Black,
+			"O-O-O",
+			[2]Square{e8, c8},
+		},
+	}
+
+	for _, row := range table {
+		got1, got2 := decodeCastleMust(row.player, row.playerMove)
+		if [2]Square{got1, got2} != row.expected {
+			t.Errorf("got: %v, expected: %v\n", [2]Square{got1, got2}, row.expected)
+		}
+	}
+}
+
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {
 		return false

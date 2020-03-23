@@ -1,6 +1,7 @@
 package chess
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -85,6 +86,22 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	_, _ = targetSquare, fromSquare
 //	return Move{}
 //}
+
+func decodeCastleMust(player Player, move string) (Square, Square) {
+	if player == White && move == "O-O" {
+		return e1, g1
+	}
+	if player == White && move == "O-O-O" {
+		return e1, c1
+	}
+	if player == Black && move == "O-O" {
+		return e8, g8
+	}
+	if player == Black && move == "O-O-O" {
+		return e8, c8
+	}
+	panic(fmt.Sprintf("called decode Castle with player: %v, move: %v\n", player, move))
+}
 
 func isCastle(playerMove string) bool {
 	switch playerMove[0] {
