@@ -86,6 +86,14 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	return Move{}
 //}
 
+func isCastle(playerMove string) bool {
+	switch playerMove[0] {
+	case 'O':
+		return true
+	}
+	return false
+}
+
 func isCapture(playerMove string) bool {
 	for i := 0; i < len(playerMove); i++ {
 		if playerMove[i] == 'x' {

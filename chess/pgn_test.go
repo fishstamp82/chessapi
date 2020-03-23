@@ -177,6 +177,41 @@ func TestIsPawn(t *testing.T) {
 	}
 }
 
+func TestIsCastle(t *testing.T) {
+	table := []struct {
+		playerMove string
+		expected   bool
+	}{
+		{
+			"exd5",
+			false,
+		},
+		{
+			"Ng3",
+			false,
+		},
+		{
+			"f3",
+			false,
+		},
+		{
+			"dxe8=Q",
+			false,
+		},
+		{
+			"O-O",
+			true,
+		},
+	}
+
+	for _, row := range table {
+		got := isCastle(row.playerMove)
+		if got != row.expected {
+			t.Errorf("got: %v, expected: %v\n", got, row.expected)
+		}
+	}
+}
+
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {
 		return false
