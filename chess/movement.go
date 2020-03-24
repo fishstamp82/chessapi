@@ -1037,6 +1037,43 @@ func createPawnPromotionMoves(p Player, f, t Square, targetPiece Piece, mt []Mov
 	return moves
 }
 
+func createPawnPromotionMove(board [64]Piece, f, t Square, promoPiece Piece, mt []MovementType) Move {
+	var pawn, target Piece
+	target = board[t]
+	pawn = board[f]
+
+	var move Move
+	move = Move{
+		piece:      pawn,
+		fromSquare: f,
+		toSquare:   t,
+		piecePositions: []piecePosition{
+			{
+				piece:    promoPiece,
+				position: t,
+			},
+			{
+				piece:    Empty,
+				position: f,
+			},
+		},
+		reverseMove: &Move{
+			piecePositions: []piecePosition{
+				{
+					piece:    pawn,
+					position: f,
+				},
+				{
+					piece:    target,
+					position: t,
+				},
+			},
+		},
+		moveTypes: mt,
+	}
+	return move
+}
+
 func bishopMoves(s Square, b [64]Piece) []Move {
 	var moves []Move
 

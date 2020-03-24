@@ -72,6 +72,42 @@ func TestPawnMoves(t *testing.T) {
 	}
 }
 
+func TestCreatePawnPromotionMove(t *testing.T) {
+	fenWhitePawnG7vsBlackRookH8 := "k6r1/6P1/8/8/8/8/8/K7 w KQkq - 0 1"
+	table := []struct {
+		board        [64]Piece
+		fromSquare   Square
+		toSquare     Square
+		expectedMove Move
+	}{
+		{
+			board:      NewFromFEN(fenWhitePawnG7vsBlackRookH8).board,
+			fromSquare: g7,
+			toSquare:   h8,
+			expectedMove: Move{
+				piece:      WhitePawn,
+				fromSquare: g7,
+				toSquare:   h8,
+				piecePositions: []piecePosition{
+					{WhiteQueen, h8},
+					{Empty, g7},
+				},
+				moveTypes: []MovementType{Capture, Promotion},
+			},
+		},
+	}
+
+	for _, row := range table {
+		got := createPawnPromotionMove(row.board, row.fromSquare, row.toSquare, WhiteQueen, []MovementType{Capture, Promotion})
+		if !isMoveEqual(got, row.expectedMove) {
+			t.Errorf("got: %s, expected: %s\n", got, row.expectedMove)
+		}
+	}
+}
+
+//
+//
+
 func TestBishopMoves(t *testing.T) {
 	var piece = WhiteBishop
 	bf1 := NewBoard()

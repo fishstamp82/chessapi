@@ -62,15 +62,17 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 	targetSquareString := playerMove[len(playerMove)-2:]
 	targetSquare = stringToSquare[targetSquareString]
 	var fromInformation string
-	var piece Piece
+	var promotion bool
+	var piece, promoPiece Piece
 	var movementTypes []MovementType
 	var move Move
-	//var file, rank byte
 
-	// handle pawns first
-	//if isPromotion(playerMove){
-	//
-	//}
+	if isPromotion(playerMove) {
+		promotion = true
+		bytePiece := playerMove[len(playerMove)-1]
+		promoPiece = byteToPiece[bytePiece]
+		playerMove = strings.Split(playerMove, "=")[0]
+	}
 
 	isPawnMove := isPawn(playerMove)
 	if isPawnMove {
@@ -117,6 +119,12 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 
 	switch piece {
 	case WhitePawn, BlackPawn:
+		if promotion {
+			move = createPawnPromotionMove(board, fromSquare, targetSquare, promoPiece, []MovementType{Promotion})
+		}
+		//if enPassant {
+		//	move = createPawnPromotionMove(board, fromSquare, targetSquare, promoPiece, []MovementType{Promotion})
+		//}
 		move = createPawnMove(piece, fromSquare, targetSquare, movementTypes)
 	default:
 		move = createMove(board, fromSquare, targetSquare, movementTypes)
