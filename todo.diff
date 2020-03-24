@@ -4,3 +4,10 @@ implement checks
 3 repetition draw rule
 draws
 resigning
+
+
+REFACTOR pgn:
+- remove need for king on a board
+- replace lane with file
+- remove regular move type
+- rename is to are for slice equals functions
