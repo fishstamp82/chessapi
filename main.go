@@ -98,10 +98,10 @@ func main() {
 
 func pickRandom() string {
 	rand.Seed(time.Now().UnixNano())
-	lane := [8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
+	file := [8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
 	rank := [8]string{"1", "2", "3", "4", "5", "6", "7", "8"}
-	moveFrom := lane[rand.Intn(8)] + rank[rand.Intn(8)]
-	moveTo := lane[rand.Intn(8)] + rank[rand.Intn(8)]
+	moveFrom := file[rand.Intn(8)] + rank[rand.Intn(8)]
+	moveTo := file[rand.Intn(8)] + rank[rand.Intn(8)]
 	return moveFrom + moveTo
 }
 

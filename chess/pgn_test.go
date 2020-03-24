@@ -353,10 +353,10 @@ func TestGetPieceMust(t *testing.T) {
 	}
 }
 
-func TestGetLaneRank(t *testing.T) {
+func TestGetFileRank(t *testing.T) {
 	table := []struct {
 		fromInformation string
-		expectedLane    byte
+		expectedFile    byte
 		expectedRank    byte
 	}{
 		{
@@ -382,9 +382,9 @@ func TestGetLaneRank(t *testing.T) {
 	}
 
 	for _, row := range table {
-		gotLane, gotRank := getLaneRank(row.fromInformation)
-		if gotLane != row.expectedLane || gotRank != row.expectedRank {
-			t.Errorf("got: %v %v, expected: %v %v\n", gotLane, gotRank, row.expectedLane, row.expectedRank)
+		gotFile, gotRank := getFileRank(row.fromInformation)
+		if gotFile != row.expectedFile || gotRank != row.expectedRank {
+			t.Errorf("got: %v %v, expected: %v %v\n", gotFile, gotRank, row.expectedFile, row.expectedRank)
 		}
 	}
 }
@@ -392,38 +392,38 @@ func TestGetLaneRank(t *testing.T) {
 func TestDisambiguateMust(t *testing.T) {
 	table := []struct {
 		squares        []Square
-		lane           byte
+		file           byte
 		rank           byte
 		expectedSquare Square
 	}{
 		{
 			squares:        []Square{e3, c3},
-			lane:           'c',
+			file:           'c',
 			rank:           0,
 			expectedSquare: c3,
 		},
 		{
 			squares:        []Square{a1, h1},
-			lane:           'h',
+			file:           'h',
 			rank:           0,
 			expectedSquare: h1,
 		},
 		{
 			squares:        []Square{a1, a8},
-			lane:           0,
+			file:           0,
 			rank:           '8',
 			expectedSquare: a8,
 		},
 		{
 			squares:        []Square{e4, h4, h1},
-			lane:           'h',
+			file:           'h',
 			rank:           '4',
 			expectedSquare: h4,
 		},
 	}
 
 	for _, row := range table {
-		gotSquare := disambiguateMust(row.squares, row.lane, row.rank)
+		gotSquare := disambiguateMust(row.squares, row.file, row.rank)
 		if gotSquare != row.expectedSquare {
 			t.Errorf("got: %s, expected: %s\n", gotSquare, row.expectedSquare)
 		}

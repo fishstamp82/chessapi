@@ -65,7 +65,7 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 	var piece Piece
 	var movementTypes []MovementType
 	var move Move
-	//var lane, rank byte
+	//var file, rank byte
 
 	// handle pawns first
 	//if isPromotion(playerMove){
@@ -111,9 +111,9 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 		movementTypes = append(movementTypes, PawnMove)
 	}
 
-	lane, rank := getLaneRank(fromInformation)
+	file, rank := getFileRank(fromInformation)
 	fromSquares := findFromSquares(piece, targetSquare, board, context)
-	fromSquare := disambiguateMust(fromSquares, lane, rank)
+	fromSquare := disambiguateMust(fromSquares, file, rank)
 
 	switch piece {
 	case WhitePawn, BlackPawn:
@@ -125,44 +125,44 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 	return move
 }
 
-func disambiguateMust(squares []Square, lane byte, rank byte) Square {
+func disambiguateMust(squares []Square, file byte, rank byte) Square {
 	if len(squares) == 1 {
 		return squares[0]
 	}
 
-	//disambiguate by lane first
-	if lane != 0 && rank == 0 {
+	//disambiguate by file first
+	if file != 0 && rank == 0 {
 		for _, square := range squares {
-			l, _ := getLaneRank(square.String())
-			if lane == l {
+			l, _ := getFileRank(square.String())
+			if file == l {
 				return square
 			}
 		}
 	}
 	//disambiguate by rank second
-	if lane == 0 && rank != 0 {
+	if file == 0 && rank != 0 {
 		for _, square := range squares {
-			_, r := getLaneRank(square.String())
+			_, r := getFileRank(square.String())
 			if rank == r {
 				return square
 			}
 		}
 	}
 
-	if lane != 0 && rank != 0 {
+	if file != 0 && rank != 0 {
 		for _, square := range squares {
-			l, r := getLaneRank(square.String())
-			if lane == l && rank == r {
+			l, r := getFileRank(square.String())
+			if file == l && rank == r {
 				return square
 			}
 		}
 	}
 
-	panic(fmt.Sprintf("no unique square found from squares: %s lane: %q, rank: %q\n", squares, lane, rank))
+	panic(fmt.Sprintf("no unique square found from squares: %s file: %q, rank: %q\n", squares, file, rank))
 }
 
 //Used for disambiguation
-func getLaneRank(fromInformation string) (byte, byte) {
+func getFileRank(fromInformation string) (byte, byte) {
 	if len(fromInformation) == 2 {
 		return fromInformation[0], fromInformation[1]
 	}
