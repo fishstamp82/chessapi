@@ -286,6 +286,71 @@ func TestDecodeCastleMust(t *testing.T) {
 		}
 	}
 }
+func TestGetPieceMust(t *testing.T) {
+	table := []struct {
+		piece         Piece
+		player        Player
+		expectedPiece Piece
+	}{
+		{
+			Bishop,
+			Black,
+			BlackBishop,
+		},
+		{
+			Knight,
+			Black,
+			BlackKnight,
+		},
+		{
+			Rook,
+			Black,
+			BlackRook,
+		},
+		{
+			Queen,
+			Black,
+			BlackQueen,
+		},
+		{
+			King,
+			Black,
+			BlackKing,
+		},
+		{
+			Bishop,
+			White,
+			WhiteBishop,
+		},
+		{
+			Knight,
+			White,
+			WhiteKnight,
+		},
+		{
+			Rook,
+			White,
+			WhiteRook,
+		},
+		{
+			Queen,
+			White,
+			WhiteQueen,
+		},
+		{
+			King,
+			White,
+			WhiteKing,
+		},
+	}
+
+	for _, row := range table {
+		got := getPieceMust(row.piece, row.player)
+		if got != row.expectedPiece {
+			t.Errorf("got: %v, expected: %v\n", got, row.expectedPiece)
+		}
+	}
+}
 
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {

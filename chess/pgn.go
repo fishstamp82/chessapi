@@ -58,14 +58,31 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //}
 //
 //func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
-//	targetSquare := playerMove[len(playerMove)-2:]
+//	var targetSquare Square
+//	targetSquareString := playerMove[len(playerMove)-2:]
+//	targetSquare = stringToSquare[targetSquareString]
 //	var fromInformation string
 //	var piece Piece
-//	var lane, rank rune
+//	//var lane, rank byte
 //
+//	// handle pawns first
 //	//if isPromotion(playerMove){
 //	//
 //	//}
+//
+//	isPawnMove := isPawn(playerMove)
+//	if isPawnMove {
+//		switch player {
+//		case White :
+//			piece = WhitePawn
+//		case Black:
+//			piece = BlackPawn
+//		}
+//	} else {
+//		bytePiece := playerMove[0]
+//		piece = getPieceMust(byteToPiece[bytePiece], player)
+//	}
+//
 //	if isCastle(playerMove){
 //		switch player {
 //		case White:
@@ -81,12 +98,14 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	} else {
 //		fromInformation = playerMove[:len(playerMove)-2]
 //	}
-//	if isPawn(playerMove) {
-//		piece = Pawn
+//
+//	if !isPawnMove {
+//		fromInformation = fromInformation[1:]
 //	}
-//	_ = fromInformation
-//	_ = piece
-//	fromSquare := findFromSquares(targetSquare, board, context)
+//
+//	lane, rank := getLaneRank(fromInformation)
+//
+//	fromSquare := findFromSquares(piece, targetSquare, board, context)
 //	_, _ = targetSquare, fromSquare
 //	return Move{}
 //}
@@ -105,6 +124,41 @@ func decodeCastleMust(player Player, move string) (Square, Square) {
 		return e8, c8
 	}
 	panic(fmt.Sprintf("called decode Castle with player: %v, move: %v\n", player, move))
+}
+
+func getPieceMust(piece Piece, player Player) Piece {
+	if piece == Bishop && player == White {
+		return WhiteBishop
+	}
+	if piece == Knight && player == White {
+		return WhiteKnight
+	}
+	if piece == Rook && player == White {
+		return WhiteRook
+	}
+	if piece == Queen && player == White {
+		return WhiteQueen
+	}
+	if piece == King && player == White {
+		return WhiteKing
+	}
+	if piece == Bishop && player == Black {
+		return BlackBishop
+	}
+	if piece == Knight && player == Black {
+		return BlackKnight
+	}
+	if piece == Rook && player == Black {
+		return BlackRook
+	}
+	if piece == Queen && player == Black {
+		return BlackQueen
+	}
+	if piece == King && player == Black {
+		return BlackKing
+	}
+	panic("no valid piece player combo")
+
 }
 
 func isPromotion(playerMove string) bool {
@@ -169,4 +223,12 @@ func filterMoves(s string) string {
 		keep = append(keep, line)
 	}
 	return strings.Join(keep, "\n")
+}
+
+var byteToPiece = map[byte]Piece{
+	'B': Bishop,
+	'N': Knight,
+	'R': Rook,
+	'Q': Queen,
+	'K': King,
 }
