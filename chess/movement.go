@@ -17,11 +17,15 @@ type Move struct {
 }
 
 func (m Move) String() string {
-	var pp string
+	var pp, mts string
 	for _, each := range m.piecePositions {
 		pp += fmt.Sprintf("%s on %s;", each.piece, each.position)
 	}
-	return fmt.Sprintf("move: \"%s%s\", pp's: %s", m.fromSquare, m.toSquare, pp)
+	for _, mt := range m.moveTypes {
+		mts += fmt.Sprintf("%s", mt)
+
+	}
+	return fmt.Sprintf("move: \"%s%s\", pp's: %s, movement types: %s", m.fromSquare, m.toSquare, pp, mts)
 }
 
 func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move {

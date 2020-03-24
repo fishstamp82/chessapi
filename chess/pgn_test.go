@@ -430,6 +430,70 @@ func TestDisambiguateMust(t *testing.T) {
 	}
 }
 
+func TestParseNotation(t *testing.T) {
+	fen0 := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	fen1 := "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1"
+	fen3 := "3r3r/b2k4/3b4/R7/2K1Q2Q/8/8/R6Q w KQkq - 0 1"
+
+	table := []struct {
+		player       Player
+		notation     string
+		board        [64]Piece
+		context      Context
+		expectedMove Move
+	}{
+		{
+			player:       White,
+			notation:     "e4",
+			board:        NewFromFEN(fen0).board,
+			context:      NewFromFEN(fen0).Context,
+			expectedMove: createPawnMove(WhitePawn, e2, e4, []MovementType{PawnMove}),
+		},
+		{
+			player:       Black,
+			notation:     "Nf6",
+			board:        NewFromFEN(fen1).board,
+			context:      NewFromFEN(fen1).Context,
+			expectedMove: createMove(NewFromFEN(fen1).board, g8, f6, []MovementType{Regular}),
+		},
+		{
+			player:       Black,
+			notation:     "Bdb8",
+			board:        NewFromFEN(fen3).board,
+			context:      NewFromFEN(fen3).Context,
+			expectedMove: createMove(NewFromFEN(fen3).board, d6, b8, []MovementType{Regular}),
+		},
+		{
+			player:       Black,
+			notation:     "Rdf8",
+			board:        NewFromFEN(fen3).board,
+			context:      NewFromFEN(fen3).Context,
+			expectedMove: createMove(NewFromFEN(fen3).board, d8, f8, []MovementType{Regular}),
+		},
+		{
+			player:       White,
+			notation:     "R1a3",
+			board:        NewFromFEN(fen3).board,
+			context:      NewFromFEN(fen3).Context,
+			expectedMove: createMove(NewFromFEN(fen3).board, a1, a3, []MovementType{Regular}),
+		},
+		{
+			player:       White,
+			notation:     "Qh4e1",
+			board:        NewFromFEN(fen3).board,
+			context:      NewFromFEN(fen3).Context,
+			expectedMove: createMove(NewFromFEN(fen3).board, h4, e1, []MovementType{Regular}),
+		},
+	}
+
+	for _, row := range table {
+		gotMove := parseNotation(row.player, row.notation, row.board, row.context)
+		if !isMoveEqual(gotMove, row.expectedMove) {
+			t.Errorf("got: %s, expected: %s\n", gotMove, row.expectedMove)
+		}
+	}
+}
+
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {
 		return false

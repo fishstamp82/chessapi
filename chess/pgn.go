@@ -57,59 +57,74 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	return []Move{}
 //}
 //
-//func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
-//	var targetSquare Square
-//	targetSquareString := playerMove[len(playerMove)-2:]
-//	targetSquare = stringToSquare[targetSquareString]
-//	var fromInformation string
-//	var piece Piece
-//	//var lane, rank byte
-//
-//	// handle pawns first
-//	//if isPromotion(playerMove){
-//	//
-//	//}
-//
-//	isPawnMove := isPawn(playerMove)
-//	if isPawnMove {
-//		switch player {
-//		case White :
-//			piece = WhitePawn
-//		case Black:
-//			piece = BlackPawn
-//		}
-//	} else {
-//		bytePiece := playerMove[0]
-//		piece = getPieceMust(byteToPiece[bytePiece], player)
-//	}
-//
-//	if isCastle(playerMove){
-//		switch player {
-//		case White:
-//			piece = WhiteKing
-//		case Black:
-//			piece = BlackKing
-//		}
-//		fromSquare, toSquare := decodeCastleMust(player, playerMove)
-//		return createCastleMove(piece, fromSquare, toSquare, []MovementType{Castle})
-//	}
-//	if isCapture(playerMove){
-//		fromInformation = strings.Split(playerMove, "x")[0]
-//	} else {
-//		fromInformation = playerMove[:len(playerMove)-2]
-//	}
-//
-//	if !isPawnMove {
-//		fromInformation = fromInformation[1:]
-//	}
-//
-//	lane, rank := getLaneRank(fromInformation)
-//	fromSquare := findFromSquares(piece, targetSquare, board, context)
-//	disambiguated := disambiguate(fromSquare, lane, rank )
-//	_, _ = targetSquare, disambiguated
-//	return Move{}
-//}
-//
+func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
+	var targetSquare Square
+	targetSquareString := playerMove[len(playerMove)-2:]
+	targetSquare = stringToSquare[targetSquareString]
+	var fromInformation string
+	var piece Piece
+	var movementTypes []MovementType
+	var move Move
+	//var lane, rank byte
+
+	// handle pawns first
+	//if isPromotion(playerMove){
+	//
+	//}
+
+	isPawnMove := isPawn(playerMove)
+	if isPawnMove {
+		switch player {
+		case White:
+			piece = WhitePawn
+		case Black:
+			piece = BlackPawn
+		}
+	} else {
+		bytePiece := playerMove[0]
+		piece = getPieceMust(byteToPiece[bytePiece], player)
+	}
+
+	if isCastle(playerMove) {
+		switch player {
+		case White:
+			piece = WhiteKing
+		case Black:
+			piece = BlackKing
+		}
+		fromSquare, toSquare := decodeCastleMust(player, playerMove)
+		movementTypes = append(movementTypes, Castle)
+		return createCastleMove(piece, fromSquare, toSquare, movementTypes)
+	}
+
+	if isCapture(playerMove) {
+		movementTypes = append(movementTypes, Capture)
+		fromInformation = strings.Split(playerMove, "x")[0]
+	} else {
+		fromInformation = playerMove[:len(playerMove)-2]
+	}
+
+	if !isPawnMove {
+		movementTypes = append(movementTypes, Regular)
+		fromInformation = fromInformation[1:]
+	} else {
+		movementTypes = append(movementTypes, PawnMove)
+	}
+
+	lane, rank := getLaneRank(fromInformation)
+	fromSquares := findFromSquares(piece, targetSquare, board, context)
+	fromSquare := disambiguateMust(fromSquares, lane, rank)
+
+	switch piece {
+	case WhitePawn, BlackPawn:
+		move = createPawnMove(piece, fromSquare, targetSquare, movementTypes)
+	default:
+		move = createMove(board, fromSquare, targetSquare, movementTypes)
+	}
+
+	return move
+}
+
 func disambiguateMust(squares []Square, lane byte, rank byte) Square {
 	if len(squares) == 1 {
 		return squares[0]

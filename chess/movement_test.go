@@ -442,3 +442,18 @@ func isMovesEqual(a, b []Move) bool {
 	}
 	return true
 }
+
+func isMoveEqual(a, b Move) bool {
+	if (a.piece != b.piece || a.toSquare != b.toSquare) || a.fromSquare != b.fromSquare {
+		return false
+	}
+	if len(a.moveTypes) != len(b.moveTypes) {
+		return false
+	}
+	for j := range a.moveTypes {
+		if a.moveTypes[j] != b.moveTypes[j] {
+			return false
+		}
+	}
+	return true
+}
