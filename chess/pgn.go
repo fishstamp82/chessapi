@@ -110,10 +110,41 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	return Move{}
 //}
 //
-//func disambiguate(square []Square, lane byte, rank byte) Square {
-//	if
-//	return none
-//}
+func disambiguateMust(squares []Square, lane byte, rank byte) Square {
+	if len(squares) == 1 {
+		return squares[0]
+	}
+
+	//disambiguate by lane first
+	if lane != 0 && rank == 0 {
+		for _, square := range squares {
+			l, _ := getLaneRank(square.String())
+			if lane == l {
+				return square
+			}
+		}
+	}
+	//disambiguate by rank second
+	if lane == 0 && rank != 0 {
+		for _, square := range squares {
+			_, r := getLaneRank(square.String())
+			if rank == r {
+				return square
+			}
+		}
+	}
+
+	if lane != 0 && rank != 0 {
+		for _, square := range squares {
+			l, r := getLaneRank(square.String())
+			if lane == l && rank == r {
+				return square
+			}
+		}
+	}
+
+	panic(fmt.Sprintf("no unique square found from squares: %s lane: %q, rank: %q\n", squares, lane, rank))
+}
 
 //Used for disambiguation
 func getLaneRank(fromInformation string) (byte, byte) {

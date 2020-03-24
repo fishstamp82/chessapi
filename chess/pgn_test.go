@@ -389,6 +389,47 @@ func TestGetLaneRank(t *testing.T) {
 	}
 }
 
+func TestDisambiguateMust(t *testing.T) {
+	table := []struct {
+		squares        []Square
+		lane           byte
+		rank           byte
+		expectedSquare Square
+	}{
+		{
+			squares:        []Square{e3, c3},
+			lane:           'c',
+			rank:           0,
+			expectedSquare: c3,
+		},
+		{
+			squares:        []Square{a1, h1},
+			lane:           'h',
+			rank:           0,
+			expectedSquare: h1,
+		},
+		{
+			squares:        []Square{a1, a8},
+			lane:           0,
+			rank:           '8',
+			expectedSquare: a8,
+		},
+		{
+			squares:        []Square{e4, h4, h1},
+			lane:           'h',
+			rank:           '4',
+			expectedSquare: h4,
+		},
+	}
+
+	for _, row := range table {
+		gotSquare := disambiguateMust(row.squares, row.lane, row.rank)
+		if gotSquare != row.expectedSquare {
+			t.Errorf("got: %s, expected: %s\n", gotSquare, row.expectedSquare)
+		}
+	}
+}
+
 func areSquaresEqual(a, b []Square) bool {
 	if len(a) != len(b) {
 		return false
