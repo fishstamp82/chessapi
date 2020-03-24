@@ -104,11 +104,32 @@ var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
 //	}
 //
 //	lane, rank := getLaneRank(fromInformation)
-//
 //	fromSquare := findFromSquares(piece, targetSquare, board, context)
-//	_, _ = targetSquare, fromSquare
+//	disambiguated := disambiguate(fromSquare, lane, rank )
+//	_, _ = targetSquare, disambiguated
 //	return Move{}
 //}
+//
+//func disambiguate(square []Square, lane byte, rank byte) Square {
+//	if
+//	return none
+//}
+
+//Used for disambiguation
+func getLaneRank(fromInformation string) (byte, byte) {
+	if len(fromInformation) == 2 {
+		return fromInformation[0], fromInformation[1]
+	}
+	if len(fromInformation) == 1 {
+		switch fromInformation[0] {
+		case 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h':
+			return fromInformation[0], 0
+		case '1', '2', '3', '4', '5', '6', '7', '8':
+			return 0, fromInformation[0]
+		}
+	}
+	return 0, 0
+}
 
 func decodeCastleMust(player Player, move string) (Square, Square) {
 	if player == White && move == "O-O" {

@@ -286,6 +286,7 @@ func TestDecodeCastleMust(t *testing.T) {
 		}
 	}
 }
+
 func TestGetPieceMust(t *testing.T) {
 	table := []struct {
 		piece         Piece
@@ -348,6 +349,42 @@ func TestGetPieceMust(t *testing.T) {
 		got := getPieceMust(row.piece, row.player)
 		if got != row.expectedPiece {
 			t.Errorf("got: %v, expected: %v\n", got, row.expectedPiece)
+		}
+	}
+}
+
+func TestGetLaneRank(t *testing.T) {
+	table := []struct {
+		fromInformation string
+		expectedLane    byte
+		expectedRank    byte
+	}{
+		{
+			"e1",
+			'e',
+			'1',
+		},
+		{
+			"d",
+			'd',
+			0,
+		},
+		{
+			"8",
+			0,
+			'8',
+		},
+		{
+			"",
+			0,
+			0,
+		},
+	}
+
+	for _, row := range table {
+		gotLane, gotRank := getLaneRank(row.fromInformation)
+		if gotLane != row.expectedLane || gotRank != row.expectedRank {
+			t.Errorf("got: %v %v, expected: %v %v\n", gotLane, gotRank, row.expectedLane, row.expectedRank)
 		}
 	}
 }
