@@ -14,9 +14,11 @@ import (
 )
 
 var random bool
+var pgnGame string
 
 func init() {
 	flag.BoolVar(&random, "random", false, "turn on random game")
+	flag.StringVar(&pgnGame, "pgn", "", "play a game from loaded pgn file")
 }
 
 func main() {
@@ -25,7 +27,6 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	var reader *bufio.Reader
-	_ = reader
 	var move string
 	var err error
 	var moves [][2]string
@@ -41,10 +42,13 @@ func main() {
 				fmt.Printf("\t{\"%s\", \"%s\"},\n", each[0], each[1])
 			}
 			fmt.Printf("},\n")
-
 			os.Exit(0)
 		}
 	}(&moves)
+
+	if pgnGame != "" {
+		os.Exit(0)
+	}
 
 	b = chess.NewBoard()
 	var allMoves string
