@@ -2,70 +2,118 @@ package chess
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"regexp"
 	"strings"
 )
 
-var allmovesRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)?\s+(1-0|1\/2-1\/2|0-1)?`)
-var gameoverRegexp = regexp.MustCompile(`.*(1-0|1\/2-1\/2|0-1)$`)
-var regularmoveRegexp = regexp.MustCompile(`(\d+)\.(.*\d|\+) (.*\d|\+)`)
+var fullMoveRegex = `\d+`
+var notationRegex = `[a-hBNRQKOx\-]+[+O1-8]+`
+var overRegex = `(1-0)|(0-1)|(1/2-1/2)`
+var allmovesRegexp = regexp.MustCompile(fmt.Sprintf(`(%s)\.(%s)\s+(%s)?\s*(%s)?\s*`,
+	fullMoveRegex,
+	notationRegex,
+	notationRegex,
+	overRegex))
+var gameOverRegexp = regexp.MustCompile(fmt.Sprintf(`(%s)\.(%s)\s+(%s)?\s*(%s)\s*`,
+	fullMoveRegex,
+	notationRegex,
+	notationRegex,
+	overRegex))
+var moveRegexp = regexp.MustCompile(fmt.Sprintf(`(%s)\.(%s)\s+(%s)\s*`,
+	fullMoveRegex,
+	notationRegex,
+	notationRegex))
 
-//
-//func pgnParse(reader io.Reader) ([]Move, error) {
-//	var moves []Move
-//	_ = moves
-//	var pgnBytes []byte
-//	var err error
-//
-//	pgnBytes, err = ioutil.ReadAll(reader)
-//	if err != nil {
-//		return nil, err
-//	}
-//	pgnString := filterMoves(string(pgnBytes))
-//	movesStr := allmovesRegexp.FindAllString(pgnString, -1)
-//	_ = movesStr
-//	_ = pgnString
-//	moves = getMoves(movesStr)
-//	return moves, nil
-//}
-//
-//func getMoves(allMoves []string) []Move {
-//	b := NewEmptyBoard()
-//
-//	type move struct {
-//		white string
-//		black string
-//	}
-//	var realMoves []Move
-//	var moves []move
-//	var groups []string
-//
-//	for _, each := range allMoves {
-//		if gameoverRegexp.MatchString(each) {
-//			// Handle edge case reading final
-//			continue
-//		}
-//		groups = regularmoveRegexp.FindStringSubmatch(each)
-//		moves = append(moves, move{
-//			white: groups[1],
-//			black: groups[2],
-//		})
-//	}
-//	for _, m := range moves {
-//		realMoves = append(realMoves, parseNotation(m.white, b.board))
-//	}
-//	return []Move{}
-//}
-//
+func pgnParse(reader io.Reader) ([]Move, error) {
+	var moves []Move
+	_ = moves
+	var pgnBytes []byte
+	var err error
+
+	pgnBytes, err = ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, err
+	}
+	pgnString := filterMoves(string(pgnBytes))
+	movesStr := allmovesRegexp.FindAllString(pgnString, -1)
+	moves = getMoves(movesStr)
+	return moves, nil
+}
+
+func getMoves(allMoves []string) []Move {
+	b := NewBoard()
+
+	type move struct {
+		player   Player
+		notation string
+	}
+	var realMoves []Move
+	var realMove Move
+	var moves []move
+	var groups []string
+
+	for _, each := range allMoves {
+		if gameOverRegexp.MatchString(each) {
+			groups = gameOverRegexp.FindStringSubmatch(each)
+			if len(groups) == 5 {
+				moves = append(moves, move{
+					player:   White,
+					notation: groups[2],
+				})
+				moves = append(moves, move{
+					player:   Black,
+					notation: groups[3],
+				})
+			}
+			continue
+		}
+		groups = moveRegexp.FindStringSubmatch(each)
+		moves = append(moves, move{
+			player:   White,
+			notation: groups[2],
+		})
+		moves = append(moves, move{
+			player:   Black,
+			notation: groups[3],
+		})
+	}
+	for _, m := range moves {
+		realMove = parseNotation(m.player, m.notation, b.board, b.Context)
+		realMoves = append(realMoves, realMove)
+		b.board = makeMove(realMove, b.board)
+	}
+	return realMoves
+}
+
 func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
 	var targetSquare Square
-	targetSquareString := playerMove[len(playerMove)-2:]
-	targetSquare = stringToSquare[targetSquareString]
+
 	var fromInformation string
 	var promotion bool
 	var piece, promoPiece Piece
 	var movementTypes []MovementType
 	var move Move
+
+	if isCastle(playerMove) {
+		switch player {
+		case White:
+			piece = WhiteKing
+		case Black:
+			piece = BlackKing
+		}
+		fromSquare, toSquare := decodeCastleMust(player, playerMove)
+		movementTypes = append(movementTypes, Castle)
+		return createCastleMove(piece, fromSquare, toSquare, movementTypes)
+	}
+
+	if isCheck(playerMove) {
+		playerMove = playerMove[:len(playerMove)-1]
+	}
+
+	targetSquareString := playerMove[len(playerMove)-2:]
+	targetSquare = stringToSquare[targetSquareString]
 
 	if isPromotion(playerMove) {
 		promotion = true
@@ -85,18 +133,6 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 	} else {
 		bytePiece := playerMove[0]
 		piece = getPieceMust(byteToPiece[bytePiece], player)
-	}
-
-	if isCastle(playerMove) {
-		switch player {
-		case White:
-			piece = WhiteKing
-		case Black:
-			piece = BlackKing
-		}
-		fromSquare, toSquare := decodeCastleMust(player, playerMove)
-		movementTypes = append(movementTypes, Castle)
-		return createCastleMove(piece, fromSquare, toSquare, movementTypes)
 	}
 
 	if isCapture(playerMove) {
@@ -121,16 +157,21 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 	case WhitePawn, BlackPawn:
 		if promotion {
 			move = createPawnPromotionMove(board, fromSquare, targetSquare, promoPiece, []MovementType{Promotion})
+		} else {
+			move = createPawnMove(piece, fromSquare, targetSquare, movementTypes)
 		}
-		//if enPassant {
-		//	move = createPawnPromotionMove(board, fromSquare, targetSquare, promoPiece, []MovementType{Promotion})
-		//}
-		move = createPawnMove(piece, fromSquare, targetSquare, movementTypes)
 	default:
 		move = createMove(board, fromSquare, targetSquare, movementTypes)
 	}
 
 	return move
+}
+
+func isCheck(move string) bool {
+	if move[len(move)-1] == '+' {
+		return true
+	}
+	return false
 }
 
 func disambiguateMust(squares []Square, file byte, rank byte) Square {

@@ -892,13 +892,12 @@ func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 		rook = BlackRook
 	}
 
-	for _, moveType := range mt {
-		if moveType == Castle {
-			short = true
-		}
-		if moveType == Castle {
-			short = false
-		}
+	if t == g1 {
+		short = true
+	} else if t == g8 {
+		short = true
+	} else {
+		short = false
 	}
 	isBlack = !isWhite
 	long = !short

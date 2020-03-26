@@ -3,6 +3,7 @@ package chess
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -39,6 +40,7 @@ func (c Context) String() string {
 
 type Board struct {
 	board   [64]Piece
+	moves   []Move
 	Context Context
 }
 
@@ -149,6 +151,17 @@ func (b *Board) Move(moveStr string) (Context, error) {
 		return b.Context, err
 	}
 
+	return b.move(fromSquare, toSquare)
+}
+
+// Move gets squares in human readable form, and performs a move
+// error is nil on successful move
+// arguments are two squares : "e2e4"
+func (b *Board) MoveNotation(move Move) (Context, error) {
+	if b.Context.State != Playing && b.Context.State != Check {
+		return b.Context, errors.New("not in playing state")
+	}
+	fromSquare, toSquare := move.fromSquare, move.toSquare
 	return b.move(fromSquare, toSquare)
 }
 
@@ -505,6 +518,18 @@ func NewBoard() *Board {
 
 	b.board[d8] = BlackQueen
 	b.board[e8] = BlackKing
+
+	return b
+}
+
+func FromPGN(reader io.Reader) *Board {
+	b := NewBoard()
+	moves, err := pgnParse(reader)
+	if err != nil {
+		panic(err)
+	}
+
+	b.moves = moves
 
 	return b
 }
