@@ -5,9 +5,5 @@ implement checks
 draws
 resigning
 
-
-REFACTOR pgn:
-- remove need for king on a board
-- replace lane with file
-- remove regular move type
-- rename is to are for slice equals functions
+Tree of boards:
+- each board should have a pointer to a Tree of Boards
