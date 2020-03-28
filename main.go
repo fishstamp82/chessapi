@@ -15,10 +15,12 @@ import (
 
 var random bool
 var pgnGame string
+var fenString string
 
 func init() {
 	flag.BoolVar(&random, "random", false, "turn on random game")
 	flag.StringVar(&pgnGame, "pgn", "", "play a game from loaded pgn file")
+	flag.StringVar(&fenString, "print_fen", "", "print a Board from fen string")
 }
 
 func main() {
@@ -47,6 +49,18 @@ func main() {
 	}(&moves)
 
 	if pgnGame != "" {
+		file, err := os.Open(pgnGame)
+		if err !=nil {
+			panic(err)
+		}
+		board := chess.FromPGN(file)
+		explorePgn(board)
+		os.Exit(0)
+	}
+
+	if fenString != "" {
+		b = chess.NewFromFEN(fenString)
+		fmt.Println(pretty(b.BoardMap()))
 		os.Exit(0)
 	}
 
