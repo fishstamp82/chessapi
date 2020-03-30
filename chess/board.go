@@ -146,7 +146,7 @@ func (b *Board) Move(moveStr string) (Context, error) {
 	if b.Context.State != Playing && b.Context.State != Check {
 		return b.Context, errors.New("not in playing state")
 	}
-	fromSquare, toSquare, err := b.getSquare(moveStr)
+	fromSquare, toSquare, err := getSquare(moveStr)
 	if err != nil {
 		return b.Context, err
 	}
@@ -437,7 +437,7 @@ func getPieces(p Player, board [64]Piece) []Square {
 	return pieces
 }
 
-func (b *Board) getSquare(s string) (Square, Square, error) {
+func getSquare(s string) (Square, Square, error) {
 	if len(s) != 4 {
 		return none, none, errors.New("wrong length")
 	}

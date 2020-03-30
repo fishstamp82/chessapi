@@ -137,7 +137,7 @@ func squaresWithoutKing(p Player, b [64]Piece) []Square {
 	return pieces
 }
 
-func abortCastling(m Move, c Context) {
+func updateCastling(m Move, c Context) {
 
 	switch m.fromSquare {
 	case a1:
@@ -180,4 +180,15 @@ func getEnPassantSquare(m Move) Square {
 	} else {
 		return none
 	}
+}
+
+func switchTurn(p Player) Player {
+	var player Player
+	switch p {
+	case White:
+		player = Black
+	case Black:
+		player = White
+	}
+	return player
 }
