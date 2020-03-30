@@ -3,6 +3,7 @@ package chess
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -125,6 +126,94 @@ func (b *PBoard) move(fromSquare, toSquare Square) (Context, error) {
 	return b.Context, nil
 }
 
-func NewPBoard(fen string) PlayBoard {
-	return &PBoard{}
+func NewPBoard() PlayBoard {
+
+	startingFen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	var err error
+	splitted := strings.Split(startingFen, " ")
+	board := splitted[0]
+	turn := splitted[1]
+	castle := splitted[2]
+	enPassant := splitted[3]
+	halfMove := splitted[4]
+	fullMove := splitted[5]
+	ranks := strings.Split(board, "/")
+
+	finalBoard := map[Square]Piece{}
+	var i, j, row, col, toSkip int
+	var boardIdx Square
+	for i = 0; i < len(ranks); i++ {
+		row = 7 - i
+		col = 0
+		for j = 0; j < len(ranks[i]); j++ {
+			boardIdx = Square(row*8 + col)
+			switch piece := fenToPiece[ranks[i][j]]; {
+			case piece == Empty:
+				toSkip, _ = strconv.Atoi(ranks[i][j : j+1])
+				col += toSkip
+			default:
+				finalBoard[boardIdx] = piece
+				col += 1
+			}
+		}
+	}
+	eb := &PBoard{
+		Context: Context{
+			State:               Playing,
+			PlayersTurn:         White,
+			enPassantSquare:     none,
+			whiteCanCastleLeft:  true,
+			whiteCanCastleRight: true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+			fullMove:            1,
+		},
+	}
+	for key, val := range finalBoard {
+		eb.board[key] = val
+	}
+	switch turn {
+	case "w":
+		eb.Context.PlayersTurn = White
+	case "b":
+		eb.Context.PlayersTurn = Black
+	}
+
+	eb.Context.whiteCanCastleLeft = false
+	eb.Context.whiteCanCastleRight = false
+	eb.Context.blackCanCastleRight = false
+	eb.Context.blackCanCastleLeft = false
+	for _, b := range castle {
+		switch b {
+		case 'K':
+			eb.Context.whiteCanCastleRight = true
+		case 'Q':
+			eb.Context.whiteCanCastleLeft = true
+		case 'k':
+			eb.Context.blackCanCastleRight = true
+		case 'q':
+			eb.Context.blackCanCastleLeft = true
+		}
+	}
+
+	switch sq := enPassant; {
+	case sq == "-":
+		eb.Context.enPassantSquare = none
+	default:
+		eb.Context.enPassantSquare = stringToSquare[sq]
+	}
+
+	var halfMoveInt, fullMoveInt int
+	halfMoveInt, err = strconv.Atoi(halfMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.halfMove = halfMoveInt
+	fullMoveInt, err = strconv.Atoi(fullMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.fullMove = fullMoveInt
+
+	return eb
 }

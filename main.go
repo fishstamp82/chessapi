@@ -28,12 +28,9 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	var reader *bufio.Reader
-	var move string
-	var err error
 	var moves [][2]string
-	var context chess.Context
 	var b *chess.Board
+	var pb chess.PlayBoard
 
 	go func(moves *[][2]string) {
 		for _ = range c {
@@ -50,7 +47,7 @@ func main() {
 
 	if pgnGame != "" {
 		file, err := os.Open(pgnGame)
-		if err !=nil {
+		if err != nil {
 			panic(err)
 		}
 		board := chess.FromPGN(file)
@@ -58,60 +55,17 @@ func main() {
 		os.Exit(0)
 	}
 
+	//Review mode
 	if fenString != "" {
 		b = chess.NewFromFEN(fenString)
 		fmt.Println(pretty(b.BoardMap()))
 		os.Exit(0)
+		review(b)
+	} else {
+		pb = chess.NewPBoard()
+		play(pb)
 	}
 
-	b = chess.NewBoard()
-	var allMoves string
-	_ = allMoves
-	for {
-		if err == nil {
-			fmt.Println(pretty(b.BoardMap()))
-		}
-		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
-		validMoves, err := b.ValidMoves()
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if random {
-			move = pickRandom()
-			move = pickRandomString(validMoves)
-
-		} else {
-			reader = bufio.NewReader(os.Stdin)
-			move, _ = reader.ReadString('\n')
-			move = strings.TrimSuffix(move, "\n")
-			fmt.Printf("move : %s\n", move)
-
-		}
-		context, err = b.Move(move)
-
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			moves = append(moves, [2]string{move})
-		}
-		fmt.Println("state: " + context.State.String())
-		if context.State == chess.CheckMate {
-			fmt.Printf("game over, %s won", context.Winner)
-			fmt.Println(pretty(b.BoardMap()))
-			break
-		}
-		if context.State == chess.Draw {
-			fmt.Printf("game over, draw")
-			fmt.Println(pretty(b.BoardMap()))
-			break
-		}
-		fmt.Println(pretty(b.BoardMap()))
-	}
-	//for _, val := range moves {
-	//	fmt.Println(val)
-	//}
 }
 
 func pickRandom() string {
@@ -137,6 +91,29 @@ func pretty(m map[string]string) string {
 	var finalString string
 	for key, val := range m {
 		s = append(s, [2]string{key, val})
+	}
+	sort.Slice(s, func(i, j int) bool {
+		return lookup(s[i][0], s[j][0])
+	})
+	var ind int
+	for row := 7; row >= 0; row-- {
+		finalString += "\n-----------------\n|"
+		for col := 0; col <= 7; col++ {
+			ind = row*8 + col
+			finalString += s[ind][1] + "|"
+		}
+	}
+	return finalString
+}
+
+func prettyFromPieces(m map[chess.Square]chess.Piece) string {
+	if len(m) != 64 {
+		panic("not correct boardmap")
+	}
+	var s [][2]string
+	var finalString string
+	for key, val := range m {
+		s = append(s, [2]string{key.String(), val.String()})
 	}
 	sort.Slice(s, func(i, j int) bool {
 		return lookup(s[i][0], s[j][0])
@@ -227,4 +204,45 @@ func lookup(a, b string) bool {
 		"h8": 63,
 	}
 	return m[a] < m[b]
+}
+
+func play(b chess.PlayBoard) {
+	var err error
+	var reader *bufio.Reader
+	var move string
+	var context chess.Context
+	context.PlayersTurn = chess.White
+	for {
+		if err == nil {
+			fmt.Println(prettyFromPieces(b.Board()))
+		}
+		fmt.Printf("%s's turn\nmake a move...\n", context.PlayersTurn)
+		reader = bufio.NewReader(os.Stdin)
+		move, _ = reader.ReadString('\n')
+		move = strings.TrimSuffix(move, "\n")
+		fmt.Printf("move : %s\n", move)
+
+		context, err = b.Move(move)
+
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		fmt.Println("state: " + context.State.String())
+		if context.State == chess.CheckMate {
+			fmt.Printf("game over, %s won", context.Winner)
+			fmt.Println(prettyFromPieces(b.Board()))
+			break
+		}
+		if context.State == chess.Draw {
+			fmt.Printf("game over, draw")
+			fmt.Println(prettyFromPieces(b.Board()))
+			break
+		}
+		fmt.Println(prettyFromPieces(b.Board()))
+	}
+}
+
+func review(b *chess.Board) {
+
 }
