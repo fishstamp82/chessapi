@@ -136,3 +136,48 @@ func squaresWithoutKing(p Player, b [64]Piece) []Square {
 	}
 	return pieces
 }
+
+func abortCastling(m Move, c Context) {
+
+	switch m.fromSquare {
+	case a1:
+		c.whiteCanCastleLeft = false
+	case h1:
+		c.whiteCanCastleRight = false
+	case a8:
+		c.blackCanCastleLeft = false
+	case h8:
+		c.blackCanCastleRight = false
+	case e1:
+		c.whiteCanCastleLeft = false
+		c.whiteCanCastleRight = false
+	case e8:
+		c.blackCanCastleLeft = false
+		c.blackCanCastleRight = false
+	}
+
+	switch m.toSquare {
+	case a1:
+		c.whiteCanCastleLeft = false
+	case h1:
+		c.whiteCanCastleRight = false
+	case a8:
+		c.blackCanCastleLeft = false
+	case h8:
+		c.blackCanCastleRight = false
+	}
+
+}
+
+func getEnPassantSquare(m Move) Square {
+	if m.piece != WhitePawn && m.piece != BlackPawn {
+		return none
+	}
+	if m.fromSquare.rank() == 2 && m.toSquare.rank() == 4 && m.piece == WhitePawn {
+		return m.fromSquare + 8
+	} else if m.fromSquare.rank() == 7 && m.toSquare.rank() == 5 && m.piece == BlackPawn {
+		return m.fromSquare - 8
+	} else {
+		return none
+	}
+}

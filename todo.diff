@@ -5,5 +5,11 @@ implement checks
 draws
 resigning
 
+50/80 move draw rule:
+- implement checking for captures
+
 Tree of boards:
 - each board should have a pointer to a Tree of Boards
+
+PlayBoard:
+- Well defined API interface for a board that is in play.
