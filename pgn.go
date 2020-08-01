@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/fishstamp82/chessapi/chess"
-	"github.com/nsf/termbox-go"
+	//"github.com/nsf/termbox-go"
 	"os"
 	"os/exec"
 	"strings"
@@ -48,30 +48,30 @@ func NewUserReader() *UserReader {
 	return &UserReader{}
 }
 
-func explorePgn(board *chess.Board) {
-	if err := termbox.Init(); err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
-	go listenToKeyboard(keyboardEventsChan)
-
-	mainloop: for {
-		select {
-		case e := <-keyboardEventsChan:
-			switch e.eventType {
-			case MOVE:
-				d := keyToDirection(e.key)
-				switch d {
-				case BACK:
-					//board.GoBack()
-					fmt.Print(pretty(board.BoardMap()))
-				case FORWARD:
-					//board.GoForward()
-					fmt.Print(pretty(board.BoardMap()))
-				}
-			case END:
-				break mainloop
-			}
-		}
-	}
-}
+//func explorePgn(board *chess.Board) {
+//	if err := termbox.Init(); err != nil {
+//		panic(err)
+//	}
+//	defer termbox.Close()
+//	go listenToKeyboard(keyboardEventsChan)
+//
+//	mainloop: for {
+//		select {
+//		case e := <-keyboardEventsChan:
+//			switch e.eventType {
+//			case MOVE:
+//				d := keyToDirection(e.key)
+//				switch d {
+//				case BACK:
+//					//board.GoBack()
+//					fmt.Print(pretty(board.BoardMap()))
+//				case FORWARD:
+//					//board.GoForward()
+//					fmt.Print(pretty(board.BoardMap()))
+//				}
+//			case END:
+//				break mainloop
+//			}
+//		}
+//	}
+//}
