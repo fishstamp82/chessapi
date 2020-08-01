@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"chessapi/chess"
 	"fmt"
+	"github.com/fishstamp82/chessapi/chess"
 	"github.com/nsf/termbox-go"
 	"os"
 	"os/exec"
