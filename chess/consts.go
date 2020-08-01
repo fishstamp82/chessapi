@@ -48,7 +48,8 @@ const (
 )
 
 const (
-	Playing State = iota + 1
+	Idle State = iota 
+	Playing
 	Check
 	CheckMate
 	Draw
