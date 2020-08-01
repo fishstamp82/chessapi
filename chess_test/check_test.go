@@ -1,7 +1,7 @@
 package chess
 
 import (
-	"chessapi/chess"
+	"github.com/fishstamp82/chessapi/chess"
 	"testing"
 )
 
