@@ -2,9 +2,9 @@ package main
 
 import (
 	"bufio"
-	"chessapi/chess"
 	"flag"
 	"fmt"
+	"github.com/fishstamp82/chessapi/chess"
 	"math/rand"
 	"os"
 	"os/signal"
