@@ -43,6 +43,69 @@ type Board struct {
 	moves   []Move
 	Context Context
 }
+func (b *Board) FenString() string {
+	var cnt int
+	var board string
+	var sq Square
+	for i := 7; i >= 0; i-- {
+		cnt = 0
+		for j := 0; j < 8; j++ {
+			sq = Square(i*8 + j)
+
+			switch p := b.board[sq]; {
+			case p == Empty:
+				cnt += 1
+			default:
+				if cnt > 0 {
+					board += strconv.Itoa(cnt)
+				}
+				cnt = 0
+				board += pieceToFen[p]
+			}
+			if j == 7 {
+				if cnt == 0 {
+					board += "/"
+					continue
+				}
+				board += strconv.Itoa(cnt) + "/"
+				cnt = 0
+			}
+		}
+	}
+	board = strings.TrimSuffix(board, "/")
+
+	toMove := playerToFen[b.Context.PlayersTurn]
+
+	var castle string
+	if b.Context.whiteCanCastleRight {
+		castle += pieceToFen[WhiteKing]
+	}
+	if b.Context.whiteCanCastleLeft {
+		castle += pieceToFen[WhiteQueen]
+	}
+	if b.Context.blackCanCastleRight {
+		castle += pieceToFen[BlackKing]
+	}
+	if b.Context.whiteCanCastleRight {
+		castle += pieceToFen[BlackQueen]
+	}
+
+	if castle == "" {
+		castle = "-"
+	}
+
+	var enpassant string
+	if b.Context.enPassantSquare >= a1 {
+		enpassant = b.Context.enPassantSquare.String()
+	} else {
+		enpassant = "-"
+	}
+	halfMove := strconv.Itoa(b.Context.halfMove)
+	fullMove := strconv.Itoa(b.Context.fullMove)
+	return fmt.Sprintf("%s %s %s %s %s %s", board, toMove, castle, enpassant, halfMove, fullMove)
+}
+
+
 
 func (b *Board) fenString() string {
 	var cnt int
