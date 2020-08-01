@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/fishstamp82/chessapi/chess"
+	//"github.com/fishstamp82/chessapi/chess"
 	//"github.com/nsf/termbox-go"
 	"os"
 	"os/exec"

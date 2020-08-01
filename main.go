@@ -48,15 +48,14 @@ func main() {
 		}
 	}(&moves)
 
-	if pgnGame != "" {
-		file, err := os.Open(pgnGame)
-		if err !=nil {
-			panic(err)
-		}
-		board := chess.FromPGN(file)
-		explorePgn(board)
-		os.Exit(0)
-	}
+	//if pgnGame != "" {
+	//	file, err := os.Open(pgnGame)
+	//	if err !=nil {
+	//		panic(err)
+	//	}
+	//	board := chess.FromPGN(file)
+	//	os.Exit(0)
+	//}
 
 	if fenString != "" {
 		b = chess.NewFromFEN(fenString)
