@@ -539,7 +539,7 @@ func (b *Board) switchTurn() {
 func NewBoard() *Board {
 	b := &Board{
 		Context: Context{
-			State:               Playing,
+			State:               Idle,
 			PlayersTurn:         White,
 			Winner:              0,
 			whiteCanCastleRight: true,
