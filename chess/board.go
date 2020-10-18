@@ -1,6 +1,8 @@
 package chess
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -106,6 +108,19 @@ func (b *Board) FenString() string {
 }
 
 
+
+func (b *Board) MarshalJSON() ([]byte, error) {
+	data := struct {
+		Fen string `json:"fen"`
+	}{
+		Fen: b.fenString(),
+	}
+	buf := bytes.NewBuffer([]byte{})
+	if err := json.NewEncoder(buf).Encode(data); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
 
 func (b *Board) fenString() string {
 	var cnt int
