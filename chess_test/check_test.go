@@ -34,6 +34,7 @@ func TestCheck(t *testing.T) {
 	var err error
 	for _, row := range table {
 		game := chess.NewGame()
+		game.Context.State = chess.Playing
 		for _, move := range row.moves {
 			ctx, err = game.Move(move)
 			if err != nil {

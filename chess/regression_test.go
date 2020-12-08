@@ -23,12 +23,12 @@ func TestWhitesTurn(t *testing.T) {
 	}
 	var ctx Context
 	for _, row := range table {
-		b := NewBoard()
+		g := NewGame()
 		for _, move := range row.moves {
-			ctx, _ = b.Move(move)
+			ctx, _ = g.Move(move)
 		}
 		if ctx.PlayersTurn != row.expected {
-			t.Errorf("expected: %v, got: %v\n", row.expected, b.Context.PlayersTurn)
+			t.Errorf("expected: %v, got: %v\n", row.expected, g.Context.PlayersTurn)
 		}
 	}
 }

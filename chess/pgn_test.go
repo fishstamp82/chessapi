@@ -6,7 +6,7 @@ import (
 
 func TestPGN(t *testing.T) {
 
-	board := NewBoard()
+	game := NewGame()
 	table := []struct {
 		pgnGame       string
 		expectedMoves []Move
@@ -37,19 +37,19 @@ func TestPGN(t *testing.T) {
 		{
 			pgnGame: `1.e4 e6`,
 			expectedMoves: []Move{
-				createMove(board.board, e2, e4, []MovementType{Regular, PawnMove}),
-				createMove(board.board, e7, e6, []MovementType{Regular, PawnMove}),
+				createMove(game.Board.board, e2, e4, []MovementType{Regular, PawnMove}),
+				createMove(game.Board.board, e7, e6, []MovementType{Regular, PawnMove}),
 			},
 			expectedFen: "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
 		},
 	}
 	for _, row := range table {
 		for _, move := range row.expectedMoves {
-			_, _ = board.move(move.fromSquare, move.toSquare)
+			_, _ = game.move(move.fromSquare, move.toSquare)
 		}
 		//got, _ := pgnParse(strings.NewReader(row.pgnGame))
-		if board.String() != row.expectedFen {
-			t.Errorf("got: %v, expected: %v\n", board.String(), row.expectedFen)
+		if game.FenString() != row.expectedFen {
+			t.Errorf("got: %v, expected: %v\n", game.FenString(), row.expectedFen)
 		}
 	}
 }
@@ -98,25 +98,25 @@ func TestFindFromSquare(t *testing.T) {
 	table := []struct {
 		piece               Piece
 		toSquare            Square
-		board               *Board
+		game               *Game
 		expectedFromSquares []Square
 	}{
 		{
 			WhitePawn,
 			e4,
-			NewFromFEN(startFen),
+			NewGameFromFEN(startFen),
 			[]Square{e2},
 		},
 		{
 			WhiteRook,
 			d1,
-			NewFromFEN("8/8/8/8/8/8/7K/R6R w - - 0 1"),
+			NewGameFromFEN("8/8/8/8/8/8/7K/R6R w - - 0 1"),
 			[]Square{a1, h1},
 		},
 	}
 
 	for _, row := range table {
-		got := findFromSquares(row.piece, row.toSquare, row.board.board, row.board.Context)
+		got := findFromSquares(row.piece, row.toSquare, row.game.Board.board, row.game.Context)
 		if !areSquaresEqual(got, row.expectedFromSquares) {
 			t.Errorf("got: %v, expected: %v\n", got, row.expectedFromSquares)
 		}
@@ -445,44 +445,44 @@ func TestParseNotation(t *testing.T) {
 		{
 			player:       White,
 			notation:     "e4",
-			board:        NewFromFEN(fen0).board,
-			context:      NewFromFEN(fen0).Context,
+			board:        NewGameFromFEN(fen0).Board.board,
+			context:      NewGameFromFEN(fen0).Context,
 			expectedMove: createPawnMove(WhitePawn, e2, e4, []MovementType{PawnMove}),
 		},
 		{
 			player:       Black,
 			notation:     "Nf6",
-			board:        NewFromFEN(fen1).board,
-			context:      NewFromFEN(fen1).Context,
-			expectedMove: createMove(NewFromFEN(fen1).board, g8, f6, []MovementType{Regular}),
+			board:        NewGameFromFEN(fen1).Board.board,
+			context:      NewGameFromFEN(fen1).Context,
+			expectedMove: createMove(NewGameFromFEN(fen1).Board.board, g8, f6, []MovementType{Regular}),
 		},
 		{
 			player:       Black,
 			notation:     "Bdb8",
-			board:        NewFromFEN(fen3).board,
-			context:      NewFromFEN(fen3).Context,
-			expectedMove: createMove(NewFromFEN(fen3).board, d6, b8, []MovementType{Regular}),
+			board:        NewGameFromFEN(fen3).Board.board,
+			context:      NewGameFromFEN(fen3).Context,
+			expectedMove: createMove(NewGameFromFEN(fen3).Board.board, d6, b8, []MovementType{Regular}),
 		},
 		{
 			player:       Black,
 			notation:     "Rdf8",
-			board:        NewFromFEN(fen3).board,
-			context:      NewFromFEN(fen3).Context,
-			expectedMove: createMove(NewFromFEN(fen3).board, d8, f8, []MovementType{Regular}),
+			board:        NewGameFromFEN(fen3).Board.board,
+			context:      NewGameFromFEN(fen3).Context,
+			expectedMove: createMove(NewGameFromFEN(fen3).Board.board, d8, f8, []MovementType{Regular}),
 		},
 		{
 			player:       White,
 			notation:     "R1a3",
-			board:        NewFromFEN(fen3).board,
-			context:      NewFromFEN(fen3).Context,
-			expectedMove: createMove(NewFromFEN(fen3).board, a1, a3, []MovementType{Regular}),
+			board:        NewGameFromFEN(fen3).Board.board,
+			context:      NewGameFromFEN(fen3).Context,
+			expectedMove: createMove(NewGameFromFEN(fen3).Board.board, a1, a3, []MovementType{Regular}),
 		},
 		{
 			player:       White,
 			notation:     "Qh4e1",
-			board:        NewFromFEN(fen3).board,
-			context:      NewFromFEN(fen3).Context,
-			expectedMove: createMove(NewFromFEN(fen3).board, h4, e1, []MovementType{Regular}),
+			board:        NewGameFromFEN(fen3).Board.board,
+			context:      NewGameFromFEN(fen3).Context,
+			expectedMove: createMove(NewGameFromFEN(fen3).Board.board, h4, e1, []MovementType{Regular}),
 		},
 	}
 

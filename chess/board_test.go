@@ -5,8 +5,8 @@ import (
 )
 
 func TestInitialization(t *testing.T) {
-	b := NewBoard()
-	if b.Context.PlayersTurn != White {
+	game := NewGame()
+	if game.Context.PlayersTurn != White {
 		t.Error("not white's turn on start of the game")
 	}
 
@@ -52,7 +52,7 @@ func TestInitialization(t *testing.T) {
 	for _, row := range table {
 		p := row.piece
 		s := row.square
-		if piece := b.board[s]; piece != p {
+		if piece := game.Board.board[s]; piece != p {
 			t.Errorf("expected: %s on %s, got: %s\n", p, s, piece)
 		}
 	}
@@ -80,17 +80,20 @@ func TestEnPassant(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewBoard()
+		game := NewGame()
+		game.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, _ = b.Move(move)
+			_, err := game.Move(move)
+			if err != nil {
+				t.Error(err)
+			}
 		}
-		moves := pawnMoves(e5, b.board, b.Context.enPassantSquare)
+		moves := pawnMoves(e5, game.Board.board, game.Context.enPassantSquare)
 		if !isMovesEqual(moves, row.expectedMoves) {
 			t.Errorf("got: %s, expected: %s\n", printPrettyMoves(moves), printPrettyMoves(row.expectedMoves))
 		}
 	}
-
 }
 
 func TestNewFromFEN(t *testing.T) {
@@ -244,18 +247,18 @@ func TestNewFromFEN(t *testing.T) {
 	}
 
 	for _, row := range table {
-		b := NewFromFEN(row.fen)
-		expectedBoard := NewEmptyBoard()
+		game := NewGameFromFEN(row.fen)
+		expectedGame := NewEmptyGame()
 		for _, pp := range row.piecePositions {
-			expectedBoard.board[pp.position] = pp.piece
+			expectedGame.Board.board[pp.position] = pp.piece
 		}
 
-		if b.Context != row.context {
-			t.Errorf("got: %s, expected: %s\n", b.Context, row.context)
+		if game.Context != row.context {
+			t.Errorf("got: %s, expected: %s\n", game.Context, row.context)
 		}
 
-		if b.board != expectedBoard.board {
-			t.Errorf("got: %s, expected: %s\n", b.fenString(), expectedBoard.fenString())
+		if game.Board.board != expectedGame.Board.board {
+			t.Errorf("got: %s, expected: %s\n", game.FenString(), expectedGame.FenString())
 
 		}
 	}
