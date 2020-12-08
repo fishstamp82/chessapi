@@ -43,7 +43,8 @@ func pgnParse(reader io.Reader) ([]Move, error) {
 }
 
 func getMoves(allMoves []string) []Move {
-	b := NewBoard()
+	g := NewGame()
+	b := g.Board
 
 	type move struct {
 		player   Player
@@ -80,7 +81,7 @@ func getMoves(allMoves []string) []Move {
 		})
 	}
 	for _, m := range moves {
-		realMove = parseNotation(m.player, m.notation, b.board, b.Context)
+		realMove = parseNotation(m.player, m.notation, b.board, g.Context)
 		realMoves = append(realMoves, realMove)
 		b.board = makeMove(realMove, b.board)
 	}

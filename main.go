@@ -33,12 +33,12 @@ func main() {
 	var err error
 	var moves [][2]string
 	var context chess.Context
-	var b *chess.Board
+	var game *chess.Game
 
 	go func(moves *[][2]string) {
 		for _ = range c {
 			fmt.Printf("fen:\n")
-			fmt.Printf("%s\n", b)
+			fmt.Printf("%s\n", game)
 			fmt.Printf("moves: [][2]string{\n")
 			for _, each := range *moves {
 				fmt.Printf("\t{\"%s\", \"%s\"},\n", each[0], each[1])
@@ -58,20 +58,20 @@ func main() {
 	//}
 
 	if fenString != "" {
-		b = chess.NewFromFEN(fenString)
-		fmt.Println(pretty(b.BoardMap()))
+		game = chess.NewGameFromFEN(fenString)
+		fmt.Println(pretty(game.Board.BoardMap()))
 		os.Exit(0)
 	}
 
-	b = chess.NewBoard()
+	game = chess.NewGame()
 	var allMoves string
 	_ = allMoves
 	for {
 		if err == nil {
-			fmt.Println(pretty(b.BoardMap()))
+			fmt.Println(pretty(game.Board.BoardMap()))
 		}
-		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
-		validMoves, err := b.ValidMoves()
+		fmt.Printf("%s's turn\nmake a move...\n", game.Context.PlayersTurn)
+		validMoves, err := chess.ValidMoves(game.Board, game.Context.PlayersTurn, game.Context)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -88,7 +88,7 @@ func main() {
 			fmt.Printf("move : %s\n", move)
 
 		}
-		context, err = b.Move(move)
+		context, err = game.Move(move)
 
 		if err != nil {
 			fmt.Println(err)
@@ -98,15 +98,15 @@ func main() {
 		fmt.Println("state: " + context.State.String())
 		if context.State == chess.CheckMate {
 			fmt.Printf("game over, %s won", context.Winner)
-			fmt.Println(pretty(b.BoardMap()))
+			fmt.Println(pretty(game.Board.BoardMap()))
 			break
 		}
 		if context.State == chess.Draw {
 			fmt.Printf("game over, draw")
-			fmt.Println(pretty(b.BoardMap()))
+			fmt.Println(pretty(game.Board.BoardMap()))
 			break
 		}
-		fmt.Println(pretty(b.BoardMap()))
+		fmt.Println(pretty(game.Board.BoardMap()))
 	}
 	//for _, val := range moves {
 	//	fmt.Println(val)

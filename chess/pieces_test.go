@@ -34,12 +34,12 @@ func TestPieces(t *testing.T) {
 	}
 
 	for ind, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyGame()
 		for _, val := range row.pieces {
-			b.board[val.pos] = val.piece
+			b.Board.board[val.pos] = val.piece
 		}
 
-		got := getPieces(row.player, b.board)
+		got := getPieces(row.player, b.Board.board)
 		if !sameAfterSquareSort(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				printPrettySquares(got), printPrettySquares(row.expected), ind+1)
@@ -88,12 +88,12 @@ func TestKingSquare(t *testing.T) {
 	}
 
 	for ind, row := range table {
-		b := NewEmptyBoard()
+		b := NewEmptyGame()
 		for _, val := range row.pieces {
-			b.board[val.pos] = val.piece
+			b.Board.board[val.pos] = val.piece
 		}
 
-		got := getKingSquareMust(row.player, b.board)
+		got := getKingSquareMust(row.player, b.Board.board)
 		if got != row.expected {
 			t.Errorf("got: %v, expected: %v for testcase: %d\n",
 				got, row.expected, ind+1)

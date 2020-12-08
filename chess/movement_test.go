@@ -8,9 +8,9 @@ import (
 
 func TestPawnMoves(t *testing.T) {
 	var piece = WhitePawn
-	b := NewBoard()
-	be4 := NewBoard()
-	be4.board[e4] = piece
+	b := NewGame()
+	be4 := NewGame()
+	be4.Board.board[e4] = piece
 	table := []struct {
 		moves    []string
 		pawnPos  Square
@@ -23,8 +23,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: d2,
 			expected: []Move{
-				createMove(b.board, d2, d3, []MovementType{Regular, PawnMove}),
-				createMove(b.board, d2, d4, []MovementType{Regular, PawnMove}),
+				createMove(b.Board.board, d2, d3, []MovementType{Regular, PawnMove}),
+				createMove(b.Board.board, d2, d4, []MovementType{Regular, PawnMove}),
 			},
 		},
 		{
@@ -34,8 +34,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: e4,
 			expected: []Move{
-				createMove(be4.board, e4, e5, []MovementType{Regular, PawnMove}),
-				createMove(be4.board, e4, d5, []MovementType{Capture, PawnMove}),
+				createMove(be4.Board.board, e4, e5, []MovementType{Regular, PawnMove}),
+				createMove(be4.Board.board, e4, d5, []MovementType{Capture, PawnMove}),
 			},
 		},
 		{
@@ -56,7 +56,8 @@ func TestPawnMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -64,7 +65,7 @@ func TestPawnMoves(t *testing.T) {
 			}
 		}
 
-		got := pawnMoves(row.pawnPos, b.board, b.Context.enPassantSquare)
+		got := pawnMoves(row.pawnPos, b.Board.board, b.Context.enPassantSquare)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
@@ -81,7 +82,7 @@ func TestCreatePawnPromotionMove(t *testing.T) {
 		expectedMove Move
 	}{
 		{
-			board:      NewFromFEN(fenWhitePawnG7vsBlackRookH8).board,
+			board:      NewGameFromFEN(fenWhitePawnG7vsBlackRookH8).Board.board,
 			fromSquare: g7,
 			toSquare:   h8,
 			expectedMove: Move{
@@ -110,10 +111,10 @@ func TestCreatePawnPromotionMove(t *testing.T) {
 
 func TestBishopMoves(t *testing.T) {
 	var piece = WhiteBishop
-	bf1 := NewBoard()
-	bc4 := NewBoard()
-	bf1.board[f1] = piece
-	bc4.board[c4] = piece
+	bf1 := NewGame()
+	bc4 := NewGame()
+	bf1.Board.board[f1] = piece
+	bc4.Board.board[c4] = piece
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -127,11 +128,11 @@ func TestBishopMoves(t *testing.T) {
 			pos:   f1,
 			piece: piece,
 			expected: []Move{
-				createMove(bf1.board, f1, e2, []MovementType{Regular}),
-				createMove(bf1.board, f1, d3, []MovementType{Regular}),
-				createMove(bf1.board, f1, c4, []MovementType{Regular}),
-				createMove(bf1.board, f1, b5, []MovementType{Regular}),
-				createMove(bf1.board, f1, a6, []MovementType{Regular}),
+				createMove(bf1.Board.board, f1, e2, []MovementType{Regular}),
+				createMove(bf1.Board.board, f1, d3, []MovementType{Regular}),
+				createMove(bf1.Board.board, f1, c4, []MovementType{Regular}),
+				createMove(bf1.Board.board, f1, b5, []MovementType{Regular}),
+				createMove(bf1.Board.board, f1, a6, []MovementType{Regular}),
 			},
 		},
 		{
@@ -144,22 +145,23 @@ func TestBishopMoves(t *testing.T) {
 			pos:   c4,
 			piece: piece,
 			expected: []Move{
-				createMove(bc4.board, c4, f1, []MovementType{Regular}),
-				createMove(bc4.board, c4, e2, []MovementType{Regular}),
-				createMove(bc4.board, c4, b3, []MovementType{Regular}),
-				createMove(bc4.board, c4, d3, []MovementType{Regular}),
-				createMove(bc4.board, c4, b5, []MovementType{Regular}),
-				createMove(bc4.board, c4, d5, []MovementType{Regular}),
-				createMove(bc4.board, c4, a6, []MovementType{Regular}),
-				createMove(bc4.board, c4, e6, []MovementType{Regular}),
-				createMove(bc4.board, c4, f7, []MovementType{Capture}),
+				createMove(bc4.Board.board, c4, f1, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, e2, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, b3, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, d3, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, b5, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, d5, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, a6, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, e6, []MovementType{Regular}),
+				createMove(bc4.Board.board, c4, f7, []MovementType{Capture}),
 			},
 		},
 	}
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -167,7 +169,7 @@ func TestBishopMoves(t *testing.T) {
 			}
 		}
 
-		got := bishopMoves(row.pos, b.board)
+		got := bishopMoves(row.pos, b.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -178,7 +180,8 @@ func TestBishopMoves(t *testing.T) {
 func TestKnightMoves(t *testing.T) {
 	var piece = WhiteKnight
 	var fun = knightMoves
-	b := NewBoard()
+	b := NewGame()
+
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -190,8 +193,8 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, g1, f3, []MovementType{Regular}),
-				createMove(b.board, g1, h3, []MovementType{Regular}),
+				createMove(b.Board.board, g1, f3, []MovementType{Regular}),
+				createMove(b.Board.board, g1, h3, []MovementType{Regular}),
 			},
 		},
 		{
@@ -201,9 +204,9 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, g1, f3, []MovementType{Regular}),
-				createMove(b.board, g1, h3, []MovementType{Regular}),
-				createMove(b.board, g1, e2, []MovementType{Regular}),
+				createMove(b.Board.board, g1, f3, []MovementType{Regular}),
+				createMove(b.Board.board, g1, h3, []MovementType{Regular}),
+				createMove(b.Board.board, g1, e2, []MovementType{Regular}),
 			},
 		},
 		{
@@ -217,16 +220,18 @@ func TestKnightMoves(t *testing.T) {
 			pos:   g8,
 			piece: BlackKnight,
 			expected: []Move{
-				createMove(b.board, g8, f6, []MovementType{Capture}),
-				createMove(b.board, g8, h6, []MovementType{Regular}),
-				createMove(b.board, g8, e7, []MovementType{Regular}),
+				createMove(b.Board.board, g8, f6, []MovementType{Capture}),
+				createMove(b.Board.board, g8, h6, []MovementType{Regular}),
+				createMove(b.Board.board, g8, e7, []MovementType{Regular}),
 			},
 		},
 	}
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
+
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -234,7 +239,7 @@ func TestKnightMoves(t *testing.T) {
 			}
 		}
 
-		got := fun(row.pos, b.board)
+		got := fun(row.pos, b.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -245,7 +250,7 @@ func TestKnightMoves(t *testing.T) {
 func TestRookMoves(t *testing.T) {
 	var piece = WhiteRook
 	var fun = rookMoves
-	b := NewBoard()
+	b := NewGame()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -265,15 +270,17 @@ func TestRookMoves(t *testing.T) {
 			pos:   a1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, a1, a2, []MovementType{Regular}),
-				createMove(b.board, a1, a3, []MovementType{Regular}),
+				createMove(b.Board.board, a1, a2, []MovementType{Regular}),
+				createMove(b.Board.board, a1, a3, []MovementType{Regular}),
 			},
 		},
 	}
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
+
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -281,7 +288,7 @@ func TestRookMoves(t *testing.T) {
 			}
 		}
 
-		got := fun(row.pos, b.board)
+		got := fun(row.pos, b.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -292,7 +299,7 @@ func TestRookMoves(t *testing.T) {
 func TestQueenMoves(t *testing.T) {
 	var piece = WhiteQueen
 	var fun = queenMoves
-	b := NewBoard()
+	b := NewGame()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -314,19 +321,21 @@ func TestQueenMoves(t *testing.T) {
 			pos:   d1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, d1, d2, []MovementType{Regular}),
-				createMove(b.board, d1, d3, []MovementType{Regular}),
-				createMove(b.board, d1, e2, []MovementType{Regular}),
-				createMove(b.board, d1, f3, []MovementType{Regular}),
-				createMove(b.board, d1, g4, []MovementType{Regular}),
-				createMove(b.board, d1, h5, []MovementType{Capture}),
+				createMove(b.Board.board, d1, d2, []MovementType{Regular}),
+				createMove(b.Board.board, d1, d3, []MovementType{Regular}),
+				createMove(b.Board.board, d1, e2, []MovementType{Regular}),
+				createMove(b.Board.board, d1, f3, []MovementType{Regular}),
+				createMove(b.Board.board, d1, g4, []MovementType{Regular}),
+				createMove(b.Board.board, d1, h5, []MovementType{Capture}),
 			},
 		},
 	}
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
+
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -334,7 +343,7 @@ func TestQueenMoves(t *testing.T) {
 			}
 		}
 
-		got := fun(row.pos, b.board)
+		got := fun(row.pos, b.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -346,7 +355,7 @@ func TestKingMoves(t *testing.T) {
 	var piece = WhiteKing
 	var fun1 = kingMoves
 	var fun2 = castleMoves
-	b := NewBoard()
+	b := NewGame()
 	table := []struct {
 		moves    []string
 		pos      Square
@@ -368,8 +377,8 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, e2, []MovementType{Regular}),
-				createMove(b.board, e1, d2, []MovementType{Regular}),
+				createMove(b.Board.board, e1, e2, []MovementType{Regular}),
+				createMove(b.Board.board, e1, d2, []MovementType{Regular}),
 			},
 		},
 		{
@@ -383,9 +392,9 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, e2, []MovementType{Regular}),
-				createMove(b.board, e1, f1, []MovementType{Regular}),
-				createMove(b.board, e1, g1, []MovementType{Castle}),
+				createMove(b.Board.board, e1, e2, []MovementType{Regular}),
+				createMove(b.Board.board, e1, f1, []MovementType{Regular}),
+				createMove(b.Board.board, e1, g1, []MovementType{Castle}),
 			},
 		},
 		{
@@ -403,14 +412,16 @@ func TestKingMoves(t *testing.T) {
 			pos:   e1,
 			piece: piece,
 			expected: []Move{
-				createMove(b.board, e1, d1, []MovementType{Regular}),
+				createMove(b.Board.board, e1, d1, []MovementType{Regular}),
 			},
 		},
 	}
 
 	var err error
 	for _, row := range table {
-		b := NewBoard()
+		b := NewGame()
+		b.Context.State = Playing
+
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
@@ -418,8 +429,8 @@ func TestKingMoves(t *testing.T) {
 			}
 		}
 
-		got := fun1(row.pos, b.board)
-		got = append(got, fun2(row.pos, b.board, b.Context)...)
+		got := fun1(row.pos, b.Board.board)
+		got = append(got, fun2(row.pos, b.Board.board, b.Context)...)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
