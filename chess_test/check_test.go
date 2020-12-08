@@ -33,9 +33,9 @@ func TestCheck(t *testing.T) {
 	var ctx chess.Context
 	var err error
 	for _, row := range table {
-		b := chess.NewBoard()
+		game := chess.NewGame()
 		for _, move := range row.moves {
-			ctx, err = b.Move(move)
+			ctx, err = game.Move(move)
 			if err != nil {
 				t.Errorf("error: %s\n", err)
 			}
@@ -80,7 +80,7 @@ func TestCheckMate(t *testing.T) {
 
 	var err error
 	for ind, row := range table {
-		b := chess.NewBoard()
+		b := chess.NewGame()
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {

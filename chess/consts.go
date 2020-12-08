@@ -48,7 +48,7 @@ const (
 )
 
 const (
-	Idle State = iota 
+	Idle State = iota
 	Playing
 	Check
 	CheckMate
