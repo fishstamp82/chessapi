@@ -33,12 +33,12 @@ func main() {
 	var err error
 	var moves [][2]string
 	var context chess.Context
-	var game *chess.Game
+	var b *chess.Game
 
 	go func(moves *[][2]string) {
 		for _ = range c {
 			fmt.Printf("fen:\n")
-			fmt.Printf("%s\n", game)
+			fmt.Printf("%s\n", b)
 			fmt.Printf("moves: [][2]string{\n")
 			for _, each := range *moves {
 				fmt.Printf("\t{\"%s\", \"%s\"},\n", each[0], each[1])
@@ -58,20 +58,21 @@ func main() {
 	//}
 
 	if fenString != "" {
-		game = chess.NewGameFromFEN(fenString)
-		fmt.Println(pretty(game.Board.BoardMap()))
+		b = chess.NewGameFromFEN(fenString)
+		fmt.Println(pretty(b.Board.BoardMap()))
 		os.Exit(0)
 	}
 
-	game = chess.NewGame()
+	b = chess.NewGame()
+	b.Context.State = chess.Playing
 	var allMoves string
 	_ = allMoves
 	for {
 		if err == nil {
-			fmt.Println(pretty(game.Board.BoardMap()))
+			fmt.Println(pretty(b.Board.BoardMap()))
 		}
-		fmt.Printf("%s's turn\nmake a move...\n", game.Context.PlayersTurn)
-		validMoves, err := chess.ValidMoves(game.Board, game.Context.PlayersTurn, game.Context)
+		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
+		validMoves, err := chess.ValidMoves(b.Board, b.Context.PlayersTurn, b.Context)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -88,7 +89,7 @@ func main() {
 			fmt.Printf("move : %s\n", move)
 
 		}
-		context, err = game.Move(move)
+		context, err = b.Move(move)
 
 		if err != nil {
 			fmt.Println(err)
@@ -98,15 +99,15 @@ func main() {
 		fmt.Println("state: " + context.State.String())
 		if context.State == chess.CheckMate {
 			fmt.Printf("game over, %s won", context.Winner)
-			fmt.Println(pretty(game.Board.BoardMap()))
+			fmt.Println(pretty(b.Board.BoardMap()))
 			break
 		}
 		if context.State == chess.Draw {
 			fmt.Printf("game over, draw")
-			fmt.Println(pretty(game.Board.BoardMap()))
+			fmt.Println(pretty(b.Board.BoardMap()))
 			break
 		}
-		fmt.Println(pretty(game.Board.BoardMap()))
+		fmt.Println(pretty(b.Board.BoardMap()))
 	}
 	//for _, val := range moves {
 	//	fmt.Println(val)
