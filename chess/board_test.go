@@ -248,6 +248,7 @@ func TestNewFromFEN(t *testing.T) {
 
 	for _, row := range table {
 		game := NewGameFromFEN(row.fen)
+		game.Context.State = Playing
 		expectedGame := NewEmptyGame()
 		for _, pp := range row.piecePositions {
 			expectedGame.Board.board[pp.position] = pp.piece

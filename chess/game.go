@@ -288,7 +288,7 @@ func NewEmptyGame() *Game {
 	return &Game{
 		Board: b,
 		Context: Context{
-			State:               Playing,
+			State:               Idle,
 			PlayersTurn:         White,
 			enPassantSquare:     none,
 			whiteCanCastleLeft:  true,
