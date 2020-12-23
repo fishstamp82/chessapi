@@ -6,7 +6,6 @@ import (
 )
 
 func TestBoardMap(t *testing.T) {
-
 	table := []struct {
 		square  string
 		unicode string
@@ -21,13 +20,12 @@ func TestBoardMap(t *testing.T) {
 		game := chess.NewGame()
 		b := game.Board
 		bMap := b.BoardMap()
-		for key, _ := range bMap {
+		for key := range bMap {
 			if key == row.square {
 				if bMap[row.square] != row.unicode {
 					t.Errorf("expected: %s, got: %s for case %d\n", row.unicode, bMap[row.square], ind+1)
 				}
 			}
-
 		}
 	}
 }

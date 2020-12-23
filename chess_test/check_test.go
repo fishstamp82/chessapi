@@ -82,10 +82,11 @@ func TestCheckMate(t *testing.T) {
 	var err error
 	for ind, row := range table {
 		b := chess.NewGame()
+		b.Context.State = chess.Playing
 		for _, move := range row.moves {
 			_, err = b.Move(move)
 			if err != nil {
-				t.Error("error")
+				t.Error(err)
 			}
 		}
 		if b.Context.State.String() != row.expected {
