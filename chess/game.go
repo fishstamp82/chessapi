@@ -6,6 +6,11 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
+)
+
+const (
+	gameUpdateInterval = 100 * time.Millisecond
 )
 
 type Game struct {
@@ -16,8 +21,35 @@ type Game struct {
 	startedAt int64
 }
 
-func (g *Game) Start() {
+func (g *Game) Start() chan<- bool {
 	g.startedAt = timeNow()
+	exit := make(chan bool)
+	ticker := time.NewTicker(gameUpdateInterval)
+	defer func() {
+		ticker.Stop()
+	}()
+
+	go func() {
+		for {
+			select {
+			case <-exit:
+				g.End()
+			case <-ticker.C:
+				p := g.getPlayer(g.Context.ColorsTurn)
+				p.timeSpent += gameUpdateInterval
+				if p.timeSpent < 0 {
+					g.Context.Winner = getOpponent(g.Players, p.color).color
+					g.Context.State = Over
+				}
+			}
+		}
+	}()
+
+	return exit
+}
+
+func (g *Game) End() {
+	g.Context.State = Idle
 }
 
 // Move gets squares in human readable form, and performs a move
@@ -249,7 +281,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 		return g.Context, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
 	}
 
-	// Commit the move to the board
+	// Commit the move to the board, update timers
 	g.Board.board = makeMove(m, g.Board.board)
 	p := g.getPlayer(g.Context.ColorsTurn)
 	p.moves = append(p.moves, m)

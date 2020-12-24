@@ -54,6 +54,7 @@ const (
 	CheckMate
 	Draw
 	Promo
+	Over // Timeout or anything else
 )
 
 const (
