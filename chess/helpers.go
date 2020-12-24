@@ -15,7 +15,7 @@ func (s Square) rank() Square {
 	return s/8 + 1
 }
 
-func (b *Board) squaresWithoutKing(p Player) []Square {
+func (b *Board) squaresWithoutKing(p Color) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {
@@ -42,7 +42,7 @@ func (b *Board) squaresWithoutKing(p Player) []Square {
 	return pieces
 }
 
-func getKingSquareMust(p Player, b [64]Piece) Square {
+func getKingSquareMust(p Color, b [64]Piece) Square {
 	var king Piece
 	switch p {
 	case White:
@@ -89,7 +89,7 @@ func pawnFinalRank(piece Piece, square Square) bool {
 	return false
 }
 
-func validPromotion(piece Piece, player Player) bool {
+func validPromotion(piece Piece, player Color) bool {
 	switch player {
 	case White:
 		switch piece {
@@ -110,7 +110,7 @@ func validPromotion(piece Piece, player Player) bool {
 	return false
 }
 
-func squaresWithoutKing(p Player, b [64]Piece) []Square {
+func squaresWithoutKing(p Color, b [64]Piece) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {

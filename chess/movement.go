@@ -35,7 +35,7 @@ func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move
 	}
 
 	p := board[fromSquare]
-	var player Player
+	var player Color
 
 	switch {
 	case p > 0:
@@ -63,7 +63,7 @@ func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move
 	return moves
 }
 
-func validMovesForPlayer(player Player, board [64]Piece, ctx Context) []Move {
+func validMovesForPlayer(player Color, board [64]Piece, ctx Context) []Move {
 	var moves []Move
 	var pieces []Piece
 	var squares []Square
@@ -97,7 +97,7 @@ func getPieceSquares(piece Piece, board [64]Piece) []Square {
 }
 
 //remove moves that result in player being in check
-func cleanMovesInCheck(m []Move, b [64]Piece, p Player) []Move {
+func cleanMovesInCheck(m []Move, b [64]Piece, p Color) []Move {
 	var cleanMoves []Move
 	for _, move := range m {
 		b = makeMove(move, b)
@@ -469,7 +469,7 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	var canCastleLeft bool
 	var shortCastleSquares []Square
 	var longCastleSquares []Square
-	var opponent Player
+	var opponent Color
 
 	switch piece {
 	case WhiteKing:
@@ -584,7 +584,7 @@ func pawnMoves(fromSquare Square, b [64]Piece, enPassant Square) []Move {
 
 	// Used dependent on if its white or black pawns
 	var pawn Piece
-	var player Player
+	var player Color
 	var oneStep Square
 	var twoStep Square
 	var diagonalLeft Square
@@ -986,7 +986,7 @@ func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	return move
 }
 
-func createPawnPromotionMoves(p Player, f, t Square, targetPiece Piece, mt []MovementType) []Move {
+func createPawnPromotionMoves(p Color, f, t Square, targetPiece Piece, mt []MovementType) []Move {
 	var pawn, bishop, knight, rook, queen, target Piece
 	target = targetPiece
 	switch p {

@@ -4,7 +4,7 @@ import "fmt"
 
 //go:generate stringer -type=Piece,Player,Square,State,MovementType -output=stringer_gen.go
 
-type Player byte
+type Color byte
 type Square int
 type State byte
 type MovementType byte
@@ -41,10 +41,10 @@ func (nm *NoMoveError) Error() string {
 }
 
 const (
-	Noone Player = iota
-	White        // 1
-	Black        // 2
-	Both         // 2
+	Noone Color = iota
+	White       // 1
+	Black       // 2
+	Both        // 3
 )
 
 const (

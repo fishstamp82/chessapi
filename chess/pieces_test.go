@@ -10,7 +10,7 @@ func TestPieces(t *testing.T) {
 
 	table := []struct {
 		pieces   []piecePos
-		player   Player
+		player   Color
 		expected []Square
 	}{
 		{
@@ -55,7 +55,7 @@ func TestKingSquare(t *testing.T) {
 
 	table := []struct {
 		pieces   []piecePos
-		player   Player
+		player   Color
 		expected Square
 	}{
 		{

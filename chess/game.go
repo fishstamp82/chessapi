@@ -6,12 +6,19 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Game struct {
 	Board   *Board
-	moves   []Move
 	Context Context
+	Players []Player
+	moves   []Move
+	startedAt int64
+}
+
+func (g *Game) Start() {
+	g.startedAt = time.Now().UTC().UnixNano()
 }
 
 func (game *Game) FenString() string {
@@ -104,7 +111,7 @@ func (g *Game) MoveNotation(move Move) (Context, error) {
 
 func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
-	var opponent Player
+	var opponent Color
 	switch g.Context.PlayersTurn {
 	case White:
 		if g.Board.board[fromSquare] < 0 {

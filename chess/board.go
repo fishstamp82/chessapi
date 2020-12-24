@@ -7,8 +7,8 @@ import (
 
 type Context struct {
 	State               State
-	PlayersTurn         Player
-	Winner              Player
+	PlayersTurn         Color
+	Winner              Color
 	Score               string // 1-0, 0-1, 1/2-1/2
 	whiteCanCastleRight bool
 	whiteCanCastleLeft  bool
@@ -40,7 +40,7 @@ type Board struct {
 }
 
 
-var playerToFen = map[Player]string{
+var playerToFen = map[Color]string{
 	White: "w",
 	Black: "b",
 }
@@ -72,7 +72,7 @@ func (b *Board) BoardMap() map[string]string {
 
 
 
-func ValidMoves(b *Board, p Player, c Context ) ([]string, error) {
+func ValidMoves(b *Board, p Color, c Context ) ([]string, error) {
 	if c.State != Playing && c.State != Check {
 		return nil, errors.New("not in playing state")
 	}
@@ -84,7 +84,7 @@ func ValidMoves(b *Board, p Player, c Context ) ([]string, error) {
 	return strMoves, nil
 }
 
-func isDraw(player Player, board [64]Piece, ctx Context) bool {
+func isDraw(player Color, board [64]Piece, ctx Context) bool {
 	moves := validMovesForPlayer(player, board, ctx)
 	if moves == nil {
 		return true
@@ -122,7 +122,7 @@ func getSquares(m []Move) []Square {
 
 func inCheck(kingSquare Square, board [64]Piece) bool {
 
-	var opponent Player
+	var opponent Color
 	switch board[kingSquare] {
 	case WhiteKing:
 		opponent = Black
@@ -144,7 +144,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 		return false
 	}
 
-	var hero, opponent Player
+	var hero, opponent Color
 	switch board[kingSquare] {
 	case WhiteKing:
 		hero = White
@@ -198,7 +198,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	return true
 }
 
-func (b *Board) getOpponent(p Player) Player {
+func (b *Board) getOpponent(p Color) Color {
 	switch p {
 	case White:
 		return Black
@@ -209,7 +209,7 @@ func (b *Board) getOpponent(p Player) Player {
 	panic("must be black or white")
 }
 
-func getPieces(p Player, board [64]Piece) []Square {
+func getPieces(p Color, board [64]Piece) []Square {
 	var isWhite bool
 	switch p {
 	case White:

@@ -7,7 +7,7 @@ import (
 func TestWhitesTurn(t *testing.T) {
 	table := []struct {
 		moves    []string
-		expected Player
+		expected Color
 	}{
 		{
 			moves: []string{
