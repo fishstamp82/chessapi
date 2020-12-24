@@ -260,7 +260,6 @@ func TestNewFromFEN(t *testing.T) {
 
 		if game.Board.board != expectedGame.Board.board {
 			t.Errorf("got: %s, expected: %s\n", game.FenString(), expectedGame.FenString())
-
 		}
 	}
 }

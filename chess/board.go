@@ -36,9 +36,8 @@ func (c Context) String() string {
 }
 
 type Board struct {
-	board   [64]Piece
+	board [64]Piece
 }
-
 
 var playerToFen = map[Color]string{
 	White: "w",
@@ -69,10 +68,7 @@ func (b *Board) BoardMap() map[string]string {
 	return board
 }
 
-
-
-
-func ValidMoves(b *Board, p Color, c Context ) ([]string, error) {
+func ValidMoves(b *Board, p Color, c Context) ([]string, error) {
 	if c.State != Playing && c.State != Check {
 		return nil, errors.New("not in playing state")
 	}
@@ -245,8 +241,6 @@ func (b *Board) getSquare(s string) (Square, Square, error) {
 	}
 	return sq1, sq2, nil
 }
-
-
 
 var fenToPiece = map[byte]Piece{
 	'P': WhitePawn,

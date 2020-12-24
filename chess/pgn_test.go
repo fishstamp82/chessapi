@@ -98,7 +98,7 @@ func TestFindFromSquare(t *testing.T) {
 	table := []struct {
 		piece               Piece
 		toSquare            Square
-		game               *Game
+		game                *Game
 		expectedFromSquares []Square
 	}{
 		{

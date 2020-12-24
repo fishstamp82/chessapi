@@ -10,10 +10,10 @@ import (
 )
 
 type Game struct {
-	Board   *Board
-	Context Context
-	Players []Player
-	moves   []Move
+	Board     *Board
+	Context   Context
+	Players   []Player
+	moves     []Move
 	startedAt int64
 }
 
