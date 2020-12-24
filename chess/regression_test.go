@@ -27,8 +27,8 @@ func TestWhitesTurn(t *testing.T) {
 		for _, move := range row.moves {
 			ctx, _ = g.Move(move)
 		}
-		if ctx.PlayersTurn != row.expected {
-			t.Errorf("expected: %v, got: %v\n", row.expected, g.Context.PlayersTurn)
+		if ctx.ColorsTurn != row.expected {
+			t.Errorf("expected: %v, got: %v\n", row.expected, g.Context.ColorsTurn)
 		}
 	}
 }

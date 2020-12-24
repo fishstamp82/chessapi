@@ -147,8 +147,8 @@ func main() {
 		if err == nil {
 			fmt.Println(pretty(b.Board.BoardMap()))
 		}
-		fmt.Printf("%s's turn\nmake a move...\n", b.Context.PlayersTurn)
-		validMoves, err := chess.ValidMoves(b.Board, b.Context.PlayersTurn, b.Context)
+		fmt.Printf("%s's turn\nmake a move...\n", b.Context.ColorsTurn)
+		validMoves, err := chess.ValidMoves(b.Board, b.Context.ColorsTurn, b.Context)
 		if err != nil {
 			fmt.Println(err)
 			continue

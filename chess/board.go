@@ -7,7 +7,7 @@ import (
 
 type Context struct {
 	State               State
-	PlayersTurn         Color
+	ColorsTurn          Color
 	Winner              Color
 	Score               string // 1-0, 0-1, 1/2-1/2
 	whiteCanCastleRight bool
@@ -22,7 +22,7 @@ type Context struct {
 func (c Context) String() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%v/%v/%v/%v/%s/%d/%d",
 		c.State,
-		c.PlayersTurn,
+		c.ColorsTurn,
 		c.Winner,
 		c.Score,
 		c.whiteCanCastleRight,

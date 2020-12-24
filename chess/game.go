@@ -52,7 +52,7 @@ func (game *Game) FenString() string {
 	}
 	board = strings.TrimSuffix(board, "/")
 
-	toMove := playerToFen[game.Context.PlayersTurn]
+	toMove := playerToFen[game.Context.ColorsTurn]
 
 	var castle string
 	if game.Context.whiteCanCastleRight {
@@ -112,7 +112,7 @@ func (g *Game) MoveNotation(move Move) (Context, error) {
 func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
 	var opponent Color
-	switch g.Context.PlayersTurn {
+	switch g.Context.ColorsTurn {
 	case White:
 		if g.Board.board[fromSquare] < 0 {
 			return g.Context, errors.New("white's turn")
@@ -154,7 +154,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
 	if isCheckMated(opponentsKing, g.Board.board) {
 		g.Context.State = CheckMate
-		g.Context.Winner = g.Context.PlayersTurn
+		g.Context.Winner = g.Context.ColorsTurn
 		return g.Context, nil
 	}
 
@@ -168,7 +168,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 	g.Context.enPassantSquare = g.getEnPassantSquare(m)
 
 	//Increment full move if this was blacks move
-	if g.Context.PlayersTurn == Black {
+	if g.Context.ColorsTurn == Black {
 		g.Context.fullMove += 1
 	}
 
@@ -205,10 +205,10 @@ func (game *Game) getEnPassantSquare(m Move) Square {
 }
 
 func (game *Game) switchTurn() {
-	if game.Context.PlayersTurn == White {
-		game.Context.PlayersTurn = Black
+	if game.Context.ColorsTurn == White {
+		game.Context.ColorsTurn = Black
 	} else {
-		game.Context.PlayersTurn = White
+		game.Context.ColorsTurn = White
 	}
 }
 
@@ -279,7 +279,7 @@ func NewGame() *Game {
 
 	return &Game{Board: b, Context: Context{
 		State:               Idle,
-		PlayersTurn:         White,
+		ColorsTurn:          White,
 		Winner:              0,
 		whiteCanCastleRight: true,
 		whiteCanCastleLeft:  true,
@@ -296,7 +296,7 @@ func NewEmptyGame() *Game {
 		Board: b,
 		Context: Context{
 			State:               Idle,
-			PlayersTurn:         White,
+			ColorsTurn:          White,
 			enPassantSquare:     none,
 			whiteCanCastleLeft:  true,
 			whiteCanCastleRight: true,
@@ -342,9 +342,9 @@ func NewGameFromFEN(fen string) *Game {
 	}
 	switch turn {
 	case "w":
-		eb.Context.PlayersTurn = White
+		eb.Context.ColorsTurn = White
 	case "b":
-		eb.Context.PlayersTurn = Black
+		eb.Context.ColorsTurn = Black
 	}
 
 	eb.Context.whiteCanCastleLeft = false
