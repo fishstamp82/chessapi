@@ -15,34 +15,7 @@ func (s Square) rank() Square {
 	return s/8 + 1
 }
 
-func (b *Board) squaresWithoutKing(p Player) []Square {
-	var isWhite bool
-	var piece Piece
-	switch p {
-	case White:
-		isWhite = true
-	case Black:
-		isWhite = false
-	}
-
-	var pieces []Square
-	for pos := a1; pos <= h8; pos += 1 {
-		piece = b.board[pos]
-		if piece == WhiteKing || piece == BlackKing {
-			continue
-		}
-		if piece > 0 && isWhite {
-			pieces = append(pieces, pos)
-		} else if piece < 0 && !isWhite {
-			pieces = append(pieces, pos)
-
-		}
-
-	}
-	return pieces
-}
-
-func getKingSquareMust(p Player, b [64]Piece) Square {
+func getKingSquareMust(p Color, b [64]Piece) Square {
 	var king Piece
 	switch p {
 	case White:
@@ -79,17 +52,7 @@ func uniqueSquares(s []Square) []Square {
 	return uniq
 }
 
-func pawnFinalRank(piece Piece, square Square) bool {
-	switch piece {
-	case WhitePawn:
-		return inSquares(square, []Square{a8, b8, c8, d8, e8, f8, g8, h8})
-	case BlackPawn:
-		return inSquares(square, []Square{a1, b1, c1, d1, e1, f1, g1, h1})
-	}
-	return false
-}
-
-func validPromotion(piece Piece, player Player) bool {
+func validPromotion(piece Piece, player Color) bool {
 	switch player {
 	case White:
 		switch piece {
@@ -110,7 +73,7 @@ func validPromotion(piece Piece, player Player) bool {
 	return false
 }
 
-func squaresWithoutKing(p Player, b [64]Piece) []Square {
+func squaresWithoutKing(p Color, b [64]Piece) []Square {
 	var isWhite bool
 	var piece Piece
 	switch p {

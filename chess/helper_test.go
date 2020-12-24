@@ -37,7 +37,7 @@ func TestHelper(t *testing.T) {
 
 func TestValidPromotion(t *testing.T) {
 	table := []struct {
-		player   Player
+		player   Color
 		piece    Piece
 		expected bool
 	}{

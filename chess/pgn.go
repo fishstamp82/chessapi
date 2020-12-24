@@ -47,7 +47,7 @@ func getMoves(allMoves []string) []Move {
 	b := g.Board
 
 	type move struct {
-		player   Player
+		player   Color
 		notation string
 	}
 	var realMoves []Move
@@ -88,7 +88,7 @@ func getMoves(allMoves []string) []Move {
 	return realMoves
 }
 
-func parseNotation(player Player, playerMove string, board [64]Piece, context Context) Move {
+func parseNotation(player Color, playerMove string, board [64]Piece, context Context) Move {
 	var targetSquare Square
 
 	var fromInformation string
@@ -169,10 +169,7 @@ func parseNotation(player Player, playerMove string, board [64]Piece, context Co
 }
 
 func isCheck(move string) bool {
-	if move[len(move)-1] == '+' {
-		return true
-	}
-	return false
+	return move[len(move)-1] == '+'
 }
 
 func disambiguateMust(squares []Square, file byte, rank byte) Square {
@@ -227,7 +224,7 @@ func getFileRank(fromInformation string) (byte, byte) {
 	return 0, 0
 }
 
-func decodeCastleMust(player Player, move string) (Square, Square) {
+func decodeCastleMust(player Color, move string) (Square, Square) {
 	if player == White && move == "O-O" {
 		return e1, g1
 	}
@@ -243,7 +240,7 @@ func decodeCastleMust(player Player, move string) (Square, Square) {
 	panic(fmt.Sprintf("called decode Castle with player: %v, move: %v\n", player, move))
 }
 
-func getPieceMust(piece Piece, player Player) Piece {
+func getPieceMust(piece Piece, player Color) Piece {
 	if piece == Bishop && player == White {
 		return WhiteBishop
 	}

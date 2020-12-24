@@ -7,8 +7,8 @@ import (
 
 type Context struct {
 	State               State
-	PlayersTurn         Player
-	Winner              Player
+	ColorsTurn          Color
+	Winner              Color
 	Score               string // 1-0, 0-1, 1/2-1/2
 	whiteCanCastleRight bool
 	whiteCanCastleLeft  bool
@@ -22,7 +22,7 @@ type Context struct {
 func (c Context) String() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%v/%v/%v/%v/%s/%d/%d",
 		c.State,
-		c.PlayersTurn,
+		c.ColorsTurn,
 		c.Winner,
 		c.Score,
 		c.whiteCanCastleRight,
@@ -36,11 +36,10 @@ func (c Context) String() string {
 }
 
 type Board struct {
-	board   [64]Piece
+	board [64]Piece
 }
 
-
-var playerToFen = map[Player]string{
+var playerToFen = map[Color]string{
 	White: "w",
 	Black: "b",
 }
@@ -69,10 +68,7 @@ func (b *Board) BoardMap() map[string]string {
 	return board
 }
 
-
-
-
-func ValidMoves(b *Board, p Player, c Context ) ([]string, error) {
+func ValidMoves(b *Board, p Color, c Context) ([]string, error) {
 	if c.State != Playing && c.State != Check {
 		return nil, errors.New("not in playing state")
 	}
@@ -84,7 +80,7 @@ func ValidMoves(b *Board, p Player, c Context ) ([]string, error) {
 	return strMoves, nil
 }
 
-func isDraw(player Player, board [64]Piece, ctx Context) bool {
+func isDraw(player Color, board [64]Piece, ctx Context) bool {
 	moves := validMovesForPlayer(player, board, ctx)
 	if moves == nil {
 		return true
@@ -109,6 +105,7 @@ func makeMove(m Move, b [64]Piece) [64]Piece {
 	for _, pp := range m.piecePositions {
 		b[pp.position] = pp.piece
 	}
+	m.timeStamp = timeNow()
 	return b
 }
 
@@ -122,7 +119,7 @@ func getSquares(m []Move) []Square {
 
 func inCheck(kingSquare Square, board [64]Piece) bool {
 
-	var opponent Player
+	var opponent Color
 	switch board[kingSquare] {
 	case WhiteKing:
 		opponent = Black
@@ -144,7 +141,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 		return false
 	}
 
-	var hero, opponent Player
+	var hero, opponent Color
 	switch board[kingSquare] {
 	case WhiteKing:
 		hero = White
@@ -176,9 +173,8 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 		if !inSquares(kingSquare, getSquares(targets)) {
 			continue
 		}
-		for _, sq := range getBlocks(square, kingSquare, board) {
-			toBlock = append(toBlock, sq)
-		}
+		toBlock = append(toBlock, getBlocks(square, kingSquare, board)...)
+
 	}
 	toBlock = uniqueSquares(toBlock)
 
@@ -198,18 +194,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	return true
 }
 
-func (b *Board) getOpponent(p Player) Player {
-	switch p {
-	case White:
-		return Black
-	case Black:
-		return White
-	}
-
-	panic("must be black or white")
-}
-
-func getPieces(p Player, board [64]Piece) []Square {
+func getPieces(p Color, board [64]Piece) []Square {
 	var isWhite bool
 	switch p {
 	case White:
@@ -237,16 +222,14 @@ func (b *Board) getSquare(s string) (Square, Square, error) {
 	}
 	sq1, found := stringToSquare[s[:2]]
 	if !found {
-		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
+		return none, none, fmt.Errorf("no such move: %s", s)
 	}
 	sq2, found := stringToSquare[s[2:]]
 	if !found {
-		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
+		return none, none, fmt.Errorf("no such move: %s", s)
 	}
 	return sq1, sq2, nil
 }
-
-
 
 var fenToPiece = map[byte]Piece{
 	'P': WhitePawn,

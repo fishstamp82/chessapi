@@ -98,7 +98,7 @@ func TestFindFromSquare(t *testing.T) {
 	table := []struct {
 		piece               Piece
 		toSquare            Square
-		game               *Game
+		game                *Game
 		expectedFromSquares []Square
 	}{
 		{
@@ -253,7 +253,7 @@ func TestIsPromotion(t *testing.T) {
 
 func TestDecodeCastleMust(t *testing.T) {
 	table := []struct {
-		player     Player
+		player     Color
 		playerMove string
 		expected   [2]Square
 	}{
@@ -290,7 +290,7 @@ func TestDecodeCastleMust(t *testing.T) {
 func TestGetPieceMust(t *testing.T) {
 	table := []struct {
 		piece         Piece
-		player        Player
+		player        Color
 		expectedPiece Piece
 	}{
 		{
@@ -436,7 +436,7 @@ func TestParseNotation(t *testing.T) {
 	fen3 := "3r3r/b2k4/3b4/R7/2K1Q2Q/8/8/R6Q w KQkq - 0 1"
 
 	table := []struct {
-		player       Player
+		player       Color
 		notation     string
 		board        [64]Piece
 		context      Context

@@ -6,7 +6,7 @@ import (
 
 func TestInitialization(t *testing.T) {
 	game := NewGame()
-	if game.Context.PlayersTurn != White {
+	if game.Context.ColorsTurn != White {
 		t.Error("not white's turn on start of the game")
 	}
 
@@ -145,7 +145,7 @@ func TestNewFromFEN(t *testing.T) {
 			},
 			context: Context{
 				State:               Playing,
-				PlayersTurn:         White,
+				ColorsTurn:          White,
 				Winner:              Noone,
 				Score:               "",
 				whiteCanCastleRight: true,
@@ -194,7 +194,7 @@ func TestNewFromFEN(t *testing.T) {
 			},
 			context: Context{
 				State:               Playing,
-				PlayersTurn:         White,
+				ColorsTurn:          White,
 				Winner:              Noone,
 				Score:               "",
 				whiteCanCastleRight: true,
@@ -213,7 +213,7 @@ func TestNewFromFEN(t *testing.T) {
 			},
 			context: Context{
 				State:               Playing,
-				PlayersTurn:         White,
+				ColorsTurn:          White,
 				Winner:              Noone,
 				Score:               "",
 				whiteCanCastleRight: true,
@@ -232,7 +232,7 @@ func TestNewFromFEN(t *testing.T) {
 			},
 			context: Context{
 				State:               Playing,
-				PlayersTurn:         White,
+				ColorsTurn:          White,
 				Winner:              Noone,
 				Score:               "",
 				whiteCanCastleRight: false,
@@ -260,7 +260,6 @@ func TestNewFromFEN(t *testing.T) {
 
 		if game.Board.board != expectedGame.Board.board {
 			t.Errorf("got: %s, expected: %s\n", game.FenString(), expectedGame.FenString())
-
 		}
 	}
 }
