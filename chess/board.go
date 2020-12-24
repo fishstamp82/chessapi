@@ -105,6 +105,7 @@ func makeMove(m Move, b [64]Piece) [64]Piece {
 	for _, pp := range m.piecePositions {
 		b[pp.position] = pp.piece
 	}
+	m.timeStamp = timeNow()
 	return b
 }
 

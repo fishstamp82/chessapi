@@ -6,7 +6,6 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Game struct {
@@ -18,7 +17,7 @@ type Game struct {
 }
 
 func (g *Game) Start() {
-	g.startedAt = time.Now().UTC().UnixNano()
+	g.startedAt = timeNow()
 }
 
 // Move gets squares in human readable form, and performs a move
@@ -240,7 +239,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 	}
 
 	//todo: replace with function thate uses chess algebraic notation
-	m := Move{}
+	var m Move
 	for _, move := range availMoves {
 		if move.fromSquare == fromSquare && move.toSquare == toSquare {
 			m = move
@@ -250,7 +249,10 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 		return g.Context, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
 	}
 
+	// Commit the move to the board
 	g.Board.board = makeMove(m, g.Board.board)
+	p := g.getPlayer(g.Context.ColorsTurn)
+	p.moves = append(p.moves, m)
 
 	opponentsKing := getKingSquareMust(opponent, g.Board.board)
 	if inCheck(opponentsKing, g.Board.board) {
@@ -351,6 +353,15 @@ func (g *Game) abortCastling(m Move) {
 
 }
 
+func (g *Game) getPlayer(turn Color) Player {
+	for _, p := range g.Players {
+		if p.color == turn {
+			return p
+		}
+	}
+	panic(fmt.Sprintf("no player with color %s in game", turn.String()))
+}
+
 func NewGame() *Game {
 	b := &Board{}
 
@@ -384,15 +395,21 @@ func NewGame() *Game {
 	b.board[d8] = BlackQueen
 	b.board[e8] = BlackKing
 
-	return &Game{Board: b, Context: Context{
-		State:               Idle,
-		ColorsTurn:          White,
-		Winner:              0,
-		whiteCanCastleRight: true,
-		whiteCanCastleLeft:  true,
-		blackCanCastleRight: true,
-		blackCanCastleLeft:  true,
-		halfMove:            0,
-		fullMove:            1,
-	}}
+	return &Game{Board: b,
+		Context: Context{
+			State:               Idle,
+			ColorsTurn:          White,
+			Winner:              0,
+			whiteCanCastleRight: true,
+			whiteCanCastleLeft:  true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+			halfMove:            0,
+			fullMove:            1,
+		},
+		Players: []Player{
+			{color: White},
+			{color: Black},
+		},
+	}
 }
