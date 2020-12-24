@@ -172,9 +172,8 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 		if !inSquares(kingSquare, getSquares(targets)) {
 			continue
 		}
-		for _, sq := range getBlocks(square, kingSquare, board) {
-			toBlock = append(toBlock, sq)
-		}
+		toBlock = append(toBlock, getBlocks(square, kingSquare, board)...)
+
 	}
 	toBlock = uniqueSquares(toBlock)
 
@@ -192,17 +191,6 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	}
 
 	return true
-}
-
-func (b *Board) getOpponent(p Color) Color {
-	switch p {
-	case White:
-		return Black
-	case Black:
-		return White
-	}
-
-	panic("must be black or white")
 }
 
 func getPieces(p Color, board [64]Piece) []Square {
@@ -233,11 +221,11 @@ func (b *Board) getSquare(s string) (Square, Square, error) {
 	}
 	sq1, found := stringToSquare[s[:2]]
 	if !found {
-		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
+		return none, none, fmt.Errorf("no such move: %s", s)
 	}
 	sq2, found := stringToSquare[s[2:]]
 	if !found {
-		return none, none, errors.New(fmt.Sprintf("no such move: %s", s))
+		return none, none, fmt.Errorf("no such move: %s", s)
 	}
 	return sq1, sq2, nil
 }

@@ -14,6 +14,7 @@ type Move struct {
 	piecePositions []piecePosition // Resulting pieces in each square
 	moveTypes      []MovementType
 	reverseMove    *Move
+	timeStamp      int64
 }
 
 func (m Move) String() string {
@@ -22,8 +23,7 @@ func (m Move) String() string {
 		pp += fmt.Sprintf("%s on %s;", each.piece, each.position)
 	}
 	for _, mt := range m.moveTypes {
-		mts += fmt.Sprintf("%s", mt)
-
+		mts += mt.String()
 	}
 	return fmt.Sprintf("move: \"%s%s\", pp's: %s, movement types: %s", m.fromSquare, m.toSquare, pp, mts)
 }
@@ -1040,9 +1040,7 @@ func createPawnPromotionMove(board [64]Piece, f, t Square, promoPiece Piece, mt 
 	var pawn, target Piece
 	target = board[t]
 	pawn = board[f]
-
-	var move Move
-	move = Move{
+	move := Move{
 		piece:      pawn,
 		fromSquare: f,
 		toSquare:   t,

@@ -169,10 +169,7 @@ func parseNotation(player Color, playerMove string, board [64]Piece, context Con
 }
 
 func isCheck(move string) bool {
-	if move[len(move)-1] == '+' {
-		return true
-	}
-	return false
+	return move[len(move)-1] == '+'
 }
 
 func disambiguateMust(squares []Square, file byte, rank byte) Square {

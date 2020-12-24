@@ -112,7 +112,7 @@ func main() {
 	var b *chess.Game
 
 	go func(moves *[][2]string) {
-		for _ = range c {
+		for range c {
 			fmt.Printf("fen:\n")
 			fmt.Printf("%v\n", b)
 			fmt.Printf("moves: [][2]string{\n")
@@ -155,7 +155,6 @@ func main() {
 		}
 
 		if random {
-			move = pickRandom()
 			move = pickRandomString(validMoves)
 
 		} else {
@@ -188,15 +187,6 @@ func main() {
 	//for _, val := range moves {
 	//	fmt.Println(val)
 	//}
-}
-
-func pickRandom() string {
-	rand.Seed(time.Now().UnixNano())
-	file := [8]string{"a", "b", "c", "d", "e", "f", "g", "h"}
-	rank := [8]string{"1", "2", "3", "4", "5", "6", "7", "8"}
-	moveFrom := file[rand.Intn(8)] + rank[rand.Intn(8)]
-	moveTo := file[rand.Intn(8)] + rank[rand.Intn(8)]
-	return moveFrom + moveTo
 }
 
 func pickRandomString(s []string) string {

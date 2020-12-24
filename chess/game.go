@@ -21,6 +21,139 @@ func (g *Game) Start() {
 	g.startedAt = time.Now().UTC().UnixNano()
 }
 
+// Move gets squares in human readable form, and performs a move
+// error is nil on successful move
+// arguments are two squares : "e2e4"
+func (game *Game) Move(moveStr string) (Context, error) {
+	if game.Context.State != Playing && game.Context.State != Check {
+		return game.Context, errors.New("not in playing state")
+	}
+	fromSquare, toSquare, err := game.Board.getSquare(moveStr)
+	if err != nil {
+		return game.Context, err
+	}
+
+	return game.move(fromSquare, toSquare)
+}
+
+// Move gets squares in human readable form, and performs a move
+// error is nil on successful move
+// arguments are two squares : "e2e4"
+func (g *Game) MoveNotation(move Move) (Context, error) {
+	if g.Context.State != Playing && g.Context.State != Check {
+		return g.Context, errors.New("not in playing state")
+	}
+	fromSquare, toSquare := move.fromSquare, move.toSquare
+	return g.move(fromSquare, toSquare)
+}
+
+func NewEmptyGame() *Game {
+	b := &Board{}
+	return &Game{
+		Board: b,
+		Context: Context{
+			State:               Idle,
+			ColorsTurn:          White,
+			enPassantSquare:     none,
+			whiteCanCastleLeft:  true,
+			whiteCanCastleRight: true,
+			blackCanCastleRight: true,
+			blackCanCastleLeft:  true,
+			fullMove:            1,
+		},
+	}
+}
+
+func NewGameFromFEN(fen string) *Game {
+	var err error
+	splitted := strings.Split(fen, " ")
+	board := splitted[0]
+	turn := splitted[1]
+	castle := splitted[2]
+	enPassant := splitted[3]
+	halfMove := splitted[4]
+	fullMove := splitted[5]
+	ranks := strings.Split(board, "/")
+
+	finalBoard := map[Square]Piece{}
+	var i, j, row, col, toSkip int
+	var boardIdx Square
+	for i = 0; i < len(ranks); i++ {
+		row = 7 - i
+		col = 0
+		for j = 0; j < len(ranks[i]); j++ {
+			boardIdx = Square(row*8 + col)
+			switch piece := fenToPiece[ranks[i][j]]; {
+			case piece == Empty:
+				toSkip, _ = strconv.Atoi(ranks[i][j : j+1])
+				col += toSkip
+			default:
+				finalBoard[boardIdx] = piece
+				col += 1
+			}
+		}
+	}
+	eb := NewEmptyGame()
+	for key, val := range finalBoard {
+		eb.Board.board[key] = val
+	}
+	switch turn {
+	case "w":
+		eb.Context.ColorsTurn = White
+	case "b":
+		eb.Context.ColorsTurn = Black
+	}
+
+	eb.Context.whiteCanCastleLeft = false
+	eb.Context.whiteCanCastleRight = false
+	eb.Context.blackCanCastleRight = false
+	eb.Context.blackCanCastleLeft = false
+	for _, b := range castle {
+		switch b {
+		case 'K':
+			eb.Context.whiteCanCastleRight = true
+		case 'Q':
+			eb.Context.whiteCanCastleLeft = true
+		case 'k':
+			eb.Context.blackCanCastleRight = true
+		case 'q':
+			eb.Context.blackCanCastleLeft = true
+		}
+	}
+
+	switch sq := enPassant; {
+	case sq == "-":
+		eb.Context.enPassantSquare = none
+	default:
+		eb.Context.enPassantSquare = stringToSquare[sq]
+	}
+
+	var halfMoveInt, fullMoveInt int
+	halfMoveInt, err = strconv.Atoi(halfMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.halfMove = halfMoveInt
+	fullMoveInt, err = strconv.Atoi(fullMove)
+	if err != nil {
+		panic(err)
+	}
+	eb.Context.fullMove = fullMoveInt
+	return eb
+}
+
+func GameFromPGN(reader io.Reader) *Game {
+	g := NewGame()
+	moves, err := pgnParse(reader)
+	if err != nil {
+		panic(err)
+	}
+
+	g.moves = moves
+
+	return g
+}
+
 func (game *Game) FenString() string {
 	var cnt int
 	var board string
@@ -83,32 +216,6 @@ func (game *Game) FenString() string {
 	return fmt.Sprintf("%s %s %s %s %s %s", board, toMove, castle, enpassant, halfMove, fullMove)
 }
 
-// Move gets squares in human readable form, and performs a move
-// error is nil on successful move
-// arguments are two squares : "e2e4"
-func (game *Game) Move(moveStr string) (Context, error) {
-	if game.Context.State != Playing && game.Context.State != Check {
-		return game.Context, errors.New("not in playing state")
-	}
-	fromSquare, toSquare, err := game.Board.getSquare(moveStr)
-	if err != nil {
-		return game.Context, err
-	}
-
-	return game.move(fromSquare, toSquare)
-}
-
-// Move gets squares in human readable form, and performs a move
-// error is nil on successful move
-// arguments are two squares : "e2e4"
-func (g *Game) MoveNotation(move Move) (Context, error) {
-	if g.Context.State != Playing && g.Context.State != Check {
-		return g.Context, errors.New("not in playing state")
-	}
-	fromSquare, toSquare := move.fromSquare, move.toSquare
-	return g.move(fromSquare, toSquare)
-}
-
 func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
 	var opponent Color
@@ -129,7 +236,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
 	availSquares := getSquares(availMoves)
 	if !inSquares(toSquare, availSquares) {
-		return g.Context, errors.New(fmt.Sprintf("%s can't go to %s\n", g.Board.board[fromSquare], squareToString[toSquare]))
+		return g.Context, fmt.Errorf("%s can't go to %s\n", g.Board.board[fromSquare], squareToString[toSquare])
 	}
 
 	//todo: replace with function thate uses chess algebraic notation
@@ -288,111 +395,4 @@ func NewGame() *Game {
 		halfMove:            0,
 		fullMove:            1,
 	}}
-}
-
-func NewEmptyGame() *Game {
-	b := &Board{}
-	return &Game{
-		Board: b,
-		Context: Context{
-			State:               Idle,
-			ColorsTurn:          White,
-			enPassantSquare:     none,
-			whiteCanCastleLeft:  true,
-			whiteCanCastleRight: true,
-			blackCanCastleRight: true,
-			blackCanCastleLeft:  true,
-			fullMove:            1,
-		},
-	}
-}
-
-func NewGameFromFEN(fen string) *Game {
-	var err error
-	splitted := strings.Split(fen, " ")
-	board := splitted[0]
-	turn := splitted[1]
-	castle := splitted[2]
-	enPassant := splitted[3]
-	halfMove := splitted[4]
-	fullMove := splitted[5]
-	ranks := strings.Split(board, "/")
-
-	finalBoard := map[Square]Piece{}
-	var i, j, row, col, toSkip int
-	var boardIdx Square
-	for i = 0; i < len(ranks); i++ {
-		row = 7 - i
-		col = 0
-		for j = 0; j < len(ranks[i]); j++ {
-			boardIdx = Square(row*8 + col)
-			switch piece := fenToPiece[ranks[i][j]]; {
-			case piece == Empty:
-				toSkip, _ = strconv.Atoi(ranks[i][j : j+1])
-				col += toSkip
-			default:
-				finalBoard[boardIdx] = piece
-				col += 1
-			}
-		}
-	}
-	eb := NewEmptyGame()
-	for key, val := range finalBoard {
-		eb.Board.board[key] = val
-	}
-	switch turn {
-	case "w":
-		eb.Context.ColorsTurn = White
-	case "b":
-		eb.Context.ColorsTurn = Black
-	}
-
-	eb.Context.whiteCanCastleLeft = false
-	eb.Context.whiteCanCastleRight = false
-	eb.Context.blackCanCastleRight = false
-	eb.Context.blackCanCastleLeft = false
-	for _, b := range castle {
-		switch b {
-		case 'K':
-			eb.Context.whiteCanCastleRight = true
-		case 'Q':
-			eb.Context.whiteCanCastleLeft = true
-		case 'k':
-			eb.Context.blackCanCastleRight = true
-		case 'q':
-			eb.Context.blackCanCastleLeft = true
-		}
-	}
-
-	switch sq := enPassant; {
-	case sq == "-":
-		eb.Context.enPassantSquare = none
-	default:
-		eb.Context.enPassantSquare = stringToSquare[sq]
-	}
-
-	var halfMoveInt, fullMoveInt int
-	halfMoveInt, err = strconv.Atoi(halfMove)
-	if err != nil {
-		panic(err)
-	}
-	eb.Context.halfMove = halfMoveInt
-	fullMoveInt, err = strconv.Atoi(fullMove)
-	if err != nil {
-		panic(err)
-	}
-	eb.Context.fullMove = fullMoveInt
-	return eb
-}
-
-func GameFromPGN(reader io.Reader) *Game {
-	g := NewGame()
-	moves, err := pgnParse(reader)
-	if err != nil {
-		panic(err)
-	}
-
-	g.moves = moves
-
-	return g
 }

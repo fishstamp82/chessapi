@@ -449,7 +449,7 @@ func printPrettySquares(s []Square) []string {
 func printPrettyMoves(s []Move) []string {
 	var str []string
 	for i := 0; i < len(s); i++ {
-		str = append(str, fmt.Sprintf("%s%s;%s", s[i].fromSquare, s[i].toSquare, s[i].moveTypes))
+		str = append(str, fmt.Sprintf("%s%s;%b", s[i].fromSquare, s[i].toSquare, s[i].moveTypes))
 	}
 	return str
 }
