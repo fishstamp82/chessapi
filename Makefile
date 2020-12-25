@@ -12,3 +12,5 @@ run:  docker
 	API_KEY=${API_KEY} BACKEND_IMAGE=${BACKEND_IMAGE} docker-compose up
 test:
 	go test ./... -v -short -p 1 -cover
+lint:
+	golangci-lint run

@@ -15,7 +15,7 @@ const (
 
 var (
 	ErrNotPlaying      = errors.New("not in a playing GameState")
-	ErrWrongPlayerTurn = errors.New("not your turn")
+
 	ErrAlreadyPlaying  = errors.New("player already seated")
 	ErrColorTaken      = errors.New("such Color already taken")
 )
