@@ -21,15 +21,18 @@ var (
 )
 
 type Game struct {
-	Board        *Board
-	Context      Context
-	Players      []Player
+	Board        *Board  `json:"board"`
+	Context      Context `json:"context"`
+	Players      []Player `json:"players"`
 	moves        []Move
-	startingTime time.Duration
+	StartingTime time.Duration
 	startedAt    int64
 }
 
 func (g *Game) Start() func() {
+	for _, p := range g.Players {
+		p.TimeLeft = g.StartingTime
+	}
 	g.Context.State = Playing
 	g.startedAt = timeNow()
 	exit := make(chan bool)
@@ -45,8 +48,8 @@ func (g *Game) Start() func() {
 				g.End()
 			case <-ticker.C:
 				p := g.getPlayer(g.Context.ColorsTurn)
-				p.timeSpent += gameUpdateInterval
-				if p.timeSpent > g.startingTime {
+				p.TimeLeft -= gameUpdateInterval
+				if p.TimeLeft < 0 {
 					opp := g.getOpponent(p)
 					g.Context.WinningPlayer = &opp
 					g.Context.State = Over
@@ -199,7 +202,7 @@ func (g *Game) HandleSetTime(t time.Duration) error {
 	if !(g.Context.State == Idle){
 		return ErrAlreadyPlaying
 	}
-	g.startingTime = t
+	g.StartingTime = t
 	return nil
 }
 

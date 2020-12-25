@@ -6,10 +6,10 @@ import (
 )
 
 type Player struct {
-	Color     Color
-	ID        string
-	moves     []Move
-	timeSpent time.Duration
+	Color    Color
+	ID       string
+	TimeLeft time.Duration
+	moves    []Move
 }
 
 func (p *Player) String() string {
