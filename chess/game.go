@@ -21,12 +21,12 @@ var (
 )
 
 type Game struct {
-	Board     *Board
-	Context   Context
-	Players   []Player
-	moves     []Move
+	Board        *Board
+	Context      Context
+	Players      []Player
+	moves        []Move
 	startingTime time.Duration
-	startedAt int64
+	startedAt    int64
 }
 
 func (g *Game) Start() chan<- bool {
@@ -46,7 +46,8 @@ func (g *Game) Start() chan<- bool {
 				p := g.getPlayer(g.Context.ColorsTurn)
 				p.timeSpent += gameUpdateInterval
 				if p.timeSpent < 0 {
-					g.Context.Winner = getOpponent(g.Players, p.Color).Color
+					opp := g.getOpponent(p)
+					g.Context.WinningPlayer = &opp
 					g.Context.State = Over
 				}
 			}
@@ -181,71 +182,64 @@ func NewGameFromFEN(fen string) *Game {
 	return eb
 }
 
-//func (g *Game) HandleSetMove(move string) error {
-//	if g.Context.State != Playing && g.Context.State != Check {
-//		return ErrNotPlaying
-//	}
-//	err := g.Move(move)
-//	return err
-//}
-//
-//func (g *Game) HandleSetTime(t time.Duration) error {
-//	if len(g.Players) > 0 {
-//		return ErrAlreadyPlaying
-//	}
-//	g.startingTime = t
-//	return nil
-//}
-//
-//func (g *Game) HandleResign(event ClientEvent, score string) {
-//	var winner *player
-//	for _, p := range g.Players {
-//		if (p.UserID == event.UserID) && (p.Color == "white") {
-//			score = "0 - 1"
-//			winner = g.getPlayer("black")
-//		}
-//		if (p.UserID == event.UserID) && (p.Color == "black") {
-//			score = "1 - 0"
-//			winner = g.getPlayer("white")
-//		}
-//	}
-//	g.Score = score
-//	g.Winner = winner
-//	g.Board = chess.NewGame()
-//	g.Players = []*player{}
-//}
-//
-//func (g *Game) HandleLeave(event ClientEvent, toDel *player) {
-//	for _, p := range g.Players {
-//		if p.UserID == event.UserID {
-//			toDel = p
-//		}
-//	}
-//	players := []*player{}
-//	for _, p := range g.Players {
-//		if p == toDel {
-//			continue
-//		}
-//		players = append(players, p)
-//	}
-//	g.Players = players
-//}
-//
-//func (g *Game) HandlePick(event ClientEvent) error {
-//	for _, p := range g.Players {
-//		if p.Color == event.Color {
-//			return ErrColorTaken
-//		}
-//		if p.UserID == event.UserID {
-//			return ErrAlreadyPlaying
-//		}
-//	}
-//	g.Players = append(g.Players, &player{Color: event.Color, Name: event.Name, UserID: event.UserID})
-//	if len(g.Players) == 2 {
-//		g.start()
-//	}
-//	return nil
-//}
+func (g *Game) HandleSetMove(move string) error {
+	if g.Context.State != Playing && g.Context.State != Check {
+		return ErrNotPlaying
+	}
+	err := g.Move(move)
+	return err
+}
+
+func (g *Game) HandleSetTime(t time.Duration) error {
+	if len(g.Players) > 0 {
+		return ErrAlreadyPlaying
+	}
+	g.startingTime = t
+	return nil
+}
+
+func (g *Game) HandleResign(p Player) {
+	for _, ps := range g.Players {
+		if (ps.ID == p.ID) && (p.Color == White) {
+			won := g.getPlayer(Black)
+			g.Context.WinningPlayer = &won
+		}
+		if (ps.ID == p.ID) && (p.Color == Black) {
+			won := g.getPlayer(White)
+			g.Context.WinningPlayer = &won
+		}
+	}
+}
+
+// Enable a player to leave a game before it starts
+func (g *Game) HandleLeave(p Player) error {
+	if g.Context.State != Idle {
+		return fmt.Errorf("can't leave in-progress game")
+	}
+	var toDelete int
+	for i, ps := range g.Players {
+		if ps.ID == p.ID {
+			toDelete = i
+		}
+	}
+	g.Players[toDelete] = g.Players[len(g.Players)-1]
+	g.Players[len(g.Players)-1] = Player{}
+	g.Players = g.Players[:len(g.Players)-1]
+	return nil
+}
+
+func (g *Game) HandlePick(p Player, c Color) error {
+	for _, ps := range g.Players {
+		if ps.Color == c {
+			return ErrColorTaken
+		}
+		if ps.ID == p.ID {
+			return ErrAlreadyPlaying
+		}
+	}
+	g.Players = append(g.Players, p)
+	return nil
+}
 
 func GameFromPGN(reader io.Reader) *Game {
 	g := NewGame()
@@ -369,13 +363,12 @@ func (g *Game) move(fromSquare, toSquare Square) error {
 
 	if isCheckMated(opponentsKing, g.Board.board) {
 		g.Context.State = CheckMate
-		g.Context.Winner = g.Context.ColorsTurn
+		g.Context.WinningPlayer = &p
 		return nil
 	}
 
 	if isDraw(opponent, g.Board.board, g.Context) {
 		g.Context.State = Draw
-		g.Context.Winner = Both
 		return nil
 	}
 
@@ -462,13 +455,22 @@ func (g *Game) abortCastling(m Move) {
 
 }
 
-func (g *Game) getPlayer(turn Color) Player {
+func (g *Game) getPlayer(c Color) Player {
 	for _, p := range g.Players {
-		if p.Color == turn {
+		if p.Color == c {
 			return p
 		}
 	}
-	panic(fmt.Sprintf("no player with Color %s in game", turn.String()))
+	panic(fmt.Sprintf("no player with Color %s in game", c.String()))
+}
+
+func (g *Game) getOpponent(p Player) Player {
+	for _, ps := range g.Players {
+		if ps.ID != p.ID {
+			return ps
+		}
+	}
+	panic(fmt.Sprintf("can't find opponent to %v in game", p))
 }
 
 func NewGame() *Game {
@@ -508,7 +510,7 @@ func NewGame() *Game {
 		Context: Context{
 			State:               Idle,
 			ColorsTurn:          White,
-			Winner:              0,
+			WinningPlayer:       &Player{},
 			whiteCanCastleRight: true,
 			whiteCanCastleLeft:  true,
 			blackCanCastleRight: true,
@@ -516,7 +518,6 @@ func NewGame() *Game {
 			halfMove:            0,
 			fullMove:            1,
 		},
-		Players: []Player{
-		},
+		Players: []Player{},
 	}
 }

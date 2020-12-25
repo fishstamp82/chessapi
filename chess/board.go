@@ -8,8 +8,7 @@ import (
 type Context struct {
 	State               State
 	ColorsTurn          Color
-	Winner              Color
-	Score               string // 1-0, 0-1, 1/2-1/2
+	WinningPlayer       *Player
 	whiteCanCastleRight bool
 	whiteCanCastleLeft  bool
 	blackCanCastleRight bool
@@ -23,8 +22,8 @@ func (c Context) String() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%v/%v/%v/%v/%s/%d/%d",
 		c.State,
 		c.ColorsTurn,
-		c.Winner,
-		c.Score,
+		c.WinningPlayer,
+		c.Score(),
 		c.whiteCanCastleRight,
 		c.whiteCanCastleLeft,
 		c.blackCanCastleRight,
@@ -33,6 +32,20 @@ func (c Context) String() string {
 		c.halfMove,
 		c.fullMove,
 	)
+}
+
+func (c *Context) Score() string {
+	switch c.WinningPlayer.Color {
+	case White:
+		return "1 - 0"
+	case Black:
+		return "0 - 1"
+	}
+	switch c.State {
+	case Draw:
+		return "1/2 - 1/2"
+	}
+	return ""
 }
 
 type Board struct {

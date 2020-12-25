@@ -1,9 +1,13 @@
 package chess
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Player struct {
 	Color     Color
+	ID        string
 	moves     []Move
 	timeSpent time.Duration
 }
@@ -16,4 +20,8 @@ func getOpponent(pl []Player, c Color) Player {
 		}
 	}
 	return opp
+}
+
+func (p *Player) String() string {
+	return fmt.Sprintf("%s\n", p.ID)
 }

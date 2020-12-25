@@ -57,8 +57,8 @@ func TestCheck(t *testing.T) {
 func TestCheckMate(t *testing.T) {
 	table := []struct {
 		moves    []string
-		expected string
-		won      string
+		expected chess.State
+		won      chess.Color
 	}{
 		{
 			moves: []string{
@@ -70,18 +70,8 @@ func TestCheckMate(t *testing.T) {
 				"b7b6",
 				"f3f7",
 			},
-			expected: "CheckMate",
-			won:      "White",
-		},
-		{
-			moves: []string{
-				"e2e4",
-				"e7e5",
-				"f2f4",
-				"d8g5",
-			},
-			expected: "Playing",
-			won:      "Noone",
+			expected: chess.CheckMate,
+			won:      chess.White,
 		},
 	}
 
@@ -103,11 +93,11 @@ func TestCheckMate(t *testing.T) {
 				t.Error(err)
 			}
 		}
-		if g.Context.State.String() != row.expected {
+		if g.Context.State != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)
 		}
-		if won := g.Context.Winner; won.String() != row.won {
-			t.Errorf("expected: %s, got: %s for case %d\n", row.won, won, ind+1)
+		if won := g.Context.WinningPlayer.Color; won != row.won {
+			t.Errorf("expected: %s, got: %s for test case %d\n", row.won, won, ind+1)
 		}
 	}
 }

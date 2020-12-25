@@ -154,8 +154,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -203,8 +202,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -222,8 +220,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -241,8 +238,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: false,
 				whiteCanCastleLeft:  false,
 				blackCanCastleRight: false,
