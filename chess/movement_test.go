@@ -59,7 +59,7 @@ func TestPawnMoves(t *testing.T) {
 		b := NewGame()
 		b.Context.State = Playing
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -163,7 +163,7 @@ func TestBishopMoves(t *testing.T) {
 		b := NewGame()
 		b.Context.State = Playing
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -233,7 +233,7 @@ func TestKnightMoves(t *testing.T) {
 		b.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -282,7 +282,7 @@ func TestRookMoves(t *testing.T) {
 		b.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -337,7 +337,7 @@ func TestQueenMoves(t *testing.T) {
 		b.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -423,7 +423,7 @@ func TestKingMoves(t *testing.T) {
 		b.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}

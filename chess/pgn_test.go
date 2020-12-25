@@ -45,7 +45,10 @@ func TestPGN(t *testing.T) {
 	}
 	for _, row := range table {
 		for _, move := range row.expectedMoves {
-			_, _ = game.move(move.fromSquare, move.toSquare)
+			err := game.move(move.fromSquare, move.toSquare)
+			if err != nil {
+				t.Error(err)
+			}
 		}
 		//got, _ := pgnParse(strings.NewReader(row.pgnGame))
 		if game.FenString() != row.expectedFen {

@@ -13,21 +13,20 @@ func TestWhitesTurn(t *testing.T) {
 			moves: []string{
 				"e2e4",
 				"e7e5",
-				//"a2a3",
-				//"d8h4",
-				//"b2b3",
-				//"h4e4",
 			},
 			expected: White,
 		},
 	}
-	var ctx Context
 	for _, row := range table {
 		g := NewGame()
+		g.Context.State = Playing
 		for _, move := range row.moves {
-			ctx, _ = g.Move(move)
+			err := g.Move(move)
+			if err != nil {
+				t.Error(err)
+			}
 		}
-		if ctx.ColorsTurn != row.expected {
+		if g.Context.ColorsTurn != row.expected {
 			t.Errorf("expected: %v, got: %v\n", row.expected, g.Context.ColorsTurn)
 		}
 	}

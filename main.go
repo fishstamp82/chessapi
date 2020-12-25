@@ -164,7 +164,7 @@ func main() {
 			fmt.Printf("move : %s\n", move)
 
 		}
-		context, err = b.Move(move)
+		err = b.Move(move)
 
 		if err != nil {
 			fmt.Println(err)

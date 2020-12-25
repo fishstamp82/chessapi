@@ -30,19 +30,17 @@ func TestCheck(t *testing.T) {
 		},
 	}
 
-	var ctx chess.Context
-	var err error
 	for _, row := range table {
 		game := chess.NewGame()
 		game.Context.State = chess.Playing
 		for _, move := range row.moves {
-			ctx, err = game.Move(move)
+			err := game.Move(move)
 			if err != nil {
 				t.Errorf("error: %s\n", err)
 			}
 
 		}
-		if ctx.State.String() != row.expected {
+		if game.Context.State.String() != row.expected {
 			t.Errorf("not in check ")
 		}
 	}
@@ -84,7 +82,7 @@ func TestCheckMate(t *testing.T) {
 		b := chess.NewGame()
 		b.Context.State = chess.Playing
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = b.Move(move)
 			if err != nil {
 				t.Error(err)
 			}

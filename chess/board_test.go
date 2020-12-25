@@ -84,7 +84,7 @@ func TestEnPassant(t *testing.T) {
 		game.Context.State = Playing
 
 		for _, move := range row.moves {
-			_, err := game.Move(move)
+			err := game.Move(move)
 			if err != nil {
 				t.Error(err)
 			}

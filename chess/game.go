@@ -13,11 +13,19 @@ const (
 	gameUpdateInterval = 100 * time.Millisecond
 )
 
+var (
+	ErrNotPlaying      = errors.New("not in a playing GameState")
+	ErrWrongPlayerTurn = errors.New("not your turn")
+	ErrAlreadyPlaying  = errors.New("player already seated")
+	ErrColorTaken      = errors.New("such color already taken")
+)
+
 type Game struct {
 	Board     *Board
 	Context   Context
 	Players   []Player
 	moves     []Move
+	startingTime time.Duration
 	startedAt int64
 }
 
@@ -55,24 +63,24 @@ func (g *Game) End() {
 // Move gets squares in human readable form, and performs a move
 // error is nil on successful move
 // arguments are two squares : "e2e4"
-func (game *Game) Move(moveStr string) (Context, error) {
-	if game.Context.State != Playing && game.Context.State != Check {
-		return game.Context, errors.New("not in playing state")
+func (g *Game) Move(moveStr string) error {
+	if g.Context.State != Playing && g.Context.State != Check {
+		return fmt.Errorf("not in playing state")
 	}
-	fromSquare, toSquare, err := game.Board.getSquare(moveStr)
+	fromSquare, toSquare, err := g.Board.getSquare(moveStr)
 	if err != nil {
-		return game.Context, err
+		return err
 	}
 
-	return game.move(fromSquare, toSquare)
+	return g.move(fromSquare, toSquare)
 }
 
 // Move gets squares in human readable form, and performs a move
 // error is nil on successful move
 // arguments are two squares : "e2e4"
-func (g *Game) MoveNotation(move Move) (Context, error) {
+func (g *Game) MoveNotation(move Move) error {
 	if g.Context.State != Playing && g.Context.State != Check {
-		return g.Context, errors.New("not in playing state")
+		return fmt.Errorf("not in playing state")
 	}
 	fromSquare, toSquare := move.fromSquare, move.toSquare
 	return g.move(fromSquare, toSquare)
@@ -173,6 +181,72 @@ func NewGameFromFEN(fen string) *Game {
 	return eb
 }
 
+//func (g *Game) HandleSetMove(move string) error {
+//	if g.Context.State != Playing && g.Context.State != Check {
+//		return ErrNotPlaying
+//	}
+//	err := g.Move(move)
+//	return err
+//}
+//
+//func (g *Game) HandleSetTime(t time.Duration) error {
+//	if len(g.Players) > 0 {
+//		return ErrAlreadyPlaying
+//	}
+//	g.startingTime = t
+//	return nil
+//}
+//
+//func (g *Game) HandleResign(event ClientEvent, score string) {
+//	var winner *player
+//	for _, p := range g.Players {
+//		if (p.UserID == event.UserID) && (p.Color == "white") {
+//			score = "0 - 1"
+//			winner = g.getPlayer("black")
+//		}
+//		if (p.UserID == event.UserID) && (p.Color == "black") {
+//			score = "1 - 0"
+//			winner = g.getPlayer("white")
+//		}
+//	}
+//	g.Score = score
+//	g.Winner = winner
+//	g.Board = chess.NewGame()
+//	g.Players = []*player{}
+//}
+//
+//func (g *Game) HandleLeave(event ClientEvent, toDel *player) {
+//	for _, p := range g.Players {
+//		if p.UserID == event.UserID {
+//			toDel = p
+//		}
+//	}
+//	players := []*player{}
+//	for _, p := range g.Players {
+//		if p == toDel {
+//			continue
+//		}
+//		players = append(players, p)
+//	}
+//	g.Players = players
+//}
+//
+//func (g *Game) HandlePick(event ClientEvent) error {
+//	for _, p := range g.Players {
+//		if p.Color == event.Color {
+//			return ErrColorTaken
+//		}
+//		if p.UserID == event.UserID {
+//			return ErrAlreadyPlaying
+//		}
+//	}
+//	g.Players = append(g.Players, &player{Color: event.Color, Name: event.Name, UserID: event.UserID})
+//	if len(g.Players) == 2 {
+//		g.start()
+//	}
+//	return nil
+//}
+
 func GameFromPGN(reader io.Reader) *Game {
 	g := NewGame()
 	moves, err := pgnParse(reader)
@@ -185,7 +259,7 @@ func GameFromPGN(reader io.Reader) *Game {
 	return g
 }
 
-func (game *Game) FenString() string {
+func (g *Game) FenString() string {
 	var cnt int
 	var board string
 	var sq Square
@@ -194,7 +268,7 @@ func (game *Game) FenString() string {
 		for j := 0; j < 8; j++ {
 			sq = Square(i*8 + j)
 
-			switch p := game.Board.board[sq]; {
+			switch p := g.Board.board[sq]; {
 			case p == Empty:
 				cnt += 1
 			default:
@@ -216,19 +290,19 @@ func (game *Game) FenString() string {
 	}
 	board = strings.TrimSuffix(board, "/")
 
-	toMove := playerToFen[game.Context.ColorsTurn]
+	toMove := playerToFen[g.Context.ColorsTurn]
 
 	var castle string
-	if game.Context.whiteCanCastleRight {
+	if g.Context.whiteCanCastleRight {
 		castle += pieceToFen[WhiteKing]
 	}
-	if game.Context.whiteCanCastleLeft {
+	if g.Context.whiteCanCastleLeft {
 		castle += pieceToFen[WhiteQueen]
 	}
-	if game.Context.blackCanCastleRight {
+	if g.Context.blackCanCastleRight {
 		castle += pieceToFen[BlackKing]
 	}
-	if game.Context.whiteCanCastleRight {
+	if g.Context.whiteCanCastleRight {
 		castle += pieceToFen[BlackQueen]
 	}
 
@@ -237,28 +311,28 @@ func (game *Game) FenString() string {
 	}
 
 	var enpassant string
-	if game.Context.enPassantSquare >= a1 {
-		enpassant = game.Context.enPassantSquare.String()
+	if g.Context.enPassantSquare >= a1 {
+		enpassant = g.Context.enPassantSquare.String()
 	} else {
 		enpassant = "-"
 	}
-	halfMove := strconv.Itoa(game.Context.halfMove)
-	fullMove := strconv.Itoa(game.Context.fullMove)
+	halfMove := strconv.Itoa(g.Context.halfMove)
+	fullMove := strconv.Itoa(g.Context.fullMove)
 	return fmt.Sprintf("%s %s %s %s %s %s", board, toMove, castle, enpassant, halfMove, fullMove)
 }
 
-func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
+func (g *Game) move(fromSquare, toSquare Square) error {
 
 	var opponent Color
 	switch g.Context.ColorsTurn {
 	case White:
 		if g.Board.board[fromSquare] < 0 {
-			return g.Context, errors.New("white's turn")
+			return fmt.Errorf("white's turn\n")
 		}
 		opponent = Black
 	case Black:
 		if g.Board.board[fromSquare] > 0 {
-			return g.Context, errors.New("black's turn")
+			return fmt.Errorf("black's turn\n")
 		}
 		opponent = White
 	}
@@ -267,7 +341,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 
 	availSquares := getSquares(availMoves)
 	if !inSquares(toSquare, availSquares) {
-		return g.Context, fmt.Errorf("%s can't go to %s\n", g.Board.board[fromSquare], squareToString[toSquare])
+		return fmt.Errorf("%s can't move to %s\n", g.Board.board[fromSquare], squareToString[toSquare])
 	}
 
 	//todo: replace with function thate uses chess algebraic notation
@@ -278,7 +352,7 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 		}
 	}
 	if m.toSquare == none {
-		return g.Context, &NoMoveError{Move: strings.Join([]string{fromSquare.String(), toSquare.String()}, "")}
+		return fmt.Errorf("target square %s is 'none'\n", squareToString[toSquare])
 	}
 
 	// Commit the move to the board, update timers
@@ -296,16 +370,19 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 	if isCheckMated(opponentsKing, g.Board.board) {
 		g.Context.State = CheckMate
 		g.Context.Winner = g.Context.ColorsTurn
-		return g.Context, nil
+		return nil
 	}
 
 	if isDraw(opponent, g.Board.board, g.Context) {
 		g.Context.State = Draw
 		g.Context.Winner = Both
-		return g.Context, nil
+		return nil
 	}
 
+	// Invalidate castling rules if move prevents castling
 	g.abortCastling(m)
+
+	// Set possible enPassantSquare as available move for next move
 	g.Context.enPassantSquare = g.getEnPassantSquare(m)
 
 	//Increment full move if this was blacks move
@@ -326,14 +403,14 @@ func (g *Game) move(fromSquare, toSquare Square) (Context, error) {
 		g.Context.halfMove += 1
 	}
 
-	// Switch to other player
+	// Switch next turn to other player
 	g.switchTurn()
-	return g.Context, nil
+	return nil
 }
 
-func (game *Game) getEnPassantSquare(m Move) Square {
+func (g *Game) getEnPassantSquare(m Move) Square {
 	if m.piece != WhitePawn && m.piece != BlackPawn {
-		game.Context.enPassantSquare = none
+		g.Context.enPassantSquare = none
 		return none
 	}
 	if m.fromSquare.rank() == 2 && m.toSquare.rank() == 4 && m.piece == WhitePawn {
@@ -345,11 +422,11 @@ func (game *Game) getEnPassantSquare(m Move) Square {
 	}
 }
 
-func (game *Game) switchTurn() {
-	if game.Context.ColorsTurn == White {
-		game.Context.ColorsTurn = Black
+func (g *Game) switchTurn() {
+	if g.Context.ColorsTurn == White {
+		g.Context.ColorsTurn = Black
 	} else {
-		game.Context.ColorsTurn = White
+		g.Context.ColorsTurn = White
 	}
 }
 
