@@ -17,7 +17,7 @@ var (
 	ErrNotPlaying      = errors.New("not in a playing GameState")
 	ErrWrongPlayerTurn = errors.New("not your turn")
 	ErrAlreadyPlaying  = errors.New("player already seated")
-	ErrColorTaken      = errors.New("such color already taken")
+	ErrColorTaken      = errors.New("such Color already taken")
 )
 
 type Game struct {
@@ -46,7 +46,7 @@ func (g *Game) Start() chan<- bool {
 				p := g.getPlayer(g.Context.ColorsTurn)
 				p.timeSpent += gameUpdateInterval
 				if p.timeSpent < 0 {
-					g.Context.Winner = getOpponent(g.Players, p.color).color
+					g.Context.Winner = getOpponent(g.Players, p.Color).Color
 					g.Context.State = Over
 				}
 			}
@@ -464,11 +464,11 @@ func (g *Game) abortCastling(m Move) {
 
 func (g *Game) getPlayer(turn Color) Player {
 	for _, p := range g.Players {
-		if p.color == turn {
+		if p.Color == turn {
 			return p
 		}
 	}
-	panic(fmt.Sprintf("no player with color %s in game", turn.String()))
+	panic(fmt.Sprintf("no player with Color %s in game", turn.String()))
 }
 
 func NewGame() *Game {
@@ -517,8 +517,6 @@ func NewGame() *Game {
 			fullMove:            1,
 		},
 		Players: []Player{
-			{color: White},
-			{color: Black},
 		},
 	}
 }

@@ -8,9 +8,9 @@ import (
 
 func TestPawnMoves(t *testing.T) {
 	var piece = WhitePawn
-	b := NewGame()
-	be4 := NewGame()
-	be4.Board.board[e4] = piece
+	g := NewGame()
+	gE4 := NewGame()
+	gE4.Board.board[e4] = piece
 	table := []struct {
 		moves    []string
 		pawnPos  Square
@@ -23,8 +23,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: d2,
 			expected: []Move{
-				createMove(b.Board.board, d2, d3, []MovementType{Regular, PawnMove}),
-				createMove(b.Board.board, d2, d4, []MovementType{Regular, PawnMove}),
+				createMove(g.Board.board, d2, d3, []MovementType{Regular, PawnMove}),
+				createMove(g.Board.board, d2, d4, []MovementType{Regular, PawnMove}),
 			},
 		},
 		{
@@ -34,8 +34,8 @@ func TestPawnMoves(t *testing.T) {
 			},
 			pawnPos: e4,
 			expected: []Move{
-				createMove(be4.Board.board, e4, e5, []MovementType{Regular, PawnMove}),
-				createMove(be4.Board.board, e4, d5, []MovementType{Capture, PawnMove}),
+				createMove(gE4.Board.board, e4, e5, []MovementType{Regular, PawnMove}),
+				createMove(gE4.Board.board, e4, d5, []MovementType{Capture, PawnMove}),
 			},
 		},
 		{
@@ -56,16 +56,25 @@ func TestPawnMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
+
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := pawnMoves(row.pawnPos, b.Board.board, b.Context.enPassantSquare)
+		got := pawnMoves(row.pawnPos, g.Board.board, g.Context.enPassantSquare)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pawnPos)
@@ -160,16 +169,24 @@ func TestBishopMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := bishopMoves(row.pos, b.Board.board)
+		got := bishopMoves(row.pos, g.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -229,17 +246,24 @@ func TestKnightMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
-
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := fun(row.pos, b.Board.board)
+		got := fun(row.pos, g.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -278,17 +302,24 @@ func TestRookMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
-
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := fun(row.pos, b.Board.board)
+		got := fun(row.pos, g.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -333,17 +364,24 @@ func TestQueenMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
-
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := fun(row.pos, b.Board.board)
+		got := fun(row.pos, g.Board.board)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)
@@ -419,18 +457,25 @@ func TestKingMoves(t *testing.T) {
 
 	var err error
 	for _, row := range table {
-		b := NewGame()
-		b.Context.State = Playing
-
+		g := NewGame()
+		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
 
-		got := fun1(row.pos, b.Board.board)
-		got = append(got, fun2(row.pos, b.Board.board, b.Context)...)
+		got := fun1(row.pos, g.Board.board)
+		got = append(got, fun2(row.pos, g.Board.board, g.Context)...)
 		if !isMovesEqual(got, row.expected) {
 			t.Errorf("got: %v, expected: %v for %s\n",
 				printPrettyMoves(got), printPrettyMoves(row.expected), row.pos)

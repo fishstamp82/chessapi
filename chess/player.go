@@ -3,7 +3,7 @@ package chess
 import "time"
 
 type Player struct {
-	color     Color
+	Color     Color
 	moves     []Move
 	timeSpent time.Duration
 }
@@ -11,7 +11,7 @@ type Player struct {
 func getOpponent(pl []Player, c Color) Player {
 	var opp Player
 	for _, p := range pl {
-		if p.color != c {
+		if p.Color != c {
 			opp = p
 		}
 	}

@@ -20,6 +20,14 @@ func TestWhitesTurn(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
+		g.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 		for _, move := range row.moves {
 			err := g.Move(move)
 			if err != nil {

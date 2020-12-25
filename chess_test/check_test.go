@@ -33,6 +33,14 @@ func TestCheck(t *testing.T) {
 	for _, row := range table {
 		game := chess.NewGame()
 		game.Context.State = chess.Playing
+		game.Players = []chess.Player{
+			{
+				Color: chess.White,
+			},
+			{
+				Color: chess.Black,
+			},
+		}
 		for _, move := range row.moves {
 			err := game.Move(move)
 			if err != nil {
@@ -79,18 +87,26 @@ func TestCheckMate(t *testing.T) {
 
 	var err error
 	for ind, row := range table {
-		b := chess.NewGame()
-		b.Context.State = chess.Playing
+		g := chess.NewGame()
+		g.Context.State = chess.Playing
+		g.Players = []chess.Player{
+			{
+				Color: chess.White,
+			},
+			{
+				Color: chess.Black,
+			},
+		}
 		for _, move := range row.moves {
-			err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
-		if b.Context.State.String() != row.expected {
+		if g.Context.State.String() != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)
 		}
-		if won := b.Context.Winner; won.String() != row.won {
+		if won := g.Context.Winner; won.String() != row.won {
 			t.Errorf("expected: %s, got: %s for case %d\n", row.won, won, ind+1)
 		}
 	}
