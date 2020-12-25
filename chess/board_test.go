@@ -82,7 +82,7 @@ func TestEnPassant(t *testing.T) {
 	for _, row := range table {
 		game := NewGame()
 		game.Context.State = Playing
-		game.Players = []Player{
+		game.Players = []*Player{
 			{
 				Color: White,
 			},

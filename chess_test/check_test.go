@@ -33,7 +33,7 @@ func TestCheck(t *testing.T) {
 	for _, row := range table {
 		game := chess.NewGame()
 		game.Context.State = chess.Playing
-		game.Players = []chess.Player{
+		game.Players = []*chess.Player{
 			{
 				Color: chess.White,
 			},
@@ -79,7 +79,7 @@ func TestCheckMate(t *testing.T) {
 	for ind, row := range table {
 		g := chess.NewGame()
 		g.Context.State = chess.Playing
-		g.Players = []chess.Player{
+		g.Players = []*chess.Player{
 			{
 				Color: chess.White,
 			},

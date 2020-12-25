@@ -27,7 +27,7 @@ func TestGame_Start(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt.game.Players = []Player{
+		tt.game.Players = []*Player{
 			{Color: Black, ID: "black"},
 			{Color: White, ID: "white"},
 		}

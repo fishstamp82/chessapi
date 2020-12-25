@@ -8,7 +8,7 @@ func TestPGN(t *testing.T) {
 
 	game := NewGame()
 	game.Context.State = Playing
-	game.Players = []Player{
+	game.Players = []*Player{
 		{
 			Color: White,
 		},
