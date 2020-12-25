@@ -32,7 +32,7 @@ func TestGame_Start(t *testing.T) {
 			{Color: White, ID: "white"},
 		}
 		tt.game.startedAt = 0
-		tt.game.startingTime = gameUpdateInterval / 2
+		tt.game.StartingTime = gameUpdateInterval / 2
 		cleanup := tt.game.Start()
 		// Make all moves:
 
