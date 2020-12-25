@@ -23,7 +23,7 @@ var (
 type Game struct {
 	Board        *Board  `json:"board"`
 	Context      Context `json:"context"`
-	Players      []Player `json:"players"`
+	Players      []*Player `json:"players"`
 	moves        []Move
 	StartingTime time.Duration
 	startedAt    int64
@@ -51,7 +51,7 @@ func (g *Game) Start() func() {
 				p.TimeLeft -= gameUpdateInterval
 				if p.TimeLeft < 0 {
 					opp := g.getOpponent(p)
-					g.Context.WinningPlayer = &opp
+					g.Context.WinningPlayer = opp
 					g.Context.State = Over
 				}
 			}
@@ -210,11 +210,11 @@ func (g *Game) HandleResign(uid string) {
 	for _, ps := range g.Players {
 		if (ps.ID == uid) && (ps.Color == White) {
 			won := g.getPlayer(Black)
-			g.Context.WinningPlayer = &won
+			g.Context.WinningPlayer = won
 		}
 		if (ps.ID == uid) && (ps.Color == Black) {
 			won := g.getPlayer(White)
-			g.Context.WinningPlayer = &won
+			g.Context.WinningPlayer = won
 		}
 	}
 }
@@ -231,7 +231,7 @@ func (g *Game) HandleLeave(uid string) error {
 		}
 	}
 	g.Players[toDelete] = g.Players[len(g.Players)-1]
-	g.Players[len(g.Players)-1] = Player{}
+	g.Players[len(g.Players)-1] = &Player{}
 	g.Players = g.Players[:len(g.Players)-1]
 	return nil
 }
@@ -246,7 +246,7 @@ func (g *Game) HandlePick(uid string, cstr string) error {
 			return ErrAlreadyPlaying
 		}
 	}
-	g.Players = append(g.Players, Player{ID: uid, Color: c})
+	g.Players = append(g.Players, &Player{ID: uid, Color: c})
 	return nil
 }
 
@@ -382,7 +382,7 @@ func (g *Game) move(fromSquare, toSquare Square) error {
 
 	if isCheckMated(opponentsKing, g.Board.board) {
 		g.Context.State = CheckMate
-		g.Context.WinningPlayer = &p
+		g.Context.WinningPlayer = p
 		return nil
 	}
 
@@ -474,7 +474,7 @@ func (g *Game) abortCastling(m Move) {
 
 }
 
-func (g *Game) getPlayer(c Color) Player {
+func (g *Game) getPlayer(c Color) *Player {
 	for _, p := range g.Players {
 		if p.Color == c {
 			return p
@@ -483,7 +483,7 @@ func (g *Game) getPlayer(c Color) Player {
 	panic(fmt.Sprintf("no player with Color %s in game", c.String()))
 }
 
-func (g *Game) getOpponent(p Player) Player {
+func (g *Game) getOpponent(p *Player) *Player {
 	for _, ps := range g.Players {
 		if ps.ID != p.ID {
 			return ps

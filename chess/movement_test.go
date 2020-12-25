@@ -58,7 +58,7 @@ func TestPawnMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
@@ -171,7 +171,7 @@ func TestBishopMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
@@ -248,7 +248,7 @@ func TestKnightMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
@@ -304,7 +304,7 @@ func TestRookMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
@@ -366,7 +366,7 @@ func TestQueenMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
@@ -459,7 +459,7 @@ func TestKingMoves(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},

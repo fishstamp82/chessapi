@@ -20,7 +20,7 @@ func TestWhitesTurn(t *testing.T) {
 	for _, row := range table {
 		g := NewGame()
 		g.Context.State = Playing
-		g.Players = []Player{
+		g.Players = []*Player{
 			{
 				Color: White,
 			},
