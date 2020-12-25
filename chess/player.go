@@ -15,7 +15,7 @@ type Player struct {
 func (p *Player) String() string {
 	var id string
 	if p == nil {
-		id = ""
+		return ""
 	}
 	switch p {
 	case nil:
