@@ -14,10 +14,10 @@ const (
 )
 
 var (
-	ErrNotPlaying      = errors.New("not in a playing GameState")
+	ErrNotPlaying = errors.New("not in a playing GameState")
 
-	ErrAlreadyPlaying  = errors.New("player already seated")
-	ErrColorTaken      = errors.New("such Color already taken")
+	ErrAlreadyPlaying = errors.New("player already seated")
+	ErrColorTaken     = errors.New("such Color already taken")
 )
 
 type Game struct {
@@ -198,13 +198,13 @@ func (g *Game) HandleSetTime(t time.Duration) error {
 	return nil
 }
 
-func (g *Game) HandleResign(p Player) {
+func (g *Game) HandleResign(uid string) {
 	for _, ps := range g.Players {
-		if (ps.ID == p.ID) && (p.Color == White) {
+		if (ps.ID == uid) && (ps.Color == White) {
 			won := g.getPlayer(Black)
 			g.Context.WinningPlayer = &won
 		}
-		if (ps.ID == p.ID) && (p.Color == Black) {
+		if (ps.ID == uid) && (ps.Color == Black) {
 			won := g.getPlayer(White)
 			g.Context.WinningPlayer = &won
 		}
@@ -212,13 +212,13 @@ func (g *Game) HandleResign(p Player) {
 }
 
 // Enable a player to leave a game before it starts
-func (g *Game) HandleLeave(p Player) error {
+func (g *Game) HandleLeave(uid string) error {
 	if g.Context.State != Idle {
 		return fmt.Errorf("can't leave in-progress game")
 	}
 	var toDelete int
 	for i, ps := range g.Players {
-		if ps.ID == p.ID {
+		if ps.ID == uid {
 			toDelete = i
 		}
 	}
@@ -228,17 +228,28 @@ func (g *Game) HandleLeave(p Player) error {
 	return nil
 }
 
-func (g *Game) HandlePick(p Player, c Color) error {
+func (g *Game) HandlePick(uid string, cstr string) error {
+	c := getColor(cstr)
 	for _, ps := range g.Players {
 		if ps.Color == c {
 			return ErrColorTaken
 		}
-		if ps.ID == p.ID {
+		if ps.ID == uid {
 			return ErrAlreadyPlaying
 		}
 	}
-	g.Players = append(g.Players, p)
+	g.Players = append(g.Players, Player{ID: uid, Color: c})
 	return nil
+}
+
+func getColor(cstr string) Color {
+	switch strings.ToLower(cstr) {
+	case "white":
+		return White
+	case "black":
+		return Black
+	}
+	panic(fmt.Errorf("no such color: %s\n", cstr))
 }
 
 func GameFromPGN(reader io.Reader) *Game {
