@@ -35,6 +35,9 @@ func (c Context) String() string {
 }
 
 func (c *Context) Score() string {
+	if c.WinningPlayer == nil {
+		return ""
+	}
 	switch c.WinningPlayer.Color {
 	case White:
 		return "1 - 0"
