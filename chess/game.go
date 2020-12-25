@@ -127,7 +127,10 @@ func NewGameFromFEN(fen string) *Game {
 			boardIdx = Square(row*8 + col)
 			switch piece := fenToPiece[ranks[i][j]]; {
 			case piece == Empty:
-				toSkip, _ = strconv.Atoi(ranks[i][j : j+1])
+				toSkip, err = strconv.Atoi(ranks[i][j : j+1])
+				if err != nil {
+					panic(err)
+				}
 				col += toSkip
 			default:
 				finalBoard[boardIdx] = piece
@@ -193,7 +196,7 @@ func (g *Game) HandleSetMove(move string) error {
 }
 
 func (g *Game) HandleSetTime(t time.Duration) error {
-	if len(g.Players) > 0 {
+	if !(g.Context.State == Idle){
 		return ErrAlreadyPlaying
 	}
 	g.startingTime = t
