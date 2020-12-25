@@ -7,6 +7,15 @@ import (
 func TestPGN(t *testing.T) {
 
 	game := NewGame()
+	game.Context.State = Playing
+	game.Players = []Player{
+		{
+			Color: White,
+		},
+		{
+			Color: Black,
+		},
+	}
 	table := []struct {
 		pgnGame       string
 		expectedMoves []Move
@@ -30,7 +39,18 @@ func TestPGN(t *testing.T) {
 		//23.Bd3 b5 24.Qe2 Bd7 25.Rhg1 Be8 26.Rde1 Bf7 27.Rg3 Rc8 28.Reg1 Nd6 29.Rxg7 Nf5
 		//30.R7g5 Rc7 31.Bxf5 exf5 32.Rh5+  1-0`,
 		//			expectedMoves: []Move{
-		//				//createMove()
+		//				createMove(game.Board.board, e2, e4, []MovementType{Regular, PawnMove}),
+		//				createMove(game.Board.board, e7, e6, []MovementType{Regular, PawnMove}),
+		//
+		//				createMove(game.Board.board, d2, d4, []MovementType{Regular, PawnMove}),
+		//				createMove(game.Board.board, d7, d5, []MovementType{Regular, PawnMove}),
+		//
+		//				createMove(game.Board.board, b1, d2, []MovementType{Regular}),
+		//				createMove(game.Board.board, g8, f6, []MovementType{Regular}),
+		//
+		//				createMove(game.Board.board, e4, e5, []MovementType{Regular, PawnMove}),
+		//				createMove(game.Board.board, f6, d7, []MovementType{Regular}),
+		//
 		//			},
 		//			expectedFen: "7k/p1r2b2/5q2/1p1p1p1R/5P2/P7/1P2Q2P/1K4R1 b - - 1 32",
 		//		},
@@ -45,7 +65,10 @@ func TestPGN(t *testing.T) {
 	}
 	for _, row := range table {
 		for _, move := range row.expectedMoves {
-			_, _ = game.move(move.fromSquare, move.toSquare)
+			err := game.move(move.fromSquare, move.toSquare)
+			if err != nil {
+				t.Error(err)
+			}
 		}
 		//got, _ := pgnParse(strings.NewReader(row.pgnGame))
 		if game.FenString() != row.expectedFen {

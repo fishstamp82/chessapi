@@ -30,19 +30,25 @@ func TestCheck(t *testing.T) {
 		},
 	}
 
-	var ctx chess.Context
-	var err error
 	for _, row := range table {
 		game := chess.NewGame()
 		game.Context.State = chess.Playing
+		game.Players = []chess.Player{
+			{
+				Color: chess.White,
+			},
+			{
+				Color: chess.Black,
+			},
+		}
 		for _, move := range row.moves {
-			ctx, err = game.Move(move)
+			err := game.Move(move)
 			if err != nil {
 				t.Errorf("error: %s\n", err)
 			}
 
 		}
-		if ctx.State.String() != row.expected {
+		if game.Context.State.String() != row.expected {
 			t.Errorf("not in check ")
 		}
 	}
@@ -51,8 +57,8 @@ func TestCheck(t *testing.T) {
 func TestCheckMate(t *testing.T) {
 	table := []struct {
 		moves    []string
-		expected string
-		won      string
+		expected chess.State
+		won      chess.Color
 	}{
 		{
 			moves: []string{
@@ -64,36 +70,34 @@ func TestCheckMate(t *testing.T) {
 				"b7b6",
 				"f3f7",
 			},
-			expected: "CheckMate",
-			won:      "White",
-		},
-		{
-			moves: []string{
-				"e2e4",
-				"e7e5",
-				"f2f4",
-				"d8g5",
-			},
-			expected: "Playing",
-			won:      "Noone",
+			expected: chess.CheckMate,
+			won:      chess.White,
 		},
 	}
 
 	var err error
 	for ind, row := range table {
-		b := chess.NewGame()
-		b.Context.State = chess.Playing
+		g := chess.NewGame()
+		g.Context.State = chess.Playing
+		g.Players = []chess.Player{
+			{
+				Color: chess.White,
+			},
+			{
+				Color: chess.Black,
+			},
+		}
 		for _, move := range row.moves {
-			_, err = b.Move(move)
+			err = g.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
 		}
-		if b.Context.State.String() != row.expected {
+		if g.Context.State != row.expected {
 			t.Errorf("not check mate for case: %d\n", ind+1)
 		}
-		if won := b.Context.Winner; won.String() != row.won {
-			t.Errorf("expected: %s, got: %s for case %d\n", row.won, won, ind+1)
+		if won := g.Context.WinningPlayer.Color; won != row.won {
+			t.Errorf("expected: %s, got: %s for test case %d\n", row.won, won, ind+1)
 		}
 	}
 }

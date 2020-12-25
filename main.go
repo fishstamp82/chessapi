@@ -164,7 +164,7 @@ func main() {
 			fmt.Printf("move : %s\n", move)
 
 		}
-		context, err = b.Move(move)
+		err = b.Move(move)
 
 		if err != nil {
 			fmt.Println(err)
@@ -173,7 +173,7 @@ func main() {
 		}
 		fmt.Println("state: " + context.State.String())
 		if context.State == chess.CheckMate {
-			fmt.Printf("game over, %s won", context.Winner)
+			fmt.Printf("game over, %s won", context.WinningPlayer)
 			fmt.Println(pretty(b.Board.BoardMap()))
 			break
 		}

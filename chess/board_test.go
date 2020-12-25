@@ -82,9 +82,17 @@ func TestEnPassant(t *testing.T) {
 	for _, row := range table {
 		game := NewGame()
 		game.Context.State = Playing
+		game.Players = []Player{
+			{
+				Color: White,
+			},
+			{
+				Color: Black,
+			},
+		}
 
 		for _, move := range row.moves {
-			_, err := game.Move(move)
+			err := game.Move(move)
 			if err != nil {
 				t.Error(err)
 			}
@@ -146,8 +154,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -195,8 +202,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -214,8 +220,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: true,
 				whiteCanCastleLeft:  true,
 				blackCanCastleRight: true,
@@ -233,8 +238,7 @@ func TestNewFromFEN(t *testing.T) {
 			context: Context{
 				State:               Playing,
 				ColorsTurn:          White,
-				Winner:              Noone,
-				Score:               "",
+				WinningPlayer:       nil,
 				whiteCanCastleRight: false,
 				whiteCanCastleLeft:  false,
 				blackCanCastleRight: false,
