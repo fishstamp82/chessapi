@@ -29,15 +29,16 @@ type Game struct {
 	startedAt    int64
 }
 
-func (g *Game) Start() chan<- bool {
+func (g *Game) Start() func() {
+	g.Context.State = Playing
 	g.startedAt = timeNow()
 	exit := make(chan bool)
 	ticker := time.NewTicker(gameUpdateInterval)
-	defer func() {
+	cleanup := func() {
+		exit <- true
 		ticker.Stop()
-	}()
-
-	go func() {
+	}
+	runAsync := func() {
 		for {
 			select {
 			case <-exit:
@@ -45,16 +46,17 @@ func (g *Game) Start() chan<- bool {
 			case <-ticker.C:
 				p := g.getPlayer(g.Context.ColorsTurn)
 				p.timeSpent += gameUpdateInterval
-				if p.timeSpent < 0 {
+				if p.timeSpent > g.startingTime {
 					opp := g.getOpponent(p)
 					g.Context.WinningPlayer = &opp
 					g.Context.State = Over
 				}
 			}
 		}
-	}()
+	}
+	go runAsync()
 
-	return exit
+	return cleanup
 }
 
 func (g *Game) End() {
@@ -521,7 +523,7 @@ func NewGame() *Game {
 		Context: Context{
 			State:               Idle,
 			ColorsTurn:          White,
-			WinningPlayer:       &Player{},
+			WinningPlayer:       nil,
 			whiteCanCastleRight: true,
 			whiteCanCastleLeft:  true,
 			blackCanCastleRight: true,
@@ -529,6 +531,6 @@ func NewGame() *Game {
 			halfMove:            0,
 			fullMove:            1,
 		},
-		Players: []Player{},
+		Players: nil,
 	}
 }

@@ -13,5 +13,15 @@ type Player struct {
 }
 
 func (p *Player) String() string {
-	return fmt.Sprintf("%s\n", p.ID)
+	var id string
+	if p == nil {
+		id = ""
+	}
+	switch p {
+	case nil:
+		id = ""
+	default:
+		id = p.ID
+	}
+	return fmt.Sprintf("%s\n", id)
 }
