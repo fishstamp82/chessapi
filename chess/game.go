@@ -373,6 +373,7 @@ func (g *Game) move(fromSquare, toSquare Square) error {
 	g.Board.board = makeMove(m, g.Board.board)
 	p := g.getPlayer(g.Context.ColorsTurn)
 	p.moves = append(p.moves, m)
+	g.Moves = append(g.Moves, &m)
 
 	opponentsKing := getKingSquareMust(opponent, g.Board.board)
 	if inCheck(opponentsKing, g.Board.board) {
