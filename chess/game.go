@@ -24,7 +24,7 @@ type Game struct {
 	Board        *Board
 	Context      Context
 	Players      []*Player
-	Moves        []Move
+	Moves        []*Move
 	StartingTime time.Duration
 	startedAt    int64
 }

@@ -26,8 +26,8 @@ var moveRegexp = regexp.MustCompile(fmt.Sprintf(`(%s)\.(%s)\s+(%s)\s*`,
 	notationRegex,
 	notationRegex))
 
-func pgnParse(reader io.Reader) ([]Move, error) {
-	var moves []Move
+func pgnParse(reader io.Reader) ([]*Move, error) {
+	var moves []*Move
 	_ = moves
 	var pgnBytes []byte
 	var err error
@@ -42,7 +42,7 @@ func pgnParse(reader io.Reader) ([]Move, error) {
 	return moves, nil
 }
 
-func getMoves(allMoves []string) []Move {
+func getMoves(allMoves []string) []*Move {
 	g := NewGame()
 	b := g.Board
 
@@ -50,20 +50,20 @@ func getMoves(allMoves []string) []Move {
 		player   Color
 		notation string
 	}
-	var realMoves []Move
+	var realMoves []*Move
 	var realMove Move
-	var moves []move
+	var moves []*move
 	var groups []string
 
 	for _, each := range allMoves {
 		if gameOverRegexp.MatchString(each) {
 			groups = gameOverRegexp.FindStringSubmatch(each)
 			if len(groups) == 5 {
-				moves = append(moves, move{
+				moves = append(moves, &move{
 					player:   White,
 					notation: groups[2],
 				})
-				moves = append(moves, move{
+				moves = append(moves, &move{
 					player:   Black,
 					notation: groups[3],
 				})
@@ -71,18 +71,18 @@ func getMoves(allMoves []string) []Move {
 			continue
 		}
 		groups = moveRegexp.FindStringSubmatch(each)
-		moves = append(moves, move{
+		moves = append(moves, &move{
 			player:   White,
 			notation: groups[2],
 		})
-		moves = append(moves, move{
+		moves = append(moves, &move{
 			player:   Black,
 			notation: groups[3],
 		})
 	}
 	for _, m := range moves {
 		realMove = parseNotation(m.player, m.notation, b.board, g.Context)
-		realMoves = append(realMoves, realMove)
+		realMoves = append(realMoves, &realMove)
 		b.board = makeMove(realMove, b.board)
 	}
 	return realMoves
