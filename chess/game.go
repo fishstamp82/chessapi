@@ -217,6 +217,7 @@ func (g *Game) HandleResign(uid string) {
 			g.Context.WinningPlayer = won
 		}
 	}
+	g.Context.State = Over
 }
 
 // Enable a player to leave a game before it starts
