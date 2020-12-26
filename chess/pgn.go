@@ -316,8 +316,8 @@ func findFromSquares(piece Piece, target Square, board [64]Piece, ctx Context) [
 	for _, fromSquare := range fromSquares {
 		moves = validMovesForSquare(fromSquare, board, ctx)
 		for _, move := range moves {
-			if move.toSquare == target {
-				returnMoves = append(returnMoves, move.fromSquare)
+			if move.ToSquare == target {
+				returnMoves = append(returnMoves, move.FromSquare)
 			}
 		}
 	}

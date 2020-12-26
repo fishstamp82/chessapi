@@ -65,7 +65,7 @@ func TestPGN(t *testing.T) {
 	}
 	for _, row := range table {
 		for _, move := range row.expectedMoves {
-			err := game.move(move.fromSquare, move.toSquare)
+			err := game.move(move.FromSquare, move.ToSquare)
 			if err != nil {
 				t.Error(err)
 			}

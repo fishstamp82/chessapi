@@ -88,7 +88,7 @@ func (g *Game) MoveNotation(move Move) error {
 	if g.Context.State != Playing && g.Context.State != Check {
 		return fmt.Errorf("not in playing state")
 	}
-	fromSquare, toSquare := move.fromSquare, move.toSquare
+	fromSquare, toSquare := move.FromSquare, move.ToSquare
 	return g.move(fromSquare, toSquare)
 }
 
@@ -360,11 +360,11 @@ func (g *Game) move(fromSquare, toSquare Square) error {
 	//todo: replace with function thate uses chess algebraic notation
 	var m Move
 	for _, move := range availMoves {
-		if move.fromSquare == fromSquare && move.toSquare == toSquare {
+		if move.FromSquare == fromSquare && move.ToSquare == toSquare {
 			m = move
 		}
 	}
-	if m.toSquare == none {
+	if m.ToSquare == none {
 		return fmt.Errorf("target square %s is 'none'\n", squareToString[toSquare])
 	}
 
@@ -425,10 +425,10 @@ func (g *Game) getEnPassantSquare(m Move) Square {
 		g.Context.enPassantSquare = none
 		return none
 	}
-	if m.fromSquare.rank() == 2 && m.toSquare.rank() == 4 && m.piece == WhitePawn {
-		return m.fromSquare + 8
-	} else if m.fromSquare.rank() == 7 && m.toSquare.rank() == 5 && m.piece == BlackPawn {
-		return m.fromSquare - 8
+	if m.FromSquare.rank() == 2 && m.ToSquare.rank() == 4 && m.piece == WhitePawn {
+		return m.FromSquare + 8
+	} else if m.FromSquare.rank() == 7 && m.ToSquare.rank() == 5 && m.piece == BlackPawn {
+		return m.FromSquare - 8
 	} else {
 		return none
 	}
@@ -444,7 +444,7 @@ func (g *Game) switchTurn() {
 
 func (g *Game) abortCastling(m Move) {
 
-	switch m.fromSquare {
+	switch m.FromSquare {
 	case a1:
 		g.Context.whiteCanCastleLeft = false
 	case h1:
@@ -461,7 +461,7 @@ func (g *Game) abortCastling(m Move) {
 		g.Context.blackCanCastleRight = false
 	}
 
-	switch m.toSquare {
+	switch m.ToSquare {
 	case a1:
 		g.Context.whiteCanCastleLeft = false
 	case h1:

@@ -9,9 +9,9 @@ type piecePosition struct {
 
 type Move struct {
 	Color          Color
+	FromSquare     Square
+	ToSquare       Square
 	piece          Piece
-	fromSquare     Square
-	toSquare       Square
 	piecePositions []piecePosition // Resulting pieces in each square
 	moveTypes      []MovementType
 	reverseMove    *Move
@@ -26,7 +26,7 @@ func (m Move) String() string {
 	for _, mt := range m.moveTypes {
 		mts += mt.String()
 	}
-	return fmt.Sprintf("move: \"%s%s\", pp's: %s, movement types: %s", m.fromSquare, m.toSquare, pp, mts)
+	return fmt.Sprintf("move: \"%s%s\", pp's: %s, movement types: %s", m.FromSquare, m.ToSquare, pp, mts)
 }
 
 func validMovesForSquare(fromSquare Square, board [64]Piece, ctx Context) []Move {
@@ -493,7 +493,7 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	if canCastleRight {
 		for _, p := range squaresWithoutKing(opponent, b) {
 			for _, move := range validMovesForSquare(p, b, ctx) {
-				if inSquares(move.toSquare, append(shortCastleSquares, kingSquare)) {
+				if inSquares(move.ToSquare, append(shortCastleSquares, kingSquare)) {
 					canCastleRight = false
 					break
 				}
@@ -506,7 +506,7 @@ func castleMoves(kingSquare Square, b [64]Piece, ctx Context) []Move {
 	if canCastleLeft {
 		for _, p := range squaresWithoutKing(opponent, b) {
 			for _, move := range validMovesForSquare(p, b, ctx) {
-				if inSquares(move.toSquare, append(longCastleSquares, kingSquare)) {
+				if inSquares(move.ToSquare, append(longCastleSquares, kingSquare)) {
 					canCastleLeft = false
 					break
 				}
@@ -738,8 +738,8 @@ func createPawnMove(p Piece, f, t Square, mt []MovementType) Move {
 	return Move{
 		Color:      pieceToColor(p),
 		piece:      p,
-		fromSquare: f,
-		toSquare:   t,
+		FromSquare: f,
+		ToSquare:   t,
 		piecePositions: []piecePosition{
 			{
 				piece:    p,
@@ -780,8 +780,8 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt []MovementType) Move {
 	m := Move{
 		Color:      pieceToColor(p),
 		piece:      p,
-		fromSquare: f,
-		toSquare:   t,
+		FromSquare: f,
+		ToSquare:   t,
 		piecePositions: []piecePosition{
 			{
 				piece:    p,
@@ -823,8 +823,8 @@ func createMove(b [64]Piece, fromSquare, toSquare Square, mt []MovementType) Mov
 	return Move{
 		Color:      pieceToColor(fromPiece),
 		piece:      fromPiece,
-		fromSquare: fromSquare,
-		toSquare:   toSquare,
+		FromSquare: fromSquare,
+		ToSquare:   toSquare,
 		piecePositions: []piecePosition{
 			{
 				piece:    fromPiece,
@@ -859,8 +859,8 @@ func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	move := Move{
 		Color:      pieceToColor(p),
 		piece:      p,
-		fromSquare: f,
-		toSquare:   t,
+		FromSquare: f,
+		ToSquare:   t,
 		piecePositions: []piecePosition{
 			{
 				piece:    p,
@@ -1024,9 +1024,9 @@ func createPawnPromotionMoves(c Color, f, t Square, targetPiece Piece, mt []Move
 	var moves []Move
 	for _, piece := range []Piece{bishop, knight, rook, queen} {
 		moves = append(moves, Move{
-			Color: c,
-			fromSquare: f,
-			toSquare:   t,
+			Color:      c,
+			FromSquare: f,
+			ToSquare:   t,
 			piecePositions: []piecePosition{
 				{
 					piece:    piece,
@@ -1060,10 +1060,10 @@ func createPawnPromotionMove(board [64]Piece, f, t Square, promoPiece Piece, mt 
 	target = board[t]
 	pawn = board[f]
 	move := Move{
-		Color: pieceToColor(pawn),
+		Color:      pieceToColor(pawn),
 		piece:      pawn,
-		fromSquare: f,
-		toSquare:   t,
+		FromSquare: f,
+		ToSquare:   t,
 		piecePositions: []piecePosition{
 			{
 				piece:    promoPiece,

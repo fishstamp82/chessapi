@@ -66,10 +66,10 @@ func bishopBlocks(s, kingPos Square, b [64]Piece) []Square {
 		blocks = append(blocks, s)
 
 		for _, move := range moves {
-			if move.toSquare == kingPos {
+			if move.ToSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, move.toSquare)
+			blocks = append(blocks, move.ToSquare)
 		}
 	}
 
@@ -97,10 +97,10 @@ func queenBlocks(s, kingPos Square, b [64]Piece) []Square {
 		blocks = append(blocks, s)
 
 		for _, move := range moves {
-			if move.toSquare == kingPos {
+			if move.ToSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, move.toSquare)
+			blocks = append(blocks, move.ToSquare)
 		}
 	}
 
@@ -124,10 +124,10 @@ func rookBlocks(s, kingPos Square, b [64]Piece) []Square {
 		blocks = append(blocks, s)
 
 		for _, move := range moves {
-			if move.toSquare == kingPos {
+			if move.ToSquare == kingPos {
 				return blocks
 			}
-			blocks = append(blocks, move.toSquare)
+			blocks = append(blocks, move.ToSquare)
 		}
 	}
 

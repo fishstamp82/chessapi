@@ -54,10 +54,10 @@ func pawnTargets(s Square, b [64]Piece) []Move {
 		moves = []Move{}
 	}
 	for _, move := range moves {
-		if isWhite && b[move.toSquare] < 0 {
-			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, []MovementType{Capture, PawnMove}))
-		} else if !isWhite && b[move.toSquare] > 0 {
-			targets = append(targets, createPawnMove(piece, move.fromSquare, move.toSquare, []MovementType{Capture, PawnMove}))
+		if isWhite && b[move.ToSquare] < 0 {
+			targets = append(targets, createPawnMove(piece, move.FromSquare, move.ToSquare, []MovementType{Capture, PawnMove}))
+		} else if !isWhite && b[move.ToSquare] > 0 {
+			targets = append(targets, createPawnMove(piece, move.FromSquare, move.ToSquare, []MovementType{Capture, PawnMove}))
 		}
 	}
 	return targets
@@ -85,10 +85,10 @@ func knightTargets(s Square, board [64]Piece) []Move {
 		moves = []Move{}
 	}
 	for _, move := range moves {
-		if isWhite && board[move.toSquare] < 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
-		} else if !isWhite && board[move.toSquare] > 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
+		if isWhite && board[move.ToSquare] < 0 {
+			targets = append(targets, createMove(board, move.FromSquare, move.ToSquare, []MovementType{Capture}))
+		} else if !isWhite && board[move.ToSquare] > 0 {
+			targets = append(targets, createMove(board, move.FromSquare, move.ToSquare, []MovementType{Capture}))
 
 		}
 	}
@@ -133,10 +133,10 @@ func generalTargets(s Square, board [64]Piece) []Move {
 		moves = []Move{}
 	}
 	for _, move := range moves {
-		if isWhite && board[move.toSquare] < 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
-		} else if !isWhite && board[move.toSquare] > 0 {
-			targets = append(targets, createMove(board, move.fromSquare, move.toSquare, []MovementType{Capture}))
+		if isWhite && board[move.ToSquare] < 0 {
+			targets = append(targets, createMove(board, move.FromSquare, move.ToSquare, []MovementType{Capture}))
+		} else if !isWhite && board[move.ToSquare] > 0 {
+			targets = append(targets, createMove(board, move.FromSquare, move.ToSquare, []MovementType{Capture}))
 
 		}
 	}
