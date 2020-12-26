@@ -141,6 +141,18 @@ func main() {
 
 	b = chess.NewGame()
 	b.Context.State = chess.Playing
+	b.Players = []*chess.Player{
+		{
+			Color:    chess.White,
+			ID:       "",
+			TimeLeft: 60 * time.Second,
+		},
+		{
+			Color:    chess.Black,
+			ID:       "",
+			TimeLeft: 60 * time.Second,
+		},
+	}
 	var allMoves string
 	_ = allMoves
 	for {
