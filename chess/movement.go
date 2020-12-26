@@ -8,6 +8,7 @@ type piecePosition struct {
 }
 
 type Move struct {
+	Color          Color
 	piece          Piece
 	fromSquare     Square
 	toSquare       Square
@@ -735,6 +736,7 @@ func pawnMoves(fromSquare Square, b [64]Piece, enPassant Square) []Move {
 
 func createPawnMove(p Piece, f, t Square, mt []MovementType) Move {
 	return Move{
+		Color:      pieceToColor(p),
 		piece:      p,
 		fromSquare: f,
 		toSquare:   t,
@@ -776,6 +778,7 @@ func createPawnEnPassantMove(p Piece, f, t Square, mt []MovementType) Move {
 		killPawn = WhitePawn
 	}
 	m := Move{
+		Color:      pieceToColor(p),
 		piece:      p,
 		fromSquare: f,
 		toSquare:   t,
@@ -818,6 +821,7 @@ func createMove(b [64]Piece, fromSquare, toSquare Square, mt []MovementType) Mov
 	fromPiece := b[fromSquare]
 	toPiece := b[toSquare]
 	return Move{
+		Color:      pieceToColor(fromPiece),
 		piece:      fromPiece,
 		fromSquare: fromSquare,
 		toSquare:   toSquare,
@@ -853,6 +857,7 @@ func createMove(b [64]Piece, fromSquare, toSquare Square, mt []MovementType) Mov
 
 func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	move := Move{
+		Color:      pieceToColor(p),
 		piece:      p,
 		fromSquare: f,
 		toSquare:   t,
@@ -986,10 +991,23 @@ func createCastleMove(p Piece, f, t Square, mt []MovementType) Move {
 	return move
 }
 
-func createPawnPromotionMoves(p Color, f, t Square, targetPiece Piece, mt []MovementType) []Move {
+func pieceToColor(p Piece) Color {
+	var color Color
+	switch val := p; {
+	case val < 0:
+		color = Black
+	case val > 0:
+		color = White
+	default:
+		panic("can't move from empty square")
+	}
+	return color
+}
+
+func createPawnPromotionMoves(c Color, f, t Square, targetPiece Piece, mt []MovementType) []Move {
 	var pawn, bishop, knight, rook, queen, target Piece
 	target = targetPiece
-	switch p {
+	switch c {
 	case White:
 		bishop = WhiteBishop
 		knight = WhiteKnight
@@ -1006,6 +1024,7 @@ func createPawnPromotionMoves(p Color, f, t Square, targetPiece Piece, mt []Move
 	var moves []Move
 	for _, piece := range []Piece{bishop, knight, rook, queen} {
 		moves = append(moves, Move{
+			Color: c,
 			fromSquare: f,
 			toSquare:   t,
 			piecePositions: []piecePosition{
@@ -1041,6 +1060,7 @@ func createPawnPromotionMove(board [64]Piece, f, t Square, promoPiece Piece, mt 
 	target = board[t]
 	pawn = board[f]
 	move := Move{
+		Color: pieceToColor(pawn),
 		piece:      pawn,
 		fromSquare: f,
 		toSquare:   t,

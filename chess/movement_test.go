@@ -115,8 +115,6 @@ func TestCreatePawnPromotionMove(t *testing.T) {
 	}
 }
 
-//
-//
 
 func TestBishopMoves(t *testing.T) {
 	var piece = WhiteBishop
