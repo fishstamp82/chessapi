@@ -96,8 +96,8 @@ func TestCreatePawnPromotionMove(t *testing.T) {
 			toSquare:   h8,
 			expectedMove: Move{
 				piece:      WhitePawn,
-				fromSquare: g7,
-				toSquare:   h8,
+				FromSquare: g7,
+				ToSquare:   h8,
 				piecePositions: []piecePosition{
 					{WhiteQueen, h8},
 					{Empty, g7},
@@ -492,7 +492,7 @@ func printPrettySquares(s []Square) []string {
 func printPrettyMoves(s []Move) []string {
 	var str []string
 	for i := 0; i < len(s); i++ {
-		str = append(str, fmt.Sprintf("%s%s;%b", s[i].fromSquare, s[i].toSquare, s[i].moveTypes))
+		str = append(str, fmt.Sprintf("%s%s;%b", s[i].FromSquare, s[i].ToSquare, s[i].moveTypes))
 	}
 	return str
 }
@@ -512,13 +512,13 @@ func sameAfterSquareSort(a, b []Square) bool {
 }
 
 func isMovesEqual(a, b []Move) bool {
-	sort.Slice(a, func(i, j int) bool { return a[i].toSquare < a[j].toSquare })
-	sort.Slice(b, func(i, j int) bool { return b[i].toSquare < b[j].toSquare })
+	sort.Slice(a, func(i, j int) bool { return a[i].ToSquare < a[j].ToSquare })
+	sort.Slice(b, func(i, j int) bool { return b[i].ToSquare < b[j].ToSquare })
 	if len(a) != len(b) {
 		return false
 	}
 	for i := 0; i < len(a); i++ {
-		if (a[i].piece != b[i].piece || a[i].toSquare != b[i].toSquare) || a[i].fromSquare != b[i].fromSquare {
+		if (a[i].piece != b[i].piece || a[i].ToSquare != b[i].ToSquare) || a[i].FromSquare != b[i].FromSquare {
 			return false
 		}
 		if len(a[i].moveTypes) != len(b[i].moveTypes) {
@@ -534,7 +534,7 @@ func isMovesEqual(a, b []Move) bool {
 }
 
 func isMoveEqual(a, b Move) bool {
-	if (a.piece != b.piece || a.toSquare != b.toSquare) || a.fromSquare != b.fromSquare {
+	if (a.piece != b.piece || a.ToSquare != b.ToSquare) || a.FromSquare != b.FromSquare {
 		return false
 	}
 	if len(a.moveTypes) != len(b.moveTypes) {

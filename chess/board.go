@@ -91,7 +91,7 @@ func ValidMoves(b *Board, p Color, c Context) ([]string, error) {
 	moves := validMovesForPlayer(p, b.board, c)
 	var strMoves []string
 	for _, move := range moves {
-		strMoves = append(strMoves, move.fromSquare.String()+move.toSquare.String())
+		strMoves = append(strMoves, move.FromSquare.String()+move.ToSquare.String())
 	}
 	return strMoves, nil
 }
@@ -128,7 +128,7 @@ func makeMove(m Move, b [64]Piece) [64]Piece {
 func getSquares(m []Move) []Square {
 	var s []Square
 	for _, m := range m {
-		s = append(s, m.toSquare)
+		s = append(s, m.ToSquare)
 	}
 	return s
 }
@@ -197,7 +197,7 @@ func isCheckMated(kingSquare Square, board [64]Piece) bool {
 	//Must Block all attacks from opponent in single move
 	for _, source := range squaresWithoutKing(hero, board) {
 		for _, target := range validMovesForSquare(source, board, Context{}) {
-			if inSquares(target.toSquare, toBlock) {
+			if inSquares(target.ToSquare, toBlock) {
 				board = makeMove(target, board)
 				if !inCheck(kingSquare, board) {
 					return false
