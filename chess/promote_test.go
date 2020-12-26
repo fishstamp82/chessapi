@@ -7,7 +7,7 @@ package chess
 //	}
 //	table := []struct {
 //		initialBoard     []piecePosition
-//		moves            [][2]Square
+//		Moves            [][2]Square
 //		promotion        Piece
 //		expectedStateOne State
 //		expectedStateTwo State
@@ -19,7 +19,7 @@ package chess
 //				{g6, WhiteKing},
 //				{g8, BlackKing},
 //			},
-//			moves: [][2]Square{
+//			Moves: [][2]Square{
 //				{e7, e8},
 //			},
 //			promotion:        WhiteRook,
@@ -37,7 +37,7 @@ package chess
 //		for _, pp := range row.initialBoard {
 //			b.board[pp.position] = pp.piece
 //		}
-//		for _, move := range row.moves {
+//		for _, move := range row.Moves {
 //			state, err = b.move(move[0], move[1])
 //			if err != nil {
 //				t.Error(err)

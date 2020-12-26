@@ -21,10 +21,10 @@ var (
 )
 
 type Game struct {
-	Board        *Board  `json:"board"`
-	Context      Context `json:"context"`
-	Players      []*Player `json:"players"`
-	moves        []Move
+	Board        *Board
+	Context      Context
+	Players      []*Player
+	Moves        []Move
 	StartingTime time.Duration
 	startedAt    int64
 }
@@ -267,7 +267,7 @@ func GameFromPGN(reader io.Reader) *Game {
 		panic(err)
 	}
 
-	g.moves = moves
+	g.Moves = moves
 
 	return g
 }

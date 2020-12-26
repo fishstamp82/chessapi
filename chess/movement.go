@@ -96,7 +96,7 @@ func getPieceSquares(piece Piece, board [64]Piece) []Square {
 	return squares
 }
 
-//remove moves that result in player being in check
+//remove Moves that result in player being in check
 func cleanMovesInCheck(m []Move, b [64]Piece, p Color) []Move {
 	var cleanMoves []Move
 	for _, move := range m {
