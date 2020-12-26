@@ -34,7 +34,7 @@ func TestGame_Start(t *testing.T) {
 		tt.game.startedAt = 0
 		tt.game.StartingTime = gameUpdateInterval / 2
 		cleanup := tt.game.Start()
-		// Make all moves:
+		// Make all Moves:
 
 		for _, m := range tt.moves {
 			err := tt.game.Move(m)
