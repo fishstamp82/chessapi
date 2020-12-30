@@ -10,6 +10,12 @@ The library exposes a main struct, Game, that can be used to play a game of ches
 The entry-point is the Start() method, which runs the chess game
 asynchronously, and provides a cleanup function to shut if off.
 
+```go
+g := chess.NewGame()
+cleanup := g.Start()
+cleanup()
+```
+
 The interface to setting up a game is via the Handle* functions.
 
 ```go
