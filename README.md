@@ -1,30 +1,32 @@
 ![Go](https://github.com/fishstamp82/chessapi/workflows/Go/badge.svg?branch=master)
 
 # Chess API
-A library in go to play chess.
+A library in GO to play chess.
 
 ## API
 
-The chessboard only has a method, which you use to
-play a game of chess.
+The library exposes a main struct, Game, that can be used to play a game of chess.
 
-The library exposes an interface which should have
-functionality to play chess.
+The entry-point is the Start() method, which runs the chess game
+asynchronously, and provides a cleanup function to shut if off.
+
+The interface to setting up a game is via the Handle* functions.
 
 ```go
+package chessapi
 
-type Board interface {
-	CheckMate() bool
-	Draw() bool
-	Won() (string, error)
-	InCheck() bool
-	PlayersTurn() string
-	BoardMap() map[string]string
-	Move(s, t string) error
-}
+// Before start
+func (g *Game) HandlePick(uid string, cstr string) error
+func (g *Game) HandleSetTime(t time.Duration) error
+func (g *Game) HandleLeave(uid string) error
+
+// During play
+func (g *Game) HandleSetMove(move string) error
+func (g *Game) HandleResign(uid string)
 ```
 
+# Development
 
-###### Development
-
-sh init_hooks.sh
+```sh
+make test
+```
