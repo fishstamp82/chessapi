@@ -2,7 +2,7 @@ package chess
 
 import "fmt"
 
-//go:generate stringer -type=Piece,Player,Square,State,MovementType -output=stringer_gen.go
+//go:generate stringer -type=Piece,Square,State,MovementType -output=stringer_gen.go
 
 type Color byte
 type Square int
