@@ -217,7 +217,7 @@ func (g *Game) HandleResign(uid string) error {
 		if (ps.ID == uid) && (ps.Color == Black) {
 			won := g.getPlayer(White)
 			g.Context.WinningPlayer = won
-			playerInGame = playerInGame
+			playerInGame = true
 		}
 	}
 	if !playerInGame {
