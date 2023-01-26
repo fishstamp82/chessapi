@@ -199,25 +199,32 @@ func (g *Game) HandleSetMove(move string) error {
 }
 
 func (g *Game) HandleSetTime(t time.Duration) error {
-	if !(g.Context.State == Idle){
+	if !(g.Context.State == Idle) {
 		return ErrAlreadyPlaying
 	}
 	g.StartingTime = t
 	return nil
 }
 
-func (g *Game) HandleResign(uid string) {
+func (g *Game) HandleResign(uid string) error {
+	var playerInGame bool
 	for _, ps := range g.Players {
 		if (ps.ID == uid) && (ps.Color == White) {
 			won := g.getPlayer(Black)
 			g.Context.WinningPlayer = won
+			playerInGame = true
 		}
 		if (ps.ID == uid) && (ps.Color == Black) {
 			won := g.getPlayer(White)
 			g.Context.WinningPlayer = won
+			playerInGame = playerInGame
 		}
 	}
+	if !playerInGame {
+		return fmt.Errorf("ErrNotPlaying")
+	}
 	g.Context.State = Over
+	return nil
 }
 
 // Enable a player to leave a game before it starts
